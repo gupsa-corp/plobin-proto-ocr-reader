@@ -103,40 +103,158 @@ pdf_processor = PDFToImageProcessor()
 output_dir = Path("output")
 output_dir.mkdir(exist_ok=True)
 
-def save_processing_results(filename: str, result_data: dict, blocks: list, image_path: str = None) -> dict:
-    """처리 결과를 output 폴더에 저장"""
-    # 파일명 정리 (확장자 제거)
+def create_output_folder_structure(file_type: str, filename: str, page_num: int = None) -> Path:
+    """계층적 폴더 구조 생성"""
+    now = datetime.now()
+    date_str = now.strftime("%Y-%m-%d")
+    time_str = now.strftime("%H%M%S")
+
     base_name = Path(filename).stem
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    # 기본 경로: output/타입/날짜/파일명_시간/
+    if file_type == "pdf" and page_num is not None:
+        # PDF: output/pdfs/2025-09-29/filename_HHMMSS/page_N/
+        folder_path = output_dir / "pdfs" / date_str / f"{base_name}_{time_str}" / f"page_{page_num}"
+    elif file_type == "image":
+        # 이미지: output/images/2025-09-29/filename_HHMMSS/
+        folder_path = output_dir / "images" / date_str / f"{base_name}_{time_str}"
+    else:
+        # 기본: output/documents/2025-09-29/filename_HHMMSS/
+        folder_path = output_dir / "documents" / date_str / f"{base_name}_{time_str}"
+
+    # 폴더 생성
+    folder_path.mkdir(parents=True, exist_ok=True)
+    return folder_path
+
+def create_pdf_summary(filename: str, all_pages_results: List[ProcessingResult]) -> dict:
+    """PDF 전체 요약 파일 생성"""
+    now = datetime.now()
+    date_str = now.strftime("%Y-%m-%d")
+    time_str = now.strftime("%H%M%S")
+    base_name = Path(filename).stem
+
+    # PDF 폴더 경로: output/pdfs/2025-09-29/filename_HHMMSS/
+    pdf_folder = output_dir / "pdfs" / date_str / f"{base_name}_{time_str}"
+    pdf_folder.mkdir(parents=True, exist_ok=True)
+
+    # 요약 파일 경로
+    summary_path = pdf_folder / "summary.json"
+
+    # PDF 요약 데이터 생성
+    summary_data = {
+        "pdf_info": {
+            "filename": filename,
+            "processed_at": now.isoformat(),
+            "total_pages": len(all_pages_results),
+            "total_blocks": sum(result.total_blocks for result in all_pages_results),
+            "overall_confidence": round(sum(result.average_confidence * result.total_blocks for result in all_pages_results) /
+                                      max(sum(result.total_blocks for result in all_pages_results), 1), 3) if all_pages_results else 0
+        },
+        "pages": [
+            {
+                "page_number": i + 1,
+                "blocks": result.total_blocks,
+                "confidence": result.average_confidence,
+                "blocks_detail": [block.dict() for block in result.blocks]
+            }
+            for i, result in enumerate(all_pages_results)
+        ]
+    }
+
+    with open(summary_path, 'w', encoding='utf-8') as f:
+        json.dump(summary_data, f, ensure_ascii=False, indent=2)
+
+    return {
+        "summary_path": str(summary_path),
+        "pdf_folder": str(pdf_folder),
+        "relative_path": str(pdf_folder.relative_to(output_dir))
+    }
+
+def save_processing_results(filename: str, result_data: dict, blocks: list, image_path: str = None,
+                          file_type: str = "document", page_num: int = None) -> dict:
+    """처리 결과를 계층적 폴더 구조로 저장"""
+
+    # 폴더 구조 생성
+    folder_path = create_output_folder_structure(file_type, filename, page_num)
 
     # JSON 결과 저장
-    json_filename = f"{base_name}_{timestamp}_result.json"
-    json_path = output_dir / json_filename
-
+    json_path = folder_path / "result.json"
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(result_data, f, ensure_ascii=False, indent=2)
 
     output_files = {
         "json_result": str(json_path),
-        "result_filename": json_filename
+        "result_filename": json_path.name,
+        "folder_path": str(folder_path),
+        "relative_path": str(folder_path.relative_to(output_dir))
     }
 
     # 시각화 이미지가 있으면 저장
     if image_path and os.path.exists(image_path):
         try:
-            viz_filename = f"{base_name}_{timestamp}_visualization.png"
-            viz_path = output_dir / viz_filename
+            viz_path = folder_path / "visualization.png"
 
             # 시각화 생성 및 저장
             extractor.visualize_blocks(image_path, {'blocks': blocks}, str(viz_path))
 
             output_files["visualization"] = str(viz_path)
-            output_files["visualization_filename"] = viz_filename
+            output_files["visualization_filename"] = viz_path.name
 
         except Exception as e:
             print(f"시각화 생성 실패: {e}")
 
     return output_files
+
+def save_pdf_summary(filename: str, all_pages_results: list) -> dict:
+    """PDF 전체 요약 정보 저장"""
+    base_name = Path(filename).stem
+    now = datetime.now()
+    date_str = now.strftime("%Y-%m-%d")
+    time_str = now.strftime("%H%M%S")
+
+    pdf_folder = output_dir / "pdfs" / date_str / f"{base_name}_{time_str}"
+    summary_path = pdf_folder / "summary.json"
+
+    # 전체 통계 계산
+    total_blocks = sum(len(page.get('blocks', [])) for page in all_pages_results)
+    total_confidence = sum(
+        sum(block.get('confidence', 0) for block in page.get('blocks', []))
+        for page in all_pages_results
+    )
+    avg_confidence = total_confidence / total_blocks if total_blocks > 0 else 0.0
+
+    summary_data = {
+        "pdf_info": {
+            "filename": filename,
+            "total_pages": len(all_pages_results),
+            "processed_date": now.isoformat(),
+            "folder_path": str(pdf_folder.relative_to(output_dir))
+        },
+        "statistics": {
+            "total_blocks": total_blocks,
+            "average_confidence": round(avg_confidence, 3),
+            "pages_summary": [
+                {
+                    "page_number": i + 1,
+                    "blocks_count": len(page.get('blocks', [])),
+                    "avg_confidence": round(
+                        sum(block.get('confidence', 0) for block in page.get('blocks', [])) / len(page.get('blocks', [])), 3
+                    ) if page.get('blocks') else 0.0,
+                    "folder_path": f"page_{i + 1}"
+                }
+                for i, page in enumerate(all_pages_results)
+            ]
+        }
+    }
+
+    with open(summary_path, 'w', encoding='utf-8') as f:
+        json.dump(summary_data, f, ensure_ascii=False, indent=2)
+
+    return {
+        "summary_path": str(summary_path),
+        "pdf_folder": str(pdf_folder),
+        "relative_path": str(pdf_folder.relative_to(output_dir))
+    }
 
 # 파일 관리 유틸리티 함수들
 def validate_filename(filename: str) -> bool:
@@ -385,7 +503,7 @@ async def process_image(file: UploadFile = File(...)):
             }
 
             output_files = save_processing_results(
-                file.filename, result_data, blocks, tmp_path
+                file.filename, result_data, blocks, tmp_path, file_type="image"
             )
 
             return ProcessingResult(
@@ -458,7 +576,8 @@ async def process_pdf(file: UploadFile = File(...)):
 
                         # 페이지별 output 파일 저장
                         output_files = save_processing_results(
-                            page_filename, result_data, blocks, image_path
+                            file.filename, result_data, blocks, image_path,
+                            file_type="pdf", page_num=i+1
                         )
 
                         result = ProcessingResult(
@@ -485,6 +604,24 @@ async def process_pdf(file: UploadFile = File(...)):
                 total_blocks = sum(r.total_blocks for r in results)
                 server_stats["total_blocks_extracted"] += total_blocks
                 server_stats["total_processing_time"] += processing_time
+
+                # PDF 요약 파일 저장
+                all_pages_data = []
+                for result in results:
+                    all_pages_data.append({
+                        "blocks": [block.dict() for block in result.blocks]
+                    })
+
+                summary_info = create_pdf_summary(file.filename, results)
+
+                # 첫 번째 결과에 PDF 요약 정보 추가
+                if results:
+                    if results[0].output_files is None:
+                        results[0].output_files = {}
+                    results[0].output_files.update({
+                        "pdf_summary": summary_info["summary_path"],
+                        "pdf_folder": summary_info["relative_path"]
+                    })
 
                 return results
 
@@ -520,20 +657,44 @@ async def get_supported_formats():
 
 @app.get("/output/list")
 async def list_output_files():
-    """Output 폴더의 처리 결과 파일 목록 조회"""
+    """Output 폴더의 처리 결과 파일 목록 조회 (계층적 + 기존 구조)"""
     try:
         files = []
+
+        # 1. 기존 평면 파일들 (호환성)
         for file_path in output_dir.glob("*"):
             if file_path.is_file():
                 stat = file_path.stat()
                 files.append({
                     "filename": file_path.name,
                     "path": str(file_path),
+                    "relative_path": file_path.name,
                     "size_mb": round(stat.st_size / (1024 * 1024), 2),
                     "created": datetime.fromtimestamp(stat.st_ctime).isoformat(),
                     "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                    "type": "json" if file_path.suffix == ".json" else "image" if file_path.suffix in [".png", ".jpg", ".jpeg"] else "other"
+                    "type": "json" if file_path.suffix == ".json" else "image" if file_path.suffix in [".png", ".jpg", ".jpeg"] else "other",
+                    "structure": "legacy"
                 })
+
+        # 2. 새로운 계층적 구조의 파일들
+        for category in ["pdfs", "images", "documents"]:
+            category_path = output_dir / category
+            if category_path.exists():
+                for file_path in category_path.rglob("*"):
+                    if file_path.is_file():
+                        stat = file_path.stat()
+                        relative_path = file_path.relative_to(output_dir)
+                        files.append({
+                            "filename": file_path.name,
+                            "path": str(file_path),
+                            "relative_path": str(relative_path),
+                            "size_mb": round(stat.st_size / (1024 * 1024), 2),
+                            "created": datetime.fromtimestamp(stat.st_ctime).isoformat(),
+                            "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                            "type": "json" if file_path.suffix == ".json" else "image" if file_path.suffix in [".png", ".jpg", ".jpeg"] else "other",
+                            "structure": "hierarchical",
+                            "category": category
+                        })
 
         # 최신 파일 순으로 정렬
         files.sort(key=lambda x: x["created"], reverse=True)
@@ -541,7 +702,11 @@ async def list_output_files():
         return {
             "total_files": len(files),
             "files": files,
-            "output_directory": str(output_dir)
+            "output_directory": str(output_dir),
+            "structure_info": {
+                "legacy_files": len([f for f in files if f.get("structure") == "legacy"]),
+                "hierarchical_files": len([f for f in files if f.get("structure") == "hierarchical"])
+            }
         }
 
     except Exception as e:
@@ -549,30 +714,43 @@ async def list_output_files():
 
 @app.get("/output/stats", response_model=FileStats)
 async def get_output_stats():
-    """출력 폴더 통계"""
+    """출력 폴더 통계 (계층적 + 기존 구조)"""
     try:
-        files = list(output_dir.glob("*"))
-        file_files = [f for f in files if f.is_file()]
+        all_files = []
 
-        total_size = sum(f.stat().st_size for f in file_files)
+        # 1. 기존 평면 파일들
+        legacy_files = list(output_dir.glob("*"))
+        legacy_file_files = [f for f in legacy_files if f.is_file()]
+        all_files.extend(legacy_file_files)
+
+        # 2. 새로운 계층적 구조의 파일들
+        for category in ["pdfs", "images", "documents"]:
+            category_path = output_dir / category
+            if category_path.exists():
+                for file_path in category_path.rglob("*"):
+                    if file_path.is_file():
+                        all_files.append(file_path)
+
+        # 전체 크기 계산
+        total_size = sum(f.stat().st_size for f in all_files)
 
         # 타입별 분류
         by_type = {}
-        for file_path in file_files:
-            file_info = get_file_info(file_path.name)
-            file_type = file_info["type"]
+        for file_path in all_files:
+            file_type = "json" if file_path.suffix == ".json" else "image" if file_path.suffix in [".png", ".jpg", ".jpeg"] else "other"
+            size_mb = round(file_path.stat().st_size / (1024 * 1024), 2)
 
             if file_type not in by_type:
                 by_type[file_type] = {"count": 0, "size_mb": 0}
 
             by_type[file_type]["count"] += 1
-            by_type[file_type]["size_mb"] += file_info["size_mb"]
+            by_type[file_type]["size_mb"] += size_mb
 
         # 디스크 사용량 (시스템 전체)
         disk_usage = psutil.disk_usage('/')
 
         return FileStats(
-            total_files=len(file_files),
+            total_files=len(all_files),
             total_size_mb=round(total_size / (1024 * 1024), 2),
             by_type=by_type,
             disk_usage={
@@ -833,45 +1011,6 @@ async def batch_output_operation(operation: BatchOperation):
         "total_files": len(operation.files),
         "results": results
     }
-
-@app.get("/output/stats", response_model=FileStats)
-async def get_output_stats():
-    """출력 폴더 통계"""
-    try:
-        files = list(output_dir.glob("*"))
-        file_files = [f for f in files if f.is_file()]
-
-        total_size = sum(f.stat().st_size for f in file_files)
-
-        # 타입별 분류
-        by_type = {}
-        for file_path in file_files:
-            file_info = get_file_info(file_path.name)
-            file_type = file_info["type"]
-
-            if file_type not in by_type:
-                by_type[file_type] = {"count": 0, "size_mb": 0}
-
-            by_type[file_type]["count"] += 1
-            by_type[file_type]["size_mb"] += file_info["size_mb"]
-
-        # 디스크 사용량 (시스템 전체)
-        disk_usage = psutil.disk_usage('/')
-
-        return FileStats(
-            total_files=len(file_files),
-            total_size_mb=round(total_size / (1024 * 1024), 2),
-            by_type=by_type,
-            disk_usage={
-                "total_gb": round(disk_usage.total / (1024**3), 1),
-                "used_gb": round(disk_usage.used / (1024**3), 1),
-                "free_gb": round(disk_usage.free / (1024**3), 1),
-                "percent": disk_usage.percent
-            }
-        )
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
 
 # 블록 관련 API들
 @app.get("/output/{filename}/blocks/stats", response_model=BlockStats)
