@@ -1,0 +1,25 @@
+# PaddleOCR Document Block Extractor Requirements
+# RTX 3090 GPU Support
+
+# Core dependencies
+paddlepaddle-gpu>=2.6.0
+paddleocr>=3.2.0
+
+# Image processing
+opencv-contrib-python>=4.10.0
+Pillow>=10.0.0
+numpy>=1.24.0
+
+# Visualization
+matplotlib>=3.7.0
+
+# Data handling
+PyYAML>=6.0
+pandas>=1.3.0
+
+# Utilities
+tqdm>=4.65.0
+argparse
+
+# Optional: for better font support
+fonttools>=4.40.0
