@@ -25,6 +25,29 @@ def test_supported_formats():
     print(f"Response: {json.dumps(response.json(), indent=2)}")
     print()
 
+def test_server_status():
+    """서버 상태 확인"""
+    print("📊 서버 상태 확인...")
+    response = requests.get(f"{API_BASE}/status")
+    print(f"Status: {response.status_code}")
+
+    if response.status_code == 200:
+        status = response.json()
+        print(f"✅ 서버 정보:")
+        print(f"   상태: {status['status']}")
+        print(f"   업타임: {status['uptime_formatted']}")
+        print(f"   총 요청 수: {status['total_requests']}")
+        print(f"   처리된 PDF: {status['total_pdfs_processed']}")
+        print(f"   처리된 이미지: {status['total_images_processed']}")
+        print(f"   추출된 블록: {status['total_blocks_extracted']}")
+        print(f"   평균 처리 시간: {status['average_processing_time']}초")
+        print(f"   메모리 사용량: {status['system_info']['memory_used_mb']}MB / {status['system_info']['memory_total_mb']}MB ({status['system_info']['memory_percent']}%)")
+        print(f"   CPU 사용률: {status['system_info']['cpu_percent']}%")
+        print(f"   오류 수: {status['errors']}")
+    else:
+        print(f"❌ 상태 확인 실패: {response.text}")
+    print()
+
 def test_pdf_processing():
     """PDF 처리 테스트"""
     print("📄 PDF 처리 테스트...")
@@ -129,15 +152,17 @@ def main():
     try:
         test_health()
         test_supported_formats()
+        test_server_status()
         test_pdf_processing()
         test_image_processing()
         test_general_processing()
+        test_server_status()  # 처리 후 상태 다시 확인
 
         print("✅ 모든 테스트 완료!")
 
     except requests.exceptions.ConnectionError:
         print("❌ API 서버에 연결할 수 없습니다.")
-        print("서버가 실행 중인지 확인하세요: python3 -m uvicorn api_server:app --host 0.0.0.0 --port 8001")
+        print("서버가 실행 중인지 확인하세요: python3 -m uvicorn api_server:app --host 0.0.0.0 --port 6003")
     except Exception as e:
         print(f"❌ 테스트 중 오류 발생: {e}")
 
