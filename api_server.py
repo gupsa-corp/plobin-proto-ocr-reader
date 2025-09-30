@@ -7,7 +7,7 @@ from services.ocr import DocumentBlockExtractor
 from services.pdf import PDFToImageProcessor
 
 # Import API modules
-from api.endpoints import root, process_image, process_pdf, output_list, output_stats, output_files, blocks, requests, templates
+from api.endpoints import root, process_image, process_pdf, output_list, output_stats, output_files, blocks, requests, templates, pages
 from api.utils import file_storage
 
 # Initialize FastAPI app
@@ -49,6 +49,8 @@ output_stats.set_dependencies(output_dir)
 output_files.set_dependencies(output_dir)
 requests.set_dependencies(str(output_dir))
 requests.set_processing_dependencies(extractor, pdf_processor)
+pages.set_dependencies(str(output_dir))
+blocks.set_dependencies(str(output_dir))
 
 # Include routers
 app.include_router(root.router, tags=["Root"])
@@ -57,9 +59,10 @@ app.include_router(process_pdf.router, tags=["Processing"])
 app.include_router(output_list.router, tags=["Output Management"])
 app.include_router(output_stats.router, tags=["Output Management"])
 app.include_router(output_files.router, tags=["Output Management"])
-app.include_router(blocks.router, tags=["Block Management"])
 app.include_router(requests.router, tags=["Request Management"])
 app.include_router(templates.router, tags=["Template Management"])
+app.include_router(pages.router, tags=["Page Navigation"])
+app.include_router(blocks.router, tags=["Block Editing"])  # New block editing API
 
 if __name__ == "__main__":
     import uvicorn

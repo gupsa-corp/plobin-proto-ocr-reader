@@ -371,5 +371,275 @@ class RequestStorage:
         except Exception as e:
             print(f"블록 {block_id} 이미지 크롭 실패: {e}")
 
+    def get_all_pages_summary(self, request_id: str) -> List[Dict[str, Any]]:
+        """
+        요청의 모든 페이지 요약 정보 조회
+
+        Args:
+            request_id: 요청 ID
+
+        Returns:
+            페이지 요약 정보 리스트
+        """
+        request_dir = self.base_output_dir / request_id
+        if not request_dir.exists():
+            raise ValueError(f"요청 ID를 찾을 수 없습니다: {request_id}")
+
+        pages_dir = request_dir / "pages"
+        if not pages_dir.exists():
+            return []
+
+        pages_summary = []
+        for page_dir in sorted(pages_dir.iterdir()):
+            if page_dir.is_dir() and page_dir.name.isdigit():
+                page_number = int(page_dir.name)
+                summary = self.get_page_summary(request_id, page_number)
+                if summary:
+                    pages_summary.append(summary)
+
+        return pages_summary
+
+    def get_page_summary(self, request_id: str, page_number: int) -> Optional[Dict[str, Any]]:
+        """
+        특정 페이지의 요약 정보 조회
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+
+        Returns:
+            페이지 요약 정보
+        """
+        request_dir = self.base_output_dir / request_id
+        page_dir = request_dir / "pages" / f"{page_number:03d}"
+
+        if not page_dir.exists():
+            return None
+
+        try:
+            # 페이지 정보 로드
+            page_info_file = page_dir / "page_info.json"
+            if page_info_file.exists():
+                with open(page_info_file, 'r', encoding='utf-8') as f:
+                    page_info = json.load(f)
+            else:
+                page_info = {}
+
+            # 파일 존재 여부 확인
+            has_original = (page_dir / "original.png").exists()
+            has_visualization = (page_dir / "visualization.png").exists()
+
+            return {
+                "page_number": page_number,
+                "total_blocks": page_info.get("total_blocks", 0),
+                "average_confidence": page_info.get("average_confidence", 0.0),
+                "processing_time": page_info.get("processing_time", 0.0),
+                "has_original": has_original,
+                "has_visualization": has_visualization,
+                "thumbnail_url": f"/requests/{request_id}/pages/{page_number}/visualization" if has_visualization else None
+            }
+
+        except Exception as e:
+            print(f"페이지 {page_number} 요약 정보 조회 실패: {e}")
+            return None
+
+    def update_block_in_page(self, request_id: str, page_number: int, block_id: int, updates: Dict[str, Any]) -> bool:
+        """
+        페이지의 특정 블록 정보 업데이트
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+            block_id: 블록 ID (1부터 시작)
+            updates: 업데이트할 데이터
+
+        Returns:
+            업데이트 성공 여부
+        """
+        request_dir = self.base_output_dir / request_id
+        page_dir = request_dir / "pages" / f"{page_number:03d}"
+
+        if not page_dir.exists():
+            return False
+
+        try:
+            # 결과 파일 로드
+            result_file = page_dir / "result.json"
+            if not result_file.exists():
+                return False
+
+            with open(result_file, 'r', encoding='utf-8') as f:
+                page_result = json.load(f)
+
+            # 블록 찾기 및 업데이트
+            blocks = page_result.get('blocks', [])
+            if block_id < 1 or block_id > len(blocks):
+                return False
+
+            block_index = block_id - 1
+            for key, value in updates.items():
+                if key in ['text', 'confidence', 'bbox', 'block_type']:
+                    blocks[block_index][key] = value
+
+            # 평균 신뢰도 재계산
+            if blocks:
+                avg_confidence = sum(block.get('confidence', 0) for block in blocks) / len(blocks)
+                page_result['average_confidence'] = avg_confidence
+
+            # 결과 파일 저장
+            with open(result_file, 'w', encoding='utf-8') as f:
+                json.dump(page_result, f, ensure_ascii=False, indent=2)
+
+            # 블록 메타데이터 파일 업데이트
+            block_file = page_dir / "blocks" / f"block_{block_id:03d}.json"
+            if block_file.exists():
+                with open(block_file, 'r', encoding='utf-8') as f:
+                    block_metadata = json.load(f)
+
+                for key, value in updates.items():
+                    if key in block_metadata:
+                        block_metadata[key] = value
+
+                with open(block_file, 'w', encoding='utf-8') as f:
+                    json.dump(block_metadata, f, ensure_ascii=False, indent=2)
+
+            return True
+
+        except Exception as e:
+            print(f"블록 {block_id} 업데이트 실패: {e}")
+            return False
+
+    def delete_block_from_page(self, request_id: str, page_number: int, block_id: int) -> bool:
+        """
+        페이지에서 특정 블록 삭제
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+            block_id: 블록 ID (1부터 시작)
+
+        Returns:
+            삭제 성공 여부
+        """
+        request_dir = self.base_output_dir / request_id
+        page_dir = request_dir / "pages" / f"{page_number:03d}"
+
+        if not page_dir.exists():
+            return False
+
+        try:
+            # 결과 파일 로드
+            result_file = page_dir / "result.json"
+            if not result_file.exists():
+                return False
+
+            with open(result_file, 'r', encoding='utf-8') as f:
+                page_result = json.load(f)
+
+            # 블록 삭제
+            blocks = page_result.get('blocks', [])
+            if block_id < 1 or block_id > len(blocks):
+                return False
+
+            del blocks[block_id - 1]
+
+            # 블록 ID 재정렬
+            for i, block in enumerate(blocks):
+                block['id'] = i
+
+            # 통계 업데이트
+            page_result['total_blocks'] = len(blocks)
+            if blocks:
+                avg_confidence = sum(block.get('confidence', 0) for block in blocks) / len(blocks)
+                page_result['average_confidence'] = avg_confidence
+            else:
+                page_result['average_confidence'] = 0.0
+
+            # 결과 파일 저장
+            with open(result_file, 'w', encoding='utf-8') as f:
+                json.dump(page_result, f, ensure_ascii=False, indent=2)
+
+            # 블록 메타데이터 파일 삭제
+            block_file = page_dir / "blocks" / f"block_{block_id:03d}.json"
+            if block_file.exists():
+                block_file.unlink()
+
+            # 블록 이미지 파일 삭제
+            block_image = page_dir / "blocks" / f"block_{block_id:03d}.png"
+            if block_image.exists():
+                block_image.unlink()
+
+            return True
+
+        except Exception as e:
+            print(f"블록 {block_id} 삭제 실패: {e}")
+            return False
+
+    def add_block_to_page(self, request_id: str, page_number: int, block_data: Dict[str, Any]) -> Optional[int]:
+        """
+        페이지에 새 블록 추가
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+            block_data: 블록 데이터
+
+        Returns:
+            추가된 블록 ID (1부터 시작), 실패시 None
+        """
+        request_dir = self.base_output_dir / request_id
+        page_dir = request_dir / "pages" / f"{page_number:03d}"
+
+        if not page_dir.exists():
+            return None
+
+        try:
+            # 결과 파일 로드
+            result_file = page_dir / "result.json"
+            if not result_file.exists():
+                return None
+
+            with open(result_file, 'r', encoding='utf-8') as f:
+                page_result = json.load(f)
+
+            # 새 블록 추가
+            blocks = page_result.get('blocks', [])
+            new_block_id = len(blocks) + 1
+
+            new_block = {
+                'id': len(blocks),
+                'text': block_data.get('text', ''),
+                'confidence': block_data.get('confidence', 1.0),
+                'bbox': block_data.get('bbox', []),
+                'block_type': block_data.get('block_type', 'other')
+            }
+            blocks.append(new_block)
+
+            # 통계 업데이트
+            page_result['total_blocks'] = len(blocks)
+            avg_confidence = sum(block.get('confidence', 0) for block in blocks) / len(blocks)
+            page_result['average_confidence'] = avg_confidence
+
+            # 결과 파일 저장
+            with open(result_file, 'w', encoding='utf-8') as f:
+                json.dump(page_result, f, ensure_ascii=False, indent=2)
+
+            # 블록 메타데이터 파일 생성
+            block_metadata = create_block_metadata(
+                new_block_id,
+                new_block['text'],
+                new_block['confidence'],
+                new_block['bbox'],
+                new_block['block_type']
+            )
+            block_file = page_dir / "blocks" / f"block_{new_block_id:03d}.json"
+            save_metadata(block_metadata, block_file)
+
+            return new_block_id
+
+        except Exception as e:
+            print(f"블록 추가 실패: {e}")
+            return None
+
 
 __all__ = ['save_result', 'load_result', 'RequestStorage']

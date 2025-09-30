@@ -322,6 +322,21 @@ async def get_page_result(request_id: str, page_number: int) -> Dict[str, Any]:
 
     try:
         page_data = request_storage.get_page_result(request_id, page_number)
+
+        # 네비게이션 정보 추가
+        all_pages = request_storage.get_all_pages_summary(request_id)
+        total_pages = len(all_pages)
+
+        page_data["navigation"] = {
+            "current_page": page_number,
+            "total_pages": total_pages,
+            "prev_page": page_number - 1 if page_number > 1 else None,
+            "next_page": page_number + 1 if page_number < total_pages else None,
+            "is_first": page_number == 1,
+            "is_last": page_number == total_pages,
+            "has_thumbnail": f"/requests/{request_id}/pages/{page_number}/visualization"
+        }
+
         return page_data
 
     except FileNotFoundError:

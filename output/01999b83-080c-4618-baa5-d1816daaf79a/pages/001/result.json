@@ -5,7 +5,7 @@
   "processing_time": 3.693246841430664,
   "blocks": [
     {
-      "text": "NVOICE",
+      "text": "INVOICE",
       "confidence": 0.933597981929779,
       "bbox": [
         [
@@ -25,7 +25,7 @@
           213
         ]
       ],
-      "block_type": "other"
+      "block_type": "title"
     },
     {
       "text": "From: ABC Company Ltd",
