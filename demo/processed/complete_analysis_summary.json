@@ -1,0 +1,137 @@
+{
+  "processed_date": "/home/gupsa/Server/6003-ocr-reader",
+  "total_pdfs": 13,
+  "results": [
+    {
+      "pdf_path": "demo/business/sample_business_report.pdf",
+      "category": "business",
+      "summary": {
+        "total_blocks": 177,
+        "average_confidence": 0.9893227852670486,
+        "block_types": {
+          "other": 166,
+          "paragraph": 8,
+          "list": 3
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/reports/quarterly_report.pdf",
+      "category": "reports",
+      "summary": {
+        "total_blocks": 31,
+        "average_confidence": 0.9899394108403113,
+        "block_types": {
+          "other": 30,
+          "paragraph": 1
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/invoices/sample_invoice.pdf",
+      "category": "invoices",
+      "summary": {
+        "total_blocks": 41,
+        "average_confidence": 0.9917091872633957,
+        "block_types": {
+          "other": 41
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/presentations/company_overview.pdf",
+      "category": "presentations",
+      "summary": {
+        "total_blocks": 26,
+        "average_confidence": 0.9898407734357394,
+        "block_types": {
+          "other": 26
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/legal/software_license.pdf",
+      "category": "legal",
+      "summary": {
+        "total_blocks": 29,
+        "average_confidence": 0.9936117016035935,
+        "block_types": {
+          "other": 24,
+          "list": 3,
+          "paragraph": 2
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/manuals/technical_manual.pdf",
+      "category": "manuals",
+      "summary": {
+        "total_blocks": 43,
+        "average_confidence": 0.9913667800814606,
+        "block_types": {
+          "other": 34,
+          "list": 9
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/mixed/basic_text_sample.pdf",
+      "category": "mixed",
+      "summary": {
+        "total_blocks": 32,
+        "average_confidence": 0.977522324770689,
+        "block_types": {
+          "other": 25,
+          "paragraph": 1,
+          "list": 6
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/mixed/trinity_sample.pdf",
+      "category": "mixed",
+      "summary": {
+        "total_blocks": 108,
+        "average_confidence": 0.9930122467102828,
+        "block_types": {
+          "other": 100,
+          "paragraph": 8
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/mixed/w3c_dummy.pdf",
+      "category": "mixed",
+      "summary": {
+        "total_blocks": 1,
+        "average_confidence": 0.9971131682395935,
+        "block_types": {
+          "other": 1
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/forms/application_form.pdf",
+      "category": "forms",
+      "summary": {
+        "total_blocks": 17,
+        "average_confidence": 0.9907265691196218,
+        "block_types": {
+          "other": 17
+        }
+      }
+    },
+    {
+      "pdf_path": "demo/academic/sample_research_paper.pdf",
+      "category": "academic",
+      "summary": {
+        "total_blocks": 697,
+        "average_confidence": 0.9891639020042747,
+        "block_types": {
+          "other": 688,
+          "list": 9
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,986 @@
+{
+  "pdf_file": "demo/legal/software_license.pdf",
+  "total_pages": 2,
+  "pages": [
+    {
+      "page_number": 1,
+      "image_path": "demo/processed/legal/images/software_license_page_001.png",
+      "blocks": [
+        {
+          "id": 0,
+          "text": "SOFTWARE LICENSE AGREEMENT",
+          "confidence": 0.9831851720809937,
+          "bbox": {
+            "x_min": 322,
+            "y_min": 174,
+            "x_max": 955,
+            "y_max": 198,
+            "width": 633,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              322,
+              174
+            ],
+            [
+              955,
+              174
+            ],
+            [
+              955,
+              198
+            ],
+            [
+              322,
+              198
+            ]
+          ],
+          "type": "other",
+          "area": 15192
+        },
+        {
+          "id": 1,
+          "text": "This Software License Agreement (\"Agreement\") is entered into between TechCorp Solutions",
+          "confidence": 0.9908287525177002,
+          "bbox": {
+            "x_min": 163,
+            "y_min": 285,
+            "x_max": 1022,
+            "y_max": 308,
+            "width": 859,
+            "height": 23
+          },
+          "bbox_points": [
+            [
+              163,
+              285
+            ],
+            [
+              1022,
+              285
+            ],
+            [
+              1022,
+              308
+            ],
+            [
+              163,
+              308
+            ]
+          ],
+          "type": "other",
+          "area": 19757
+        },
+        {
+          "id": 2,
+          "text": "(\"Licensor\") and the end user (\"Licensee\").",
+          "confidence": 0.9978930354118347,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 309,
+            "x_max": 556,
+            "y_max": 335,
+            "width": 397,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              159,
+              309
+            ],
+            [
+              556,
+              311
+            ],
+            [
+              556,
+              335
+            ],
+            [
+              159,
+              333
+            ]
+          ],
+          "type": "other",
+          "area": 10322
+        },
+        {
+          "id": 3,
+          "text": "1. GRANT OF LICENSE",
+          "confidence": 0.9907886981964111,
+          "bbox": {
+            "x_min": 163,
+            "y_min": 406,
+            "x_max": 480,
+            "y_max": 430,
+            "width": 317,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              163,
+              406
+            ],
+            [
+              480,
+              406
+            ],
+            [
+              480,
+              430
+            ],
+            [
+              163,
+              430
+            ]
+          ],
+          "type": "list",
+          "area": 7608
+        },
+        {
+          "id": 4,
+          "text": "Subject to the terms of this Agreement, Licensor grants to Licensee a non-exclusive, non-transferable.",
+          "confidence": 0.9868753552436829,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 450,
+            "x_max": 1097,
+            "y_max": 476,
+            "width": 936,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              161,
+              450
+            ],
+            [
+              1097,
+              452
+            ],
+            [
+              1097,
+              476
+            ],
+            [
+              161,
+              474
+            ]
+          ],
+          "type": "paragraph",
+          "area": 24336
+        },
+        {
+          "id": 5,
+          "text": "license to use the software for internal business purposes only.",
+          "confidence": 0.9905444383621216,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 480,
+            "x_max": 741,
+            "y_max": 502,
+            "width": 582,
+            "height": 22
+          },
+          "bbox_points": [
+            [
+              159,
+              480
+            ],
+            [
+              741,
+              480
+            ],
+            [
+              741,
+              502
+            ],
+            [
+              159,
+              502
+            ]
+          ],
+          "type": "other",
+          "area": 12804
+        },
+        {
+          "id": 6,
+          "text": "2. RESTRICTIONS",
+          "confidence": 0.9994043707847595,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 569,
+            "x_max": 411,
+            "y_max": 600,
+            "width": 250,
+            "height": 31
+          },
+          "bbox_points": [
+            [
+              161,
+              571
+            ],
+            [
+              410,
+              569
+            ],
+            [
+              411,
+              598
+            ],
+            [
+              161,
+              600
+            ]
+          ],
+          "type": "list",
+          "area": 7750
+        },
+        {
+          "id": 7,
+          "text": "Licensee shall not: (a) reverse engineer, decompile, or disassemble the software; (b) distribute, rent,.",
+          "confidence": 0.9965430498123169,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 617,
+            "x_max": 1086,
+            "y_max": 643,
+            "width": 927,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              159,
+              617
+            ],
+            [
+              1086,
+              619
+            ],
+            [
+              1086,
+              643
+            ],
+            [
+              159,
+              641
+            ]
+          ],
+          "type": "paragraph",
+          "area": 24102
+        },
+        {
+          "id": 8,
+          "text": "lease, or sublicense the software; (c) remove any proprietary notices.",
+          "confidence": 0.9972259402275085,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 645,
+            "x_max": 799,
+            "y_max": 667,
+            "width": 640,
+            "height": 22
+          },
+          "bbox_points": [
+            [
+              159,
+              645
+            ],
+            [
+              799,
+              645
+            ],
+            [
+              799,
+              667
+            ],
+            [
+              159,
+              667
+            ]
+          ],
+          "type": "other",
+          "area": 14080
+        },
+        {
+          "id": 9,
+          "text": "3. TERM AND TERMINATION",
+          "confidence": 0.986273467540741,
+          "bbox": {
+            "x_min": 163,
+            "y_min": 741,
+            "x_max": 560,
+            "y_max": 765,
+            "width": 397,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              163,
+              741
+            ],
+            [
+              560,
+              741
+            ],
+            [
+              560,
+              765
+            ],
+            [
+              163,
+              765
+            ]
+          ],
+          "type": "list",
+          "area": 9528
+        },
+        {
+          "id": 10,
+          "text": "This Agreement is effective until terminated. Licensor may terminate this Agreement immediately upon",
+          "confidence": 0.9988024234771729,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 784,
+            "x_max": 1105,
+            "y_max": 810,
+            "width": 944,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              161,
+              784
+            ],
+            [
+              1105,
+              785
+            ],
+            [
+              1105,
+              810
+            ],
+            [
+              161,
+              808
+            ]
+          ],
+          "type": "other",
+          "area": 24544
+        },
+        {
+          "id": 11,
+          "text": "notice if Licensee breaches any term of this Agreement..",
+          "confidence": 0.9902595281600952,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 811,
+            "x_max": 676,
+            "y_max": 834,
+            "width": 517,
+            "height": 23
+          },
+          "bbox_points": [
+            [
+              159,
+              811
+            ],
+            [
+              676,
+              811
+            ],
+            [
+              676,
+              834
+            ],
+            [
+              159,
+              834
+            ]
+          ],
+          "type": "other",
+          "area": 11891
+        },
+        {
+          "id": 12,
+          "text": "4. DISCLAIMER OF WARRANTIES",
+          "confidence": 0.9821129441261292,
+          "bbox": {
+            "x_min": 165,
+            "y_min": 906,
+            "x_max": 629,
+            "y_max": 930,
+            "width": 464,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              165,
+              906
+            ],
+            [
+              629,
+              906
+            ],
+            [
+              629,
+              930
+            ],
+            [
+              165,
+              930
+            ]
+          ],
+          "type": "other",
+          "area": 11136
+        },
+        {
+          "id": 13,
+          "text": "THE SOFTWARE IS PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND. LICENSOR",
+          "confidence": 0.9973404407501221,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 952,
+            "x_max": 1027,
+            "y_max": 975,
+            "width": 866,
+            "height": 23
+          },
+          "bbox_points": [
+            [
+              161,
+              952
+            ],
+            [
+              1027,
+              952
+            ],
+            [
+              1027,
+              975
+            ],
+            [
+              161,
+              975
+            ]
+          ],
+          "type": "other",
+          "area": 19918
+        },
+        {
+          "id": 14,
+          "text": "DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED.",
+          "confidence": 0.9923312067985535,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 978,
+            "x_max": 702,
+            "y_max": 1000,
+            "width": 541,
+            "height": 22
+          },
+          "bbox_points": [
+            [
+              161,
+              978
+            ],
+            [
+              702,
+              978
+            ],
+            [
+              702,
+              1000
+            ],
+            [
+              161,
+              1000
+            ]
+          ],
+          "type": "other",
+          "area": 11902
+        },
+        {
+          "id": 15,
+          "text": "5. LIMITATION OF LIABILITY",
+          "confidence": 0.978242039680481,
+          "bbox": {
+            "x_min": 163,
+            "y_min": 1074,
+            "x_max": 556,
+            "y_max": 1097,
+            "width": 393,
+            "height": 23
+          },
+          "bbox_points": [
+            [
+              163,
+              1074
+            ],
+            [
+              556,
+              1074
+            ],
+            [
+              556,
+              1097
+            ],
+            [
+              163,
+              1097
+            ]
+          ],
+          "type": "other",
+          "area": 9039
+        },
+        {
+          "id": 16,
+          "text": "IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, OR",
+          "confidence": 0.9929661154747009,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 1119,
+            "x_max": 1071,
+            "y_max": 1141,
+            "width": 910,
+            "height": 22
+          },
+          "bbox_points": [
+            [
+              161,
+              1119
+            ],
+            [
+              1071,
+              1119
+            ],
+            [
+              1071,
+              1141
+            ],
+            [
+              161,
+              1141
+            ]
+          ],
+          "type": "other",
+          "area": 20020
+        },
+        {
+          "id": 17,
+          "text": "CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OF THE SOFTWARE",
+          "confidence": 0.9876461029052734,
+          "bbox": {
+            "x_min": 163,
+            "y_min": 1143,
+            "x_max": 930,
+            "y_max": 1165,
+            "width": 767,
+            "height": 22
+          },
+          "bbox_points": [
+            [
+              163,
+              1143
+            ],
+            [
+              930,
+              1143
+            ],
+            [
+              930,
+              1165
+            ],
+            [
+              163,
+              1165
+            ]
+          ],
+          "type": "other",
+          "area": 16874
+        },
+        {
+          "id": 18,
+          "text": "AGREEMENT ACCEPTANCE",
+          "confidence": 0.9940062761306763,
+          "bbox": {
+            "x_min": 166,
+            "y_min": 1344,
+            "x_max": 558,
+            "y_max": 1368,
+            "width": 392,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              166,
+              1344
+            ],
+            [
+              558,
+              1344
+            ],
+            [
+              558,
+              1368
+            ],
+            [
+              166,
+              1368
+            ]
+          ],
+          "type": "other",
+          "area": 9408
+        },
+        {
+          "id": 19,
+          "text": "LICENSOR:",
+          "confidence": 0.9992774128913879,
+          "bbox": {
+            "x_min": 197,
+            "y_min": 1437,
+            "x_max": 317,
+            "y_max": 1461,
+            "width": 120,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              197,
+              1437
+            ],
+            [
+              317,
+              1437
+            ],
+            [
+              317,
+              1461
+            ],
+            [
+              197,
+              1461
+            ]
+          ],
+          "type": "other",
+          "area": 2880
+        },
+        {
+          "id": 20,
+          "text": "LICENSEE:",
+          "confidence": 0.984277606010437,
+          "bbox": {
+            "x_min": 648,
+            "y_min": 1439,
+            "x_max": 760,
+            "y_max": 1458,
+            "width": 112,
+            "height": 19
+          },
+          "bbox_points": [
+            [
+              648,
+              1439
+            ],
+            [
+              760,
+              1439
+            ],
+            [
+              760,
+              1458
+            ],
+            [
+              648,
+              1458
+            ]
+          ],
+          "type": "other",
+          "area": 2128
+        }
+      ],
+      "block_count": 21
+    },
+    {
+      "page_number": 2,
+      "image_path": "demo/processed/legal/images/software_license_page_002.png",
+      "blocks": [
+        {
+          "id": 0,
+          "text": "Signature:",
+          "confidence": 0.9999433755874634,
+          "bbox": {
+            "x_min": 199,
+            "y_min": 208,
+            "x_max": 296,
+            "y_max": 232,
+            "width": 97,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              199,
+              208
+            ],
+            [
+              296,
+              208
+            ],
+            [
+              296,
+              232
+            ],
+            [
+              199,
+              232
+            ]
+          ],
+          "type": "other",
+          "area": 2328
+        },
+        {
+          "id": 1,
+          "text": "Signature:",
+          "confidence": 0.9998882412910461,
+          "bbox": {
+            "x_min": 648,
+            "y_min": 205,
+            "x_max": 748,
+            "y_max": 234,
+            "width": 100,
+            "height": 29
+          },
+          "bbox_points": [
+            [
+              648,
+              205
+            ],
+            [
+              748,
+              205
+            ],
+            [
+              748,
+              234
+            ],
+            [
+              648,
+              234
+            ]
+          ],
+          "type": "other",
+          "area": 2900
+        },
+        {
+          "id": 2,
+          "text": "Date:",
+          "confidence": 0.9995743036270142,
+          "bbox": {
+            "x_min": 195,
+            "y_min": 242,
+            "x_max": 255,
+            "y_max": 272,
+            "width": 60,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              197,
+              242
+            ],
+            [
+              255,
+              246
+            ],
+            [
+              253,
+              272
+            ],
+            [
+              195,
+              268
+            ]
+          ],
+          "type": "other",
+          "area": 1800
+        },
+        {
+          "id": 3,
+          "text": "Date:",
+          "confidence": 0.9993220567703247,
+          "bbox": {
+            "x_min": 646,
+            "y_min": 242,
+            "x_max": 706,
+            "y_max": 272,
+            "width": 60,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              648,
+              242
+            ],
+            [
+              706,
+              246
+            ],
+            [
+              704,
+              272
+            ],
+            [
+              646,
+              268
+            ]
+          ],
+          "type": "other",
+          "area": 1800
+        },
+        {
+          "id": 4,
+          "text": "Name:",
+          "confidence": 0.9998452067375183,
+          "bbox": {
+            "x_min": 194,
+            "y_min": 280,
+            "x_max": 266,
+            "y_max": 310,
+            "width": 72,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              195,
+              280
+            ],
+            [
+              266,
+              284
+            ],
+            [
+              264,
+              310
+            ],
+            [
+              194,
+              305
+            ]
+          ],
+          "type": "other",
+          "area": 2160
+        },
+        {
+          "id": 5,
+          "text": "Name:",
+          "confidence": 0.9996545910835266,
+          "bbox": {
+            "x_min": 645,
+            "y_min": 279,
+            "x_max": 716,
+            "y_max": 312,
+            "width": 71,
+            "height": 33
+          },
+          "bbox_points": [
+            [
+              648,
+              279
+            ],
+            [
+              716,
+              286
+            ],
+            [
+              714,
+              312
+            ],
+            [
+              645,
+              305
+            ]
+          ],
+          "type": "other",
+          "area": 2343
+        },
+        {
+          "id": 6,
+          "text": "Title:",
+          "confidence": 0.9997885227203369,
+          "bbox": {
+            "x_min": 195,
+            "y_min": 317,
+            "x_max": 248,
+            "y_max": 348,
+            "width": 53,
+            "height": 31
+          },
+          "bbox_points": [
+            [
+              197,
+              317
+            ],
+            [
+              248,
+              322
+            ],
+            [
+              246,
+              348
+            ],
+            [
+              195,
+              343
+            ]
+          ],
+          "type": "other",
+          "area": 1643
+        },
+        {
+          "id": 7,
+          "text": "Company:",
+          "confidence": 0.9998986721038818,
+          "bbox": {
+            "x_min": 647,
+            "y_min": 318,
+            "x_max": 747,
+            "y_max": 349,
+            "width": 100,
+            "height": 31
+          },
+          "bbox_points": [
+            [
+              649,
+              318
+            ],
+            [
+              747,
+              324
+            ],
+            [
+              746,
+              349
+            ],
+            [
+              647,
+              343
+            ]
+          ],
+          "type": "other",
+          "area": 3100
+        }
+      ],
+      "block_count": 8
+    }
+  ],
+  "summary": {
+    "total_blocks": 29,
+    "average_confidence": 0.9936117016035935,
+    "block_types": {
+      "other": 24,
+      "list": 3,
+      "paragraph": 2
+    }
+  }
+}

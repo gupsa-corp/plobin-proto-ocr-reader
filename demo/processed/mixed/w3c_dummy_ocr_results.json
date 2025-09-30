@@ -1,0 +1,53 @@
+{
+  "pdf_file": "demo/mixed/w3c_dummy.pdf",
+  "total_pages": 1,
+  "pages": [
+    {
+      "page_number": 1,
+      "image_path": "demo/processed/mixed/images/w3c_dummy_page_001.png",
+      "blocks": [
+        {
+          "id": 0,
+          "text": "Dummy PDF file",
+          "confidence": 0.9971131682395935,
+          "bbox": {
+            "x_min": 118,
+            "y_min": 146,
+            "x_max": 376,
+            "y_max": 183,
+            "width": 258,
+            "height": 37
+          },
+          "bbox_points": [
+            [
+              118,
+              146
+            ],
+            [
+              376,
+              146
+            ],
+            [
+              376,
+              183
+            ],
+            [
+              118,
+              183
+            ]
+          ],
+          "type": "other",
+          "area": 9546
+        }
+      ],
+      "block_count": 1
+    }
+  ],
+  "summary": {
+    "total_blocks": 1,
+    "average_confidence": 0.9971131682395935,
+    "block_types": {
+      "other": 1
+    }
+  }
+}

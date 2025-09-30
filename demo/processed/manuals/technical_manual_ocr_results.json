@@ -1,0 +1,1454 @@
+{
+  "pdf_file": "demo/manuals/technical_manual.pdf",
+  "total_pages": 3,
+  "pages": [
+    {
+      "page_number": 1,
+      "image_path": "demo/processed/manuals/images/technical_manual_page_001.png",
+      "blocks": [
+        {
+          "id": 0,
+          "text": "Technical Manual.",
+          "confidence": 0.980824887752533,
+          "bbox": {
+            "x_min": 375,
+            "y_min": 173,
+            "x_max": 863,
+            "y_max": 227,
+            "width": 488,
+            "height": 54
+          },
+          "bbox_points": [
+            [
+              375,
+              173
+            ],
+            [
+              863,
+              177
+            ],
+            [
+              862,
+              227
+            ],
+            [
+              375,
+              223
+            ]
+          ],
+          "type": "other",
+          "area": 26352
+        },
+        {
+          "id": 1,
+          "text": "Software Installation Guide",
+          "confidence": 0.9903746247291565,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 314,
+            "x_max": 539,
+            "y_max": 347,
+            "width": 378,
+            "height": 33
+          },
+          "bbox_points": [
+            [
+              161,
+              316
+            ],
+            [
+              539,
+              314
+            ],
+            [
+              539,
+              345
+            ],
+            [
+              161,
+              347
+            ]
+          ],
+          "type": "other",
+          "area": 12474
+        },
+        {
+          "id": 2,
+          "text": "Version 2.1",
+          "confidence": 0.9996868371963501,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 572,
+            "x_max": 270,
+            "y_max": 597,
+            "width": 109,
+            "height": 25
+          },
+          "bbox_points": [
+            [
+              161,
+              572
+            ],
+            [
+              270,
+              572
+            ],
+            [
+              270,
+              597
+            ],
+            [
+              161,
+              597
+            ]
+          ],
+          "type": "other",
+          "area": 2725
+        },
+        {
+          "id": 3,
+          "text": "Updated: September 2025",
+          "confidence": 0.9996687173843384,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 597,
+            "x_max": 408,
+            "y_max": 623,
+            "width": 247,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              161,
+              597
+            ],
+            [
+              408,
+              597
+            ],
+            [
+              408,
+              623
+            ],
+            [
+              161,
+              623
+            ]
+          ],
+          "type": "other",
+          "area": 6422
+        }
+      ],
+      "block_count": 4
+    },
+    {
+      "page_number": 2,
+      "image_path": "demo/processed/manuals/images/technical_manual_page_002.png",
+      "blocks": [
+        {
+          "id": 0,
+          "text": "Table of Contents",
+          "confidence": 0.9991954565048218,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 168,
+            "x_max": 478,
+            "y_max": 205,
+            "width": 319,
+            "height": 37
+          },
+          "bbox_points": [
+            [
+              159,
+              168
+            ],
+            [
+              478,
+              168
+            ],
+            [
+              478,
+              205
+            ],
+            [
+              159,
+              205
+            ]
+          ],
+          "type": "other",
+          "area": 11803
+        },
+        {
+          "id": 1,
+          "text": "1. Introduction",
+          "confidence": 0.9902780055999756,
+          "bbox": {
+            "x_min": 242,
+            "y_min": 270,
+            "x_max": 379,
+            "y_max": 296,
+            "width": 137,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              242,
+              270
+            ],
+            [
+              379,
+              270
+            ],
+            [
+              379,
+              296
+            ],
+            [
+              242,
+              296
+            ]
+          ],
+          "type": "list",
+          "area": 3562
+        },
+        {
+          "id": 2,
+          "text": "3",
+          "confidence": 0.9996086955070496,
+          "bbox": {
+            "x_min": 977,
+            "y_min": 269,
+            "x_max": 1001,
+            "y_max": 298,
+            "width": 24,
+            "height": 29
+          },
+          "bbox_points": [
+            [
+              977,
+              269
+            ],
+            [
+              1001,
+              269
+            ],
+            [
+              1001,
+              298
+            ],
+            [
+              977,
+              298
+            ]
+          ],
+          "type": "other",
+          "area": 696
+        },
+        {
+          "id": 3,
+          "text": "2. System Requirements",
+          "confidence": 0.9997789263725281,
+          "bbox": {
+            "x_min": 242,
+            "y_min": 307,
+            "x_max": 475,
+            "y_max": 333,
+            "width": 233,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              242,
+              307
+            ],
+            [
+              475,
+              307
+            ],
+            [
+              475,
+              333
+            ],
+            [
+              242,
+              333
+            ]
+          ],
+          "type": "list",
+          "area": 6058
+        },
+        {
+          "id": 4,
+          "text": "4",
+          "confidence": 0.9997162222862244,
+          "bbox": {
+            "x_min": 979,
+            "y_min": 305,
+            "x_max": 1001,
+            "y_max": 334,
+            "width": 22,
+            "height": 29
+          },
+          "bbox_points": [
+            [
+              979,
+              305
+            ],
+            [
+              1001,
+              305
+            ],
+            [
+              1001,
+              334
+            ],
+            [
+              979,
+              334
+            ]
+          ],
+          "type": "other",
+          "area": 638
+        },
+        {
+          "id": 5,
+          "text": "3. Installation Steps",
+          "confidence": 0.993015468120575,
+          "bbox": {
+            "x_min": 240,
+            "y_min": 343,
+            "x_max": 429,
+            "y_max": 373,
+            "width": 189,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              240,
+              343
+            ],
+            [
+              429,
+              347
+            ],
+            [
+              428,
+              373
+            ],
+            [
+              240,
+              369
+            ]
+          ],
+          "type": "list",
+          "area": 5670
+        },
+        {
+          "id": 6,
+          "text": "5",
+          "confidence": 0.9998170733451843,
+          "bbox": {
+            "x_min": 977,
+            "y_min": 343,
+            "x_max": 1001,
+            "y_max": 373,
+            "width": 24,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              977,
+              343
+            ],
+            [
+              1001,
+              343
+            ],
+            [
+              1001,
+              373
+            ],
+            [
+              977,
+              373
+            ]
+          ],
+          "type": "other",
+          "area": 720
+        },
+        {
+          "id": 7,
+          "text": "4. Configuration",
+          "confidence": 0.9993363618850708,
+          "bbox": {
+            "x_min": 240,
+            "y_min": 380,
+            "x_max": 395,
+            "y_max": 409,
+            "width": 155,
+            "height": 29
+          },
+          "bbox_points": [
+            [
+              241,
+              380
+            ],
+            [
+              395,
+              384
+            ],
+            [
+              395,
+              409
+            ],
+            [
+              240,
+              405
+            ]
+          ],
+          "type": "other",
+          "area": 4495
+        },
+        {
+          "id": 8,
+          "text": "7",
+          "confidence": 0.999639630317688,
+          "bbox": {
+            "x_min": 977,
+            "y_min": 382,
+            "x_max": 1001,
+            "y_max": 409,
+            "width": 24,
+            "height": 27
+          },
+          "bbox_points": [
+            [
+              977,
+              382
+            ],
+            [
+              1001,
+              382
+            ],
+            [
+              1001,
+              409
+            ],
+            [
+              977,
+              409
+            ]
+          ],
+          "type": "other",
+          "area": 648
+        },
+        {
+          "id": 9,
+          "text": "5. Troubleshootinge",
+          "confidence": 0.9456912875175476,
+          "bbox": {
+            "x_min": 240,
+            "y_min": 418,
+            "x_max": 418,
+            "y_max": 448,
+            "width": 178,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              240,
+              418
+            ],
+            [
+              418,
+              422
+            ],
+            [
+              417,
+              448
+            ],
+            [
+              240,
+              444
+            ]
+          ],
+          "type": "other",
+          "area": 5340
+        },
+        {
+          "id": 10,
+          "text": "9",
+          "confidence": 0.9964621663093567,
+          "bbox": {
+            "x_min": 977,
+            "y_min": 418,
+            "x_max": 999,
+            "y_max": 448,
+            "width": 22,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              977,
+              418
+            ],
+            [
+              999,
+              418
+            ],
+            [
+              999,
+              448
+            ],
+            [
+              977,
+              448
+            ]
+          ],
+          "type": "other",
+          "area": 660
+        },
+        {
+          "id": 11,
+          "text": "6. Support",
+          "confidence": 0.9929622411727905,
+          "bbox": {
+            "x_min": 240,
+            "y_min": 455,
+            "x_max": 346,
+            "y_max": 486,
+            "width": 106,
+            "height": 31
+          },
+          "bbox_points": [
+            [
+              241,
+              455
+            ],
+            [
+              346,
+              459
+            ],
+            [
+              345,
+              486
+            ],
+            [
+              240,
+              482
+            ]
+          ],
+          "type": "other",
+          "area": 3286
+        },
+        {
+          "id": 12,
+          "text": "11",
+          "confidence": 0.9998513460159302,
+          "bbox": {
+            "x_min": 968,
+            "y_min": 457,
+            "x_max": 997,
+            "y_max": 482,
+            "width": 29,
+            "height": 25
+          },
+          "bbox_points": [
+            [
+              968,
+              457
+            ],
+            [
+              997,
+              457
+            ],
+            [
+              997,
+              482
+            ],
+            [
+              968,
+              482
+            ]
+          ],
+          "type": "other",
+          "area": 725
+        }
+      ],
+      "block_count": 13
+    },
+    {
+      "page_number": 3,
+      "image_path": "demo/processed/manuals/images/technical_manual_page_003.png",
+      "blocks": [
+        {
+          "id": 0,
+          "text": "1. Introduction.",
+          "confidence": 0.9724219441413879,
+          "bbox": {
+            "x_min": 163,
+            "y_min": 172,
+            "x_max": 423,
+            "y_max": 203,
+            "width": 260,
+            "height": 31
+          },
+          "bbox_points": [
+            [
+              163,
+              172
+            ],
+            [
+              423,
+              172
+            ],
+            [
+              423,
+              203
+            ],
+            [
+              163,
+              203
+            ]
+          ],
+          "type": "list",
+          "area": 8060
+        },
+        {
+          "id": 1,
+          "text": "This manual provides comprehensive instructions for installing and configuring our software",
+          "confidence": 0.9875600337982178,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 223,
+            "x_max": 1005,
+            "y_max": 247,
+            "width": 844,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              161,
+              223
+            ],
+            [
+              1005,
+              223
+            ],
+            [
+              1005,
+              247
+            ],
+            [
+              161,
+              247
+            ]
+          ],
+          "type": "other",
+          "area": 20256
+        },
+        {
+          "id": 2,
+          "text": "system. Please read all sections carefully before beginning the installation process.",
+          "confidence": 0.9909680485725403,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 248,
+            "x_max": 925,
+            "y_max": 274,
+            "width": 766,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              159,
+              248
+            ],
+            [
+              925,
+              250
+            ],
+            [
+              925,
+              274
+            ],
+            [
+              159,
+              272
+            ]
+          ],
+          "type": "other",
+          "area": 19916
+        },
+        {
+          "id": 3,
+          "text": "2. System Requirements",
+          "confidence": 0.9827881455421448,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 320,
+            "x_max": 600,
+            "y_max": 356,
+            "width": 439,
+            "height": 36
+          },
+          "bbox_points": [
+            [
+              161,
+              320
+            ],
+            [
+              600,
+              320
+            ],
+            [
+              600,
+              356
+            ],
+            [
+              161,
+              356
+            ]
+          ],
+          "type": "list",
+          "area": 15804
+        },
+        {
+          "id": 4,
+          "text": "Component",
+          "confidence": 0.999779462814331,
+          "bbox": {
+            "x_min": 253,
+            "y_min": 378,
+            "x_max": 377,
+            "y_max": 404,
+            "width": 124,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              253,
+              378
+            ],
+            [
+              377,
+              378
+            ],
+            [
+              377,
+              404
+            ],
+            [
+              253,
+              404
+            ]
+          ],
+          "type": "other",
+          "area": 3224
+        },
+        {
+          "id": 5,
+          "text": " Minimum",
+          "confidence": 0.9805775284767151,
+          "bbox": {
+            "x_min": 552,
+            "y_min": 378,
+            "x_max": 652,
+            "y_max": 404,
+            "width": 100,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              552,
+              378
+            ],
+            [
+              652,
+              378
+            ],
+            [
+              652,
+              404
+            ],
+            [
+              552,
+              404
+            ]
+          ],
+          "type": "other",
+          "area": 2600
+        },
+        {
+          "id": 6,
+          "text": "Recommended",
+          "confidence": 0.998609185218811,
+          "bbox": {
+            "x_min": 777,
+            "y_min": 376,
+            "x_max": 933,
+            "y_max": 404,
+            "width": 156,
+            "height": 28
+          },
+          "bbox_points": [
+            [
+              778,
+              376
+            ],
+            [
+              933,
+              378
+            ],
+            [
+              932,
+              404
+            ],
+            [
+              777,
+              402
+            ]
+          ],
+          "type": "other",
+          "area": 4368
+        },
+        {
+          "id": 7,
+          "text": "Operating System",
+          "confidence": 0.9808576703071594,
+          "bbox": {
+            "x_min": 253,
+            "y_min": 415,
+            "x_max": 425,
+            "y_max": 442,
+            "width": 172,
+            "height": 27
+          },
+          "bbox_points": [
+            [
+              253,
+              415
+            ],
+            [
+              425,
+              417
+            ],
+            [
+              425,
+              442
+            ],
+            [
+              253,
+              440
+            ]
+          ],
+          "type": "other",
+          "area": 4644
+        },
+        {
+          "id": 8,
+          "text": "Windows 10",
+          "confidence": 0.9983153343200684,
+          "bbox": {
+            "x_min": 550,
+            "y_min": 413,
+            "x_max": 674,
+            "y_max": 442,
+            "width": 124,
+            "height": 29
+          },
+          "bbox_points": [
+            [
+              551,
+              413
+            ],
+            [
+              674,
+              417
+            ],
+            [
+              673,
+              442
+            ],
+            [
+              550,
+              438
+            ]
+          ],
+          "type": "other",
+          "area": 3596
+        },
+        {
+          "id": 9,
+          "text": "Windows 11",
+          "confidence": 0.9994584918022156,
+          "bbox": {
+            "x_min": 777,
+            "y_min": 413,
+            "x_max": 896,
+            "y_max": 442,
+            "width": 119,
+            "height": 29
+          },
+          "bbox_points": [
+            [
+              778,
+              413
+            ],
+            [
+              896,
+              417
+            ],
+            [
+              895,
+              442
+            ],
+            [
+              777,
+              438
+            ]
+          ],
+          "type": "other",
+          "area": 3451
+        },
+        {
+          "id": 10,
+          "text": "RAM",
+          "confidence": 0.9980663657188416,
+          "bbox": {
+            "x_min": 253,
+            "y_min": 451,
+            "x_max": 307,
+            "y_max": 479,
+            "width": 54,
+            "height": 28
+          },
+          "bbox_points": [
+            [
+              253,
+              451
+            ],
+            [
+              307,
+              451
+            ],
+            [
+              307,
+              479
+            ],
+            [
+              253,
+              479
+            ]
+          ],
+          "type": "other",
+          "area": 1512
+        },
+        {
+          "id": 11,
+          "text": "4 GB",
+          "confidence": 0.999315619468689,
+          "bbox": {
+            "x_min": 554,
+            "y_min": 451,
+            "x_max": 608,
+            "y_max": 479,
+            "width": 54,
+            "height": 28
+          },
+          "bbox_points": [
+            [
+              554,
+              451
+            ],
+            [
+              608,
+              451
+            ],
+            [
+              608,
+              479
+            ],
+            [
+              554,
+              479
+            ]
+          ],
+          "type": "other",
+          "area": 1512
+        },
+        {
+          "id": 12,
+          "text": "8 GB",
+          "confidence": 0.9969208240509033,
+          "bbox": {
+            "x_min": 777,
+            "y_min": 451,
+            "x_max": 833,
+            "y_max": 479,
+            "width": 56,
+            "height": 28
+          },
+          "bbox_points": [
+            [
+              777,
+              451
+            ],
+            [
+              833,
+              451
+            ],
+            [
+              833,
+              479
+            ],
+            [
+              777,
+              479
+            ]
+          ],
+          "type": "other",
+          "area": 1568
+        },
+        {
+          "id": 13,
+          "text": " Storage",
+          "confidence": 0.9716957211494446,
+          "bbox": {
+            "x_min": 250,
+            "y_min": 485,
+            "x_max": 335,
+            "y_max": 520,
+            "width": 85,
+            "height": 35
+          },
+          "bbox_points": [
+            [
+              253,
+              485
+            ],
+            [
+              335,
+              492
+            ],
+            [
+              333,
+              520
+            ],
+            [
+              250,
+              513
+            ]
+          ],
+          "type": "other",
+          "area": 2975
+        },
+        {
+          "id": 14,
+          "text": "2 GB",
+          "confidence": 0.9986235499382019,
+          "bbox": {
+            "x_min": 552,
+            "y_min": 490,
+            "x_max": 608,
+            "y_max": 517,
+            "width": 56,
+            "height": 27
+          },
+          "bbox_points": [
+            [
+              552,
+              490
+            ],
+            [
+              608,
+              490
+            ],
+            [
+              608,
+              517
+            ],
+            [
+              552,
+              517
+            ]
+          ],
+          "type": "other",
+          "area": 1512
+        },
+        {
+          "id": 15,
+          "text": "5 GB",
+          "confidence": 0.9986807107925415,
+          "bbox": {
+            "x_min": 777,
+            "y_min": 490,
+            "x_max": 833,
+            "y_max": 517,
+            "width": 56,
+            "height": 27
+          },
+          "bbox_points": [
+            [
+              777,
+              490
+            ],
+            [
+              833,
+              490
+            ],
+            [
+              833,
+              517
+            ],
+            [
+              777,
+              517
+            ]
+          ],
+          "type": "other",
+          "area": 1512
+        },
+        {
+          "id": 16,
+          "text": " Network",
+          "confidence": 0.972798228263855,
+          "bbox": {
+            "x_min": 251,
+            "y_min": 528,
+            "x_max": 338,
+            "y_max": 554,
+            "width": 87,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              251,
+              528
+            ],
+            [
+              338,
+              528
+            ],
+            [
+              338,
+              554
+            ],
+            [
+              251,
+              554
+            ]
+          ],
+          "type": "other",
+          "area": 2262
+        },
+        {
+          "id": 17,
+          "text": "Broadband",
+          "confidence": 0.9678142070770264,
+          "bbox": {
+            "x_min": 554,
+            "y_min": 528,
+            "x_max": 663,
+            "y_max": 554,
+            "width": 109,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              554,
+              528
+            ],
+            [
+              663,
+              528
+            ],
+            [
+              663,
+              554
+            ],
+            [
+              554,
+              554
+            ]
+          ],
+          "type": "other",
+          "area": 2834
+        },
+        {
+          "id": 18,
+          "text": "High-speed",
+          "confidence": 0.9996783137321472,
+          "bbox": {
+            "x_min": 777,
+            "y_min": 526,
+            "x_max": 894,
+            "y_max": 558,
+            "width": 117,
+            "height": 32
+          },
+          "bbox_points": [
+            [
+              778,
+              526
+            ],
+            [
+              894,
+              530
+            ],
+            [
+              893,
+              558
+            ],
+            [
+              777,
+              553
+            ]
+          ],
+          "type": "other",
+          "area": 3744
+        },
+        {
+          "id": 19,
+          "text": "3. Installation Steps",
+          "confidence": 0.9998635649681091,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 605,
+            "x_max": 514,
+            "y_max": 645,
+            "width": 353,
+            "height": 40
+          },
+          "bbox_points": [
+            [
+              161,
+              605
+            ],
+            [
+              514,
+              609
+            ],
+            [
+              513,
+              645
+            ],
+            [
+              161,
+              641
+            ]
+          ],
+          "type": "list",
+          "area": 14120
+        },
+        {
+          "id": 20,
+          "text": "1. Download the installer from our official website",
+          "confidence": 0.9957901239395142,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 660,
+            "x_max": 615,
+            "y_max": 683,
+            "width": 454,
+            "height": 23
+          },
+          "bbox_points": [
+            [
+              161,
+              660
+            ],
+            [
+              615,
+              660
+            ],
+            [
+              615,
+              683
+            ],
+            [
+              161,
+              683
+            ]
+          ],
+          "type": "list",
+          "area": 10442
+        },
+        {
+          "id": 21,
+          "text": "2. Run the installer as administrator",
+          "confidence": 0.9814135432243347,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 705,
+            "x_max": 491,
+            "y_max": 729,
+            "width": 332,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              159,
+              705
+            ],
+            [
+              491,
+              705
+            ],
+            [
+              491,
+              729
+            ],
+            [
+              159,
+              729
+            ]
+          ],
+          "type": "list",
+          "area": 7968
+        },
+        {
+          "id": 22,
+          "text": "3. Follow the installation wizard",
+          "confidence": 0.9800827503204346,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 753,
+            "x_max": 454,
+            "y_max": 777,
+            "width": 295,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              159,
+              753
+            ],
+            [
+              454,
+              753
+            ],
+            [
+              454,
+              777
+            ],
+            [
+              159,
+              777
+            ]
+          ],
+          "type": "list",
+          "area": 7080
+        },
+        {
+          "id": 23,
+          "text": "4. Accept the license agreement",
+          "confidence": 0.9998161196708679,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 798,
+            "x_max": 462,
+            "y_max": 822,
+            "width": 301,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              161,
+              798
+            ],
+            [
+              462,
+              798
+            ],
+            [
+              462,
+              822
+            ],
+            [
+              161,
+              822
+            ]
+          ],
+          "type": "other",
+          "area": 7224
+        },
+        {
+          "id": 24,
+          "text": "5. Choose installation directory",
+          "confidence": 0.9994187355041504,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 840,
+            "x_max": 447,
+            "y_max": 870,
+            "width": 288,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              159,
+              840
+            ],
+            [
+              447,
+              844
+            ],
+            [
+              447,
+              870
+            ],
+            [
+              159,
+              866
+            ]
+          ],
+          "type": "other",
+          "area": 8640
+        },
+        {
+          "id": 25,
+          "text": "6. Complete the installation",
+          "confidence": 0.9915493726730347,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 890,
+            "x_max": 416,
+            "y_max": 914,
+            "width": 255,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              161,
+              890
+            ],
+            [
+              416,
+              890
+            ],
+            [
+              416,
+              914
+            ],
+            [
+              161,
+              914
+            ]
+          ],
+          "type": "other",
+          "area": 6120
+        }
+      ],
+      "block_count": 26
+    }
+  ],
+  "summary": {
+    "total_blocks": 43,
+    "average_confidence": 0.9913667800814606,
+    "block_types": {
+      "other": 34,
+      "list": 9
+    }
+  }
+}

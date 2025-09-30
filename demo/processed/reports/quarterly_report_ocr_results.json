@@ -1,0 +1,1044 @@
+{
+  "pdf_file": "demo/reports/quarterly_report.pdf",
+  "total_pages": 1,
+  "pages": [
+    {
+      "page_number": 1,
+      "image_path": "demo/processed/reports/images/quarterly_report_page_001.png",
+      "blocks": [
+        {
+          "id": 0,
+          "text": "Quarterly Business Report",
+          "confidence": 0.9826453328132629,
+          "bbox": {
+            "x_min": 404,
+            "y_min": 172,
+            "x_max": 877,
+            "y_max": 206,
+            "width": 473,
+            "height": 34
+          },
+          "bbox_points": [
+            [
+              404,
+              172
+            ],
+            [
+              877,
+              172
+            ],
+            [
+              877,
+              206
+            ],
+            [
+              404,
+              206
+            ]
+          ],
+          "type": "other",
+          "area": 16082
+        },
+        {
+          "id": 1,
+          "text": "Q1 2024 Performance Analysis",
+          "confidence": 0.999637246131897,
+          "bbox": {
+            "x_min": 165,
+            "y_min": 237,
+            "x_max": 587,
+            "y_max": 266,
+            "width": 422,
+            "height": 29
+          },
+          "bbox_points": [
+            [
+              165,
+              237
+            ],
+            [
+              587,
+              237
+            ],
+            [
+              587,
+              266
+            ],
+            [
+              165,
+              266
+            ]
+          ],
+          "type": "other",
+          "area": 12238
+        },
+        {
+          "id": 2,
+          "text": "Executive Summary",
+          "confidence": 0.9965741634368896,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 350,
+            "x_max": 518,
+            "y_max": 390,
+            "width": 357,
+            "height": 40
+          },
+          "bbox_points": [
+            [
+              161,
+              350
+            ],
+            [
+              518,
+              356
+            ],
+            [
+              518,
+              390
+            ],
+            [
+              161,
+              385
+            ]
+          ],
+          "type": "other",
+          "area": 14280
+        },
+        {
+          "id": 3,
+          "text": "This report presents our company's performance for the first quarter of 2024. We achieved significant",
+          "confidence": 0.9865838885307312,
+          "bbox": {
+            "x_min": 159,
+            "y_min": 404,
+            "x_max": 1095,
+            "y_max": 430,
+            "width": 936,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              159,
+              404
+            ],
+            [
+              1095,
+              406
+            ],
+            [
+              1095,
+              430
+            ],
+            [
+              159,
+              428
+            ]
+          ],
+          "type": "paragraph",
+          "area": 24336
+        },
+        {
+          "id": 4,
+          "text": "growth in revenue and expanded our market presence. Key highlights include a 25% increase in sales,",
+          "confidence": 0.986199676990509,
+          "bbox": {
+            "x_min": 163,
+            "y_min": 433,
+            "x_max": 1105,
+            "y_max": 455,
+            "width": 942,
+            "height": 22
+          },
+          "bbox_points": [
+            [
+              163,
+              433
+            ],
+            [
+              1105,
+              433
+            ],
+            [
+              1105,
+              455
+            ],
+            [
+              163,
+              455
+            ]
+          ],
+          "type": "other",
+          "area": 20724
+        },
+        {
+          "id": 5,
+          "text": "successful product launches, and improved customer satisfaction ratings.",
+          "confidence": 0.9996599555015564,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 459,
+            "x_max": 835,
+            "y_max": 481,
+            "width": 674,
+            "height": 22
+          },
+          "bbox_points": [
+            [
+              161,
+              459
+            ],
+            [
+              835,
+              459
+            ],
+            [
+              835,
+              481
+            ],
+            [
+              161,
+              481
+            ]
+          ],
+          "type": "other",
+          "area": 14828
+        },
+        {
+          "id": 6,
+          "text": "Financial Performance",
+          "confidence": 0.9998132586479187,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 526,
+            "x_max": 565,
+            "y_max": 564,
+            "width": 404,
+            "height": 38
+          },
+          "bbox_points": [
+            [
+              161,
+              526
+            ],
+            [
+              565,
+              529
+            ],
+            [
+              565,
+              564
+            ],
+            [
+              161,
+              560
+            ]
+          ],
+          "type": "other",
+          "area": 15352
+        },
+        {
+          "id": 7,
+          "text": "Metric",
+          "confidence": 0.9997822642326355,
+          "bbox": {
+            "x_min": 239,
+            "y_min": 586,
+            "x_max": 310,
+            "y_max": 610,
+            "width": 71,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              239,
+              586
+            ],
+            [
+              310,
+              586
+            ],
+            [
+              310,
+              610
+            ],
+            [
+              239,
+              610
+            ]
+          ],
+          "type": "other",
+          "area": 1704
+        },
+        {
+          "id": 8,
+          "text": "Q1 2024",
+          "confidence": 0.9998918175697327,
+          "bbox": {
+            "x_min": 580,
+            "y_min": 586,
+            "x_max": 663,
+            "y_max": 610,
+            "width": 83,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              580,
+              586
+            ],
+            [
+              663,
+              586
+            ],
+            [
+              663,
+              610
+            ],
+            [
+              580,
+              610
+            ]
+          ],
+          "type": "other",
+          "area": 1992
+        },
+        {
+          "id": 9,
+          "text": "Q1 2023",
+          "confidence": 0.9997521638870239,
+          "bbox": {
+            "x_min": 759,
+            "y_min": 586,
+            "x_max": 844,
+            "y_max": 610,
+            "width": 85,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              759,
+              586
+            ],
+            [
+              844,
+              586
+            ],
+            [
+              844,
+              610
+            ],
+            [
+              759,
+              610
+            ]
+          ],
+          "type": "other",
+          "area": 2040
+        },
+        {
+          "id": 10,
+          "text": "Change",
+          "confidence": 0.9998475909233093,
+          "bbox": {
+            "x_min": 924,
+            "y_min": 584,
+            "x_max": 1009,
+            "y_max": 614,
+            "width": 85,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              926,
+              584
+            ],
+            [
+              1009,
+              590
+            ],
+            [
+              1007,
+              614
+            ],
+            [
+              924,
+              608
+            ]
+          ],
+          "type": "other",
+          "area": 2550
+        },
+        {
+          "id": 11,
+          "text": " Revenue",
+          "confidence": 0.984493613243103,
+          "bbox": {
+            "x_min": 239,
+            "y_min": 622,
+            "x_max": 331,
+            "y_max": 652,
+            "width": 92,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              240,
+              622
+            ],
+            [
+              331,
+              626
+            ],
+            [
+              330,
+              652
+            ],
+            [
+              239,
+              648
+            ]
+          ],
+          "type": "other",
+          "area": 2760
+        },
+        {
+          "id": 12,
+          "text": "$2.5M",
+          "confidence": 0.99803227186203,
+          "bbox": {
+            "x_min": 589,
+            "y_min": 624,
+            "x_max": 653,
+            "y_max": 650,
+            "width": 64,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              589,
+              624
+            ],
+            [
+              653,
+              624
+            ],
+            [
+              653,
+              650
+            ],
+            [
+              589,
+              650
+            ]
+          ],
+          "type": "other",
+          "area": 1664
+        },
+        {
+          "id": 13,
+          "text": "$2.0M",
+          "confidence": 0.9157261848449707,
+          "bbox": {
+            "x_min": 769,
+            "y_min": 624,
+            "x_max": 835,
+            "y_max": 650,
+            "width": 66,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              769,
+              624
+            ],
+            [
+              835,
+              624
+            ],
+            [
+              835,
+              650
+            ],
+            [
+              769,
+              650
+            ]
+          ],
+          "type": "other",
+          "area": 1716
+        },
+        {
+          "id": 14,
+          "text": "+25%",
+          "confidence": 0.9463222026824951,
+          "bbox": {
+            "x_min": 937,
+            "y_min": 622,
+            "x_max": 998,
+            "y_max": 652,
+            "width": 61,
+            "height": 30
+          },
+          "bbox_points": [
+            [
+              939,
+              622
+            ],
+            [
+              998,
+              626
+            ],
+            [
+              996,
+              652
+            ],
+            [
+              937,
+              647
+            ]
+          ],
+          "type": "other",
+          "area": 1830
+        },
+        {
+          "id": 15,
+          "text": "Gross Profit",
+          "confidence": 0.996938169002533,
+          "bbox": {
+            "x_min": 243,
+            "y_min": 662,
+            "x_max": 357,
+            "y_max": 686,
+            "width": 114,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              243,
+              662
+            ],
+            [
+              357,
+              662
+            ],
+            [
+              357,
+              686
+            ],
+            [
+              243,
+              686
+            ]
+          ],
+          "type": "other",
+          "area": 2736
+        },
+        {
+          "id": 16,
+          "text": "$1.5M",
+          "confidence": 0.9993391036987305,
+          "bbox": {
+            "x_min": 591,
+            "y_min": 660,
+            "x_max": 653,
+            "y_max": 686,
+            "width": 62,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              591,
+              660
+            ],
+            [
+              653,
+              660
+            ],
+            [
+              653,
+              686
+            ],
+            [
+              591,
+              686
+            ]
+          ],
+          "type": "other",
+          "area": 1612
+        },
+        {
+          "id": 17,
+          "text": "$1.2M",
+          "confidence": 0.9978312253952026,
+          "bbox": {
+            "x_min": 771,
+            "y_min": 660,
+            "x_max": 835,
+            "y_max": 686,
+            "width": 64,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              771,
+              660
+            ],
+            [
+              835,
+              660
+            ],
+            [
+              835,
+              686
+            ],
+            [
+              771,
+              686
+            ]
+          ],
+          "type": "other",
+          "area": 1664
+        },
+        {
+          "id": 18,
+          "text": "+25%",
+          "confidence": 0.9613046646118164,
+          "bbox": {
+            "x_min": 939,
+            "y_min": 662,
+            "x_max": 998,
+            "y_max": 686,
+            "width": 59,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              939,
+              662
+            ],
+            [
+              998,
+              662
+            ],
+            [
+              998,
+              686
+            ],
+            [
+              939,
+              686
+            ]
+          ],
+          "type": "other",
+          "area": 1416
+        },
+        {
+          "id": 19,
+          "text": "Operating Expenses",
+          "confidence": 0.9998825788497925,
+          "bbox": {
+            "x_min": 244,
+            "y_min": 700,
+            "x_max": 435,
+            "y_max": 724,
+            "width": 191,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              244,
+              700
+            ],
+            [
+              435,
+              700
+            ],
+            [
+              435,
+              724
+            ],
+            [
+              244,
+              724
+            ]
+          ],
+          "type": "other",
+          "area": 4584
+        },
+        {
+          "id": 20,
+          "text": "$800K",
+          "confidence": 0.9987621307373047,
+          "bbox": {
+            "x_min": 589,
+            "y_min": 698,
+            "x_max": 657,
+            "y_max": 724,
+            "width": 68,
+            "height": 26
+          },
+          "bbox_points": [
+            [
+              589,
+              698
+            ],
+            [
+              657,
+              698
+            ],
+            [
+              657,
+              724
+            ],
+            [
+              589,
+              724
+            ]
+          ],
+          "type": "other",
+          "area": 1768
+        },
+        {
+          "id": 21,
+          "text": "$750K",
+          "confidence": 0.9997695088386536,
+          "bbox": {
+            "x_min": 769,
+            "y_min": 700,
+            "x_max": 837,
+            "y_max": 724,
+            "width": 68,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              769,
+              700
+            ],
+            [
+              837,
+              700
+            ],
+            [
+              837,
+              724
+            ],
+            [
+              769,
+              724
+            ]
+          ],
+          "type": "other",
+          "area": 1632
+        },
+        {
+          "id": 22,
+          "text": "+6.7%",
+          "confidence": 0.9999414682388306,
+          "bbox": {
+            "x_min": 935,
+            "y_min": 700,
+            "x_max": 1000,
+            "y_max": 724,
+            "width": 65,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              935,
+              700
+            ],
+            [
+              1000,
+              700
+            ],
+            [
+              1000,
+              724
+            ],
+            [
+              935,
+              724
+            ]
+          ],
+          "type": "other",
+          "area": 1560
+        },
+        {
+          "id": 23,
+          "text": "Net Income",
+          "confidence": 0.9981271028518677,
+          "bbox": {
+            "x_min": 241,
+            "y_min": 737,
+            "x_max": 355,
+            "y_max": 761,
+            "width": 114,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              241,
+              737
+            ],
+            [
+              355,
+              737
+            ],
+            [
+              355,
+              761
+            ],
+            [
+              241,
+              761
+            ]
+          ],
+          "type": "other",
+          "area": 2736
+        },
+        {
+          "id": 24,
+          "text": "$700K",
+          "confidence": 0.9968811869621277,
+          "bbox": {
+            "x_min": 591,
+            "y_min": 736,
+            "x_max": 657,
+            "y_max": 761,
+            "width": 66,
+            "height": 25
+          },
+          "bbox_points": [
+            [
+              591,
+              736
+            ],
+            [
+              657,
+              736
+            ],
+            [
+              657,
+              761
+            ],
+            [
+              591,
+              761
+            ]
+          ],
+          "type": "other",
+          "area": 1650
+        },
+        {
+          "id": 25,
+          "text": "$450K",
+          "confidence": 0.9998714327812195,
+          "bbox": {
+            "x_min": 771,
+            "y_min": 737,
+            "x_max": 837,
+            "y_max": 761,
+            "width": 66,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              771,
+              737
+            ],
+            [
+              837,
+              737
+            ],
+            [
+              837,
+              761
+            ],
+            [
+              771,
+              761
+            ]
+          ],
+          "type": "other",
+          "area": 1584
+        },
+        {
+          "id": 26,
+          "text": "+55.6%",
+          "confidence": 0.9994747638702393,
+          "bbox": {
+            "x_min": 932,
+            "y_min": 737,
+            "x_max": 1005,
+            "y_max": 761,
+            "width": 73,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              932,
+              737
+            ],
+            [
+              1005,
+              737
+            ],
+            [
+              1005,
+              761
+            ],
+            [
+              932,
+              761
+            ]
+          ],
+          "type": "other",
+          "area": 1752
+        },
+        {
+          "id": 27,
+          "text": "Market Analysis.",
+          "confidence": 0.9698342084884644,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 816,
+            "x_max": 449,
+            "y_max": 851,
+            "width": 288,
+            "height": 35
+          },
+          "bbox_points": [
+            [
+              161,
+              816
+            ],
+            [
+              449,
+              816
+            ],
+            [
+              449,
+              851
+            ],
+            [
+              161,
+              851
+            ]
+          ],
+          "type": "other",
+          "area": 10080
+        },
+        {
+          "id": 28,
+          "text": "Our market share increased from 15% to 18% during Q1. The competitive landscape remains",
+          "confidence": 0.9842991232872009,
+          "bbox": {
+            "x_min": 163,
+            "y_min": 868,
+            "x_max": 1024,
+            "y_max": 892,
+            "width": 861,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              163,
+              868
+            ],
+            [
+              1024,
+              868
+            ],
+            [
+              1024,
+              892
+            ],
+            [
+              163,
+              892
+            ]
+          ],
+          "type": "other",
+          "area": 20664
+        },
+        {
+          "id": 29,
+          "text": "challenging, but our innovative product offerings and customer-centric approach have positioned us",
+          "confidence": 0.9929922223091125,
+          "bbox": {
+            "x_min": 163,
+            "y_min": 892,
+            "x_max": 1076,
+            "y_max": 916,
+            "width": 913,
+            "height": 24
+          },
+          "bbox_points": [
+            [
+              163,
+              892
+            ],
+            [
+              1076,
+              892
+            ],
+            [
+              1076,
+              916
+            ],
+            [
+              163,
+              916
+            ]
+          ],
+          "type": "other",
+          "area": 21912
+        },
+        {
+          "id": 30,
+          "text": "well for continued growth.",
+          "confidence": 0.9979112148284912,
+          "bbox": {
+            "x_min": 161,
+            "y_min": 918,
+            "x_max": 398,
+            "y_max": 940,
+            "width": 237,
+            "height": 22
+          },
+          "bbox_points": [
+            [
+              161,
+              918
+            ],
+            [
+              398,
+              918
+            ],
+            [
+              398,
+              940
+            ],
+            [
+              161,
+              940
+            ]
+          ],
+          "type": "other",
+          "area": 5214
+        }
+      ],
+      "block_count": 31
+    }
+  ],
+  "summary": {
+    "total_blocks": 31,
+    "average_confidence": 0.9899394108403113,
+    "block_types": {
+      "other": 30,
+      "paragraph": 1
+    }
+  }
+}
