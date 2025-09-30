@@ -13,7 +13,7 @@ from paddleocr import PaddleOCR
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib import font_manager
-import argparse
+# import argparse  # Not used in API mode
 
 
 class DocumentBlockExtractor:
@@ -93,8 +93,8 @@ class DocumentBlockExtractor:
                 x_max = int(np.max(bbox[:, 0]))
                 y_max = int(np.max(bbox[:, 1]))
 
-                # 블록 분류 (간단한 휴리스틱)
-                block_type = self._classify_block(text, bbox, image.shape)
+                # 블록 분류 (단순화)
+                block_type = 'other'  # Simplified - no complex classification needed
 
                 block_info = {
                     'id': idx,
@@ -137,41 +137,6 @@ class DocumentBlockExtractor:
                 'merge_threshold': merge_threshold
             }
         }
-
-    def _classify_block(self, text: str, bbox: np.ndarray, image_shape: Tuple) -> str:
-        """
-        텍스트 블록 분류 (간단한 휴리스틱)
-
-        Args:
-            text: 추출된 텍스트
-            bbox: 바운딩 박스 좌표
-            image_shape: 이미지 크기 (height, width, channels)
-
-        Returns:
-            블록 타입 ('title', 'paragraph', 'table', 'list', 'other')
-        """
-        # 크기 기반 분류
-        width = np.max(bbox[:, 0]) - np.min(bbox[:, 0])
-        height = np.max(bbox[:, 1]) - np.min(bbox[:, 1])
-
-        # 이미지 대비 크기 비율
-        width_ratio = width / image_shape[1]
-        height_ratio = height / image_shape[0]
-
-        # 텍스트 길이
-        text_length = len(text.strip())
-
-        # 분류 규칙
-        if height_ratio > 0.05 and text_length < 50:
-            return 'title'
-        elif width_ratio > 0.7 and text_length > 100:
-            return 'paragraph'
-        elif '|' in text or '\t' in text:
-            return 'table'
-        elif text.strip().startswith(('•', '-', '1.', '2.', '3.')):
-            return 'list'
-        else:
-            return 'other'
 
     def visualize_blocks(self, image_path: str, result: Dict, save_path: Optional[str] = None):
         """
@@ -246,18 +211,6 @@ class DocumentBlockExtractor:
             plt.show()
 
         plt.close()
-
-    def save_results(self, result: Dict, output_path: str):
-        """
-        결과를 JSON 파일로 저장
-
-        Args:
-            result: extract_blocks 결과
-            output_path: 저장할 JSON 파일 경로
-        """
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(result, f, ensure_ascii=False, indent=2)
-        print(f"결과 저장 완료: {output_path}")
 
     def _merge_adjacent_blocks(self, blocks: List[Dict], merge_threshold: int = 30) -> List[Dict]:
         """
@@ -421,98 +374,7 @@ class DocumentBlockExtractor:
 
         return merged_block
 
-    def get_summary(self, result: Dict) -> Dict:
-        """
-        추출 결과 요약
 
-        Args:
-            result: extract_blocks 결과
-
-        Returns:
-            요약 정보
-        """
-        blocks = result['blocks']
-
-        # 타입별 통계
-        type_counts = {}
-        total_confidence = 0
-
-        for block in blocks:
-            block_type = block['type']
-            type_counts[block_type] = type_counts.get(block_type, 0) + 1
-            total_confidence += block['confidence']
-
-        avg_confidence = total_confidence / len(blocks) if blocks else 0
-
-        return {
-            'total_blocks': len(blocks),
-            'average_confidence': avg_confidence,
-            'block_types': type_counts,
-            'image_dimensions': f"{result['image_info']['width']}x{result['image_info']['height']}",
-            'gpu_used': result['processing_info']['gpu_used']
-        }
-
-
-def main():
-    """메인 실행 함수"""
-    parser = argparse.ArgumentParser(description='PaddleOCR Document Block Extractor')
-    parser.add_argument('--image', '-i', required=True, help='입력 이미지 경로')
-    parser.add_argument('--output', '-o', help='출력 디렉토리 (기본: ./output)')
-    parser.add_argument('--confidence', '-c', type=float, default=0.5,
-                       help='신뢰도 임계값 (기본: 0.5)')
-    parser.add_argument('--lang', '-l', default='korean',
-                       help='인식 언어 (기본: korean)')
-    parser.add_argument('--no-gpu', action='store_true',
-                       help='GPU 사용 안함')
-    parser.add_argument('--visualize', '-v', action='store_true',
-                       help='결과 시각화')
-
-    args = parser.parse_args()
-
-    # 출력 디렉토리 설정
-    output_dir = args.output or './output'
-    os.makedirs(output_dir, exist_ok=True)
-
-    # 추출기 초기화
-    extractor = DocumentBlockExtractor(
-        use_gpu=not args.no_gpu,
-        lang=args.lang
-    )
-
-    try:
-        # 블록 추출
-        print(f"이미지 처리 시작: {args.image}")
-        result = extractor.extract_blocks(args.image, args.confidence)
-
-        # 결과 요약 출력
-        summary = extractor.get_summary(result)
-        print("\n=== 추출 결과 요약 ===")
-        print(f"총 블록 수: {summary['total_blocks']}")
-        print(f"평균 신뢰도: {summary['average_confidence']:.3f}")
-        print(f"이미지 크기: {summary['image_dimensions']}")
-        print(f"GPU 사용: {summary['gpu_used']}")
-        print("블록 타입별 개수:")
-        for block_type, count in summary['block_types'].items():
-            print(f"  {block_type}: {count}")
-
-        # 결과 저장
-        base_name = os.path.splitext(os.path.basename(args.image))[0]
-        json_path = os.path.join(output_dir, f"{base_name}_blocks.json")
-        extractor.save_results(result, json_path)
-
-        # 시각화
-        if args.visualize:
-            viz_path = os.path.join(output_dir, f"{base_name}_visualization.png")
-            extractor.visualize_blocks(args.image, result, viz_path)
-
-        print(f"\n처리 완료! 결과는 {output_dir}에 저장되었습니다.")
-
-    except Exception as e:
-        print(f"오류 발생: {e}")
-        return 1
-
-    return 0
-
-
-if __name__ == "__main__":
-    exit(main())
+# CLI functionality removed - API only mode
+# Removed functions: get_summary(), save_results(), main()
+# These were only used for standalone CLI usage, not needed for API
