@@ -5,8 +5,13 @@ Save visualization plots to files
 
 import cv2
 import matplotlib.pyplot as plt
+import matplotlib
 from .rendering import draw_bounding_boxes
 from .legend import create_legend
+
+# 한글 폰트 설정
+matplotlib.rcParams['font.family'] = ['Noto Sans CJK JP', 'DejaVu Sans', 'sans-serif']
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 
 def save_visualization(image_path, blocks, save_path, title=None):
@@ -30,9 +35,9 @@ def save_visualization(image_path, blocks, save_path, title=None):
     fig, ax = plt.subplots(1, 1, figsize=(15, 10))
     ax.imshow(image_rgb)
 
-    # 제목 설정
+    # 제목 설정 (한글)
     if title is None:
-        title = f"Document Blocks Detection ({len(blocks)} blocks)"
+        title = f"문서 블록 감지 ({len(blocks)}개 블록)"
     ax.set_title(title, fontsize=16)
 
     # 바운딩 박스 그리기

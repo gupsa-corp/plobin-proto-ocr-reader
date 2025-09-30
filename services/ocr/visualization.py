@@ -6,7 +6,12 @@ Visualize extracted text blocks
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import matplotlib
 from typing import Dict, Optional
+
+# 한글 폰트 설정
+matplotlib.rcParams['font.family'] = ['Noto Sans CJK JP', 'DejaVu Sans', 'sans-serif']
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 
 def visualize_blocks(image_path: str, result: Dict, save_path: Optional[str] = None):
@@ -25,15 +30,24 @@ def visualize_blocks(image_path: str, result: Dict, save_path: Optional[str] = N
     # 플롯 설정
     fig, ax = plt.subplots(1, 1, figsize=(15, 10))
     ax.imshow(image_rgb)
-    ax.set_title(f"Document Blocks Detection ({len(result['blocks'])} blocks)", fontsize=16)
+    ax.set_title(f"문서 블록 감지 ({len(result['blocks'])}개 블록)", fontsize=16)
 
-    # 타입별 색상 정의
+    # 타입별 색상 정의 (한글)
     colors = {
         'title': 'red',
         'paragraph': 'blue',
         'table': 'green',
         'list': 'orange',
         'other': 'purple'
+    }
+
+    # 한글 타입명 매핑
+    type_names = {
+        'title': '제목',
+        'paragraph': '문단',
+        'table': '표',
+        'list': '목록',
+        'other': '기타'
     }
 
     # 블록 시각화
@@ -54,8 +68,9 @@ def visualize_blocks(image_path: str, result: Dict, save_path: Optional[str] = N
         )
         ax.add_patch(rect)
 
-        # 텍스트 라벨 추가
-        label = f"{block_type}\n{confidence:.2f}"
+        # 텍스트 라벨 추가 (한글)
+        korean_type = type_names.get(block_type, block_type)
+        label = f"{korean_type}\n{confidence:.2f}"
         ax.text(
             bbox['x_min'],
             bbox['y_min'] - 5,
@@ -65,9 +80,9 @@ def visualize_blocks(image_path: str, result: Dict, save_path: Optional[str] = N
             bbox=dict(boxstyle="round,pad=0.3", facecolor='white', alpha=0.8)
         )
 
-    # 범례 추가
+    # 범례 추가 (한글)
     legend_elements = [
-        patches.Patch(color=color, label=block_type.title())
+        patches.Patch(color=color, label=type_names.get(block_type, block_type))
         for block_type, color in colors.items()
     ]
     ax.legend(handles=legend_elements, loc='upper right')

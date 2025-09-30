@@ -4,6 +4,11 @@ Create legend for visualization
 """
 
 import matplotlib.patches as patches
+import matplotlib
+
+# 한글 폰트 설정
+matplotlib.rcParams['font.family'] = ['Noto Sans CJK JP', 'DejaVu Sans', 'sans-serif']
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 
 def create_legend(ax, colors=None):
@@ -26,9 +31,18 @@ def create_legend(ax, colors=None):
             'other': 'purple'
         }
 
-    # 범례 추가
+    # 한글 타입명 매핑
+    type_names = {
+        'title': '제목',
+        'paragraph': '문단',
+        'table': '표',
+        'list': '목록',
+        'other': '기타'
+    }
+
+    # 범례 추가 (한글)
     legend_elements = [
-        patches.Patch(color=color, label=block_type.title())
+        patches.Patch(color=color, label=type_names.get(block_type, block_type))
         for block_type, color in colors.items()
     ]
     ax.legend(handles=legend_elements, loc='upper right')

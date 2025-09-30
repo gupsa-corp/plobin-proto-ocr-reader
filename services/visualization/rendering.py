@@ -4,6 +4,12 @@ Draw bounding boxes on images
 """
 
 import matplotlib.patches as patches
+import matplotlib
+import matplotlib.pyplot as plt
+
+# 한글 폰트 설정
+matplotlib.rcParams['font.family'] = ['Noto Sans CJK JP', 'DejaVu Sans', 'sans-serif']
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 
 def draw_bounding_boxes(ax, blocks, colors=None):
@@ -27,6 +33,15 @@ def draw_bounding_boxes(ax, blocks, colors=None):
             'other': 'purple'
         }
 
+    # 한글 타입명 매핑
+    type_names = {
+        'title': '제목',
+        'paragraph': '문단',
+        'table': '표',
+        'list': '목록',
+        'other': '기타'
+    }
+
     # 블록 시각화
     for block in blocks:
         bbox = block['bbox']
@@ -45,8 +60,9 @@ def draw_bounding_boxes(ax, blocks, colors=None):
         )
         ax.add_patch(rect)
 
-        # 텍스트 라벨 추가
-        label = f"{block_type}\n{confidence:.2f}"
+        # 텍스트 라벨 추가 (한글)
+        korean_type = type_names.get(block_type, block_type)
+        label = f"{korean_type}\n{confidence:.2f}"
         ax.text(
             bbox['x_min'],
             bbox['y_min'] - 5,

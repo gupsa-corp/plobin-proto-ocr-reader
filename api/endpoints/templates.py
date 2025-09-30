@@ -5,18 +5,22 @@ Template management API endpoints.
 from typing import List, Optional
 from fastapi import APIRouter, File, UploadFile, HTTPException, Query, Depends
 from fastapi.responses import FileResponse, JSONResponse
+import tempfile
+import io
+from pathlib import Path
 
 from api.models.template import (
     TemplateCreate, TemplateUpdate, TemplateResponse,
     TemplateListResponse, TemplateValidationResult,
     TemplateMatchResult, ExtractedData
 )
-from services.template import TemplateManager
+from services.template import TemplateManager, TemplateVisualizer
 
 router = APIRouter(prefix="/templates", tags=["templates"])
 
-# 템플릿 매니저 인스턴스
+# 템플릿 매니저 및 시각화 인스턴스
 template_manager = TemplateManager()
+template_visualizer = TemplateVisualizer()
 
 
 @router.post("", response_model=TemplateResponse)
@@ -268,21 +272,30 @@ async def get_template_preview(template_id: str):
     """템플릿 시각화 이미지 다운로드"""
     try:
         # 템플릿 존재 확인
-        template = template_manager.get_template(template_id)
-        if not template:
+        template_data = template_manager.storage.get_template(template_id)
+        if not template_data:
             raise HTTPException(status_code=404, detail=f"템플릿을 찾을 수 없습니다: {template_id}")
 
-        # TODO: 실제 시각화 이미지 생성 로직 구현
-        # 현재는 플레이스홀더 응답
-        return JSONResponse(
-            content={"message": f"템플릿 {template_id}의 시각화 이미지 (구현 예정)"},
-            status_code=200
+        # 템플릿 시각화 이미지 생성
+        preview_image = template_visualizer.create_template_preview(template_data)
+
+        # 임시 파일에 이미지 저장
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
+            preview_image.save(tmp_file.name, 'PNG')
+            temp_path = tmp_file.name
+
+        # 파일 응답으로 반환
+        return FileResponse(
+            path=temp_path,
+            media_type='image/png',
+            filename=f"{template_id}_preview.png",
+            background=None  # 임시 파일이므로 백그라운드에서 자동 삭제되지 않도록
         )
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"시각화 이미지 조회 중 오류 발생: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"시각화 이미지 생성 중 오류 발생: {str(e)}")
 
 
 @router.post("/{template_id}/validate-document")
