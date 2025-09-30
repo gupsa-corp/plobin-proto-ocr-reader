@@ -23,32 +23,95 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual Environment
-paddle_ocr_env/
-venv/
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+.env
+.venv
 env/
+venv/
 ENV/
+env.bak/
+venv.bak/
+paddle_ocr_env/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# OS
+# MacOS
 .DS_Store
+
+# Windows
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# Project specific
-output/
+# OCR Output files (keep structure but ignore large files)
+output/*.png
+output/*.jpg
+output/*.jpeg
+output/*.json
+output/pdfs/*/
+output/images/*/
+output/documents/*/
+
+# Results folder
 results/
-*.log
-
-# Demo data (large files)
-demo/processed/
-demo/*/images/
 
 # Temporary files
-tmp/
-temp/
 *.tmp
+*.temp
+.tmp/
+.temp/
+
+# Logs
+*.log
+log_output/
+
+# PaddleOCR cache
+.paddleocr/
+
+# Demo files (large files)
+demo/**/*.pdf
+demo/**/*.png
+demo/**/*.jpg
+demo/**/*.jpeg
+
+# Keep demo structure
+!demo/**/README.md
+!demo/**/.gitkeep
+
+# FastAPI specific
+.pytest_cache/
+
+# Backup files
+*_original.py
+*_backup.py
+
+# System files
+.DS_Store
+Thumbs.db

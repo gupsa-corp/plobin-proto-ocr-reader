@@ -3,6 +3,8 @@
 ## 프로젝트 개요
 PaddleOCR을 기반으로 한 문서 텍스트 추출 및 블록 분류 API 서버
 
+**Repository**: https://github.com/gupsa-corp/plobin-proto-ocr-reader
+
 ## 서버 정보
 - **포트**: 6003 (폴더명 6003-ocr-reader에 맞춤)
 - **주소**: http://localhost:6003
