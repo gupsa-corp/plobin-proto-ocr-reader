@@ -120,16 +120,17 @@ output/
 └── {UUID}/                          # 시간 기반 UUID (예: 01890a5d-ac96-774b-bcce-b302099a8057)
     ├── metadata.json                # 요청 메타데이터 (원본 파일명, 타입, 크기 등)
     ├── summary.json                 # 전체 처리 요약
-    ├── page_001/                    # 페이지별 폴더
-    │   ├── page_info.json          # 페이지 메타데이터
-    │   ├── result.json             # 페이지 OCR 결과
-    │   ├── visualization.png       # 페이지 시각화
-    │   └── blocks/                 # 블록별 상세 데이터
-    │       ├── block_001.json
-    │       ├── block_002.json
-    │       └── ...
-    ├── page_002/
-    └── ...
+    └── pages/                       # 페이지들을 담는 폴더
+        ├── 001/                     # 페이지별 폴더 (3자리 숫자)
+        │   ├── page_info.json      # 페이지 메타데이터
+        │   ├── result.json         # 페이지 OCR 결과
+        │   ├── visualization.png   # 페이지 시각화
+        │   └── blocks/             # 블록별 상세 데이터
+        │       ├── block_001.json
+        │       ├── block_002.json
+        │       └── ...
+        ├── 002/
+        └── ...
 ```
 
 **장점**:

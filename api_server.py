@@ -42,8 +42,8 @@ file_storage.set_global_dependencies(output_dir, extractor)
 
 # Set up dependencies for endpoint modules
 root.set_server_stats(server_stats)
-process_image.set_dependencies(server_stats, extractor)
-process_pdf.set_dependencies(server_stats, extractor, pdf_processor)
+process_image.set_dependencies(server_stats, extractor, str(output_dir))
+process_pdf.set_dependencies(server_stats, extractor, pdf_processor, str(output_dir))
 output_list.set_dependencies(output_dir)
 output_stats.set_dependencies(output_dir)
 output_files.set_dependencies(output_dir)

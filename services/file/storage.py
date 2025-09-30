@@ -205,7 +205,7 @@ class RequestStorage:
         Returns:
             페이지 결과 데이터
         """
-        result_file = self.base_output_dir / request_id / f"page_{page_number:03d}" / 'result.json'
+        result_file = self.base_output_dir / request_id / "pages" / f"{page_number:03d}" / 'result.json'
         return load_metadata(result_file)
 
     def get_block_data(self, request_id: str, page_number: int, block_id: int) -> Dict[str, Any]:
@@ -220,7 +220,7 @@ class RequestStorage:
         Returns:
             블록 데이터
         """
-        blocks_dir = self.base_output_dir / request_id / f"page_{page_number:03d}" / 'blocks'
+        blocks_dir = self.base_output_dir / request_id / "pages" / f"{page_number:03d}" / 'blocks'
         block_file = create_block_file_path(blocks_dir, block_id)
         return load_metadata(block_file)
 

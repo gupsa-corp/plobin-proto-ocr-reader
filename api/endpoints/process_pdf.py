@@ -7,7 +7,8 @@ import os
 from datetime import datetime
 
 from api.models.schemas import ProcessingResult, BlockInfo
-from api.utils.file_storage import save_processing_results, create_pdf_summary
+from services.file.request_manager import generate_request_metadata, create_request_structure, create_page_structure, create_block_file_path
+from services.file.storage import RequestStorage
 
 router = APIRouter()
 
@@ -15,14 +16,16 @@ router = APIRouter()
 server_stats = None
 extractor = None
 pdf_processor = None
+output_dir = None
 
-def set_dependencies(stats, doc_extractor, pdf_proc):
-    global server_stats, extractor, pdf_processor
+def set_dependencies(stats, doc_extractor, pdf_proc, out_dir=None):
+    global server_stats, extractor, pdf_processor, output_dir
     server_stats = stats
     extractor = doc_extractor
     pdf_processor = pdf_proc
+    output_dir = out_dir or "output"
 
-@router.post("/process-pdf", response_model=List[ProcessingResult])
+@router.post("/process-pdf")
 async def process_pdf(
     file: UploadFile = File(...),
     merge_blocks: Optional[bool] = Query(True, description="인접한 블록들을 병합하여 문장 단위로 그룹화"),
@@ -42,91 +45,93 @@ async def process_pdf(
             tmp_path = tmp_file.name
 
         try:
+            # 파일 정보 가져오기
+            file_stats = os.stat(tmp_path)
+            file_size = file_stats.st_size
+
             with tempfile.TemporaryDirectory() as temp_dir:
                 image_paths = pdf_processor.convert_pdf_to_images(tmp_path, temp_dir)
+                total_pages = len(image_paths)
 
-                results = []
+                # RequestStorage를 사용해서 저장
+                storage = RequestStorage(output_dir)
+
+                # 요청 생성
+                request_id = storage.create_request(file.filename, "pdf", file_size, total_pages=total_pages)
+
+                # 페이지별 처리 및 저장
+                all_pages_data = []
+                total_blocks_count = 0
+                total_confidence_sum = 0
 
                 for i, image_path in enumerate(image_paths):
+                    page_num = i + 1
+                    page_start_time = time.time()
+
                     result = extractor.extract_blocks(image_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold)
                     blocks = result.get('blocks', [])
+                    page_processing_time = time.time() - page_start_time
 
+                    # 페이지 결과 저장
+                    storage.save_page_result(request_id, page_num, blocks, page_processing_time)
+
+                    # 시각화 저장
                     if blocks:
-                        block_infos = []
-                        total_confidence = 0
+                        try:
+                            request_dir = Path(output_dir) / request_id
+                            viz_path = request_dir / "pages" / f"{page_num:03d}" / "visualization.png"
+                            extractor.visualize_blocks(image_path, {'blocks': blocks}, str(viz_path))
+                        except Exception as e:
+                            print(f"페이지 {page_num} 시각화 생성 실패: {e}")
 
-                        for block in blocks:
-                            block_info = BlockInfo(
-                                text=block['text'],
-                                confidence=block['confidence'],
-                                bbox=block['bbox_points'],
-                                block_type=block['type']
-                            )
-                            block_infos.append(block_info)
-                            total_confidence += block['confidence']
-
-                        avg_confidence = total_confidence / len(blocks)
-
-                        # 페이지별 결과 데이터 준비
-                        page_filename = f"{file.filename}_page_{i+1}"
-                        result_data = {
-                            "filename": page_filename,
-                            "page_number": i+1,
+                    # 통계 누적
+                    total_blocks_count += len(blocks)
+                    if blocks:
+                        page_confidence = sum(block.get('confidence', 0) for block in blocks) / len(blocks)
+                        total_confidence_sum += page_confidence
+                        all_pages_data.append({
+                            "page_number": page_num,
                             "total_blocks": len(blocks),
-                            "average_confidence": round(avg_confidence, 3),
-                            "blocks": [block.dict() for block in block_infos]
-                        }
-
-                        # 페이지별 output 파일 저장
-                        output_files = save_processing_results(
-                            file.filename, result_data, blocks, image_path,
-                            file_type="pdf", page_num=i+1
-                        )
-
-                        result = ProcessingResult(
-                            filename=page_filename,
-                            total_blocks=len(blocks),
-                            average_confidence=round(avg_confidence, 3),
-                            blocks=block_infos,
-                            output_files=output_files
-                        )
+                            "average_confidence": round(page_confidence, 3),
+                            "processing_time": round(page_processing_time, 3)
+                        })
                     else:
-                        result = ProcessingResult(
-                            filename=f"{file.filename}_page_{i+1}",
-                            total_blocks=0,
-                            average_confidence=0.0,
-                            blocks=[],
-                            output_files=None
-                        )
+                        all_pages_data.append({
+                            "page_number": page_num,
+                            "total_blocks": 0,
+                            "average_confidence": 0.0,
+                            "processing_time": round(page_processing_time, 3)
+                        })
 
-                    results.append(result)
-
-                # PDF 처리 통계 업데이트
+                # 요청 완료 처리
                 processing_time = time.time() - start_time
+                overall_confidence = total_confidence_sum / max(len([p for p in all_pages_data if p["total_blocks"] > 0]), 1)
+
+                summary_data = {
+                    "total_pages": total_pages,
+                    "total_blocks": total_blocks_count,
+                    "overall_confidence": round(overall_confidence, 3),
+                    "processing_time": round(processing_time, 3),
+                    "pages": all_pages_data,
+                    "completed_at": datetime.now().isoformat()
+                }
+                storage.complete_request(request_id, summary_data)
+
+                # 통계 업데이트
                 server_stats["total_pdfs_processed"] += 1
-                total_blocks = sum(r.total_blocks for r in results)
-                server_stats["total_blocks_extracted"] += total_blocks
+                server_stats["total_blocks_extracted"] += total_blocks_count
                 server_stats["total_processing_time"] += processing_time
 
-                # PDF 요약 파일 저장
-                all_pages_data = []
-                for result in results:
-                    all_pages_data.append({
-                        "blocks": [block.dict() for block in result.blocks]
-                    })
-
-                summary_info = create_pdf_summary(file.filename, results)
-
-                # 첫 번째 결과에 PDF 요약 정보 추가
-                if results:
-                    if results[0].output_files is None:
-                        results[0].output_files = {}
-                    results[0].output_files.update({
-                        "pdf_summary": summary_info["summary_path"],
-                        "pdf_folder": summary_info["relative_path"]
-                    })
-
-                return results
+                return {
+                    "request_id": request_id,
+                    "status": "completed",
+                    "original_filename": file.filename,
+                    "file_type": "pdf",
+                    "file_size": file_size,
+                    "total_pages": total_pages,
+                    "processing_time": round(processing_time, 3),
+                    "processing_url": f"/requests/{request_id}"
+                }
 
         finally:
             if os.path.exists(tmp_path):

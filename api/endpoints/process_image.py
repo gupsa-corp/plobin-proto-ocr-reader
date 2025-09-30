@@ -8,20 +8,23 @@ from datetime import datetime
 from typing import Optional
 
 from api.models.schemas import ProcessingResult, BlockInfo
-from api.utils.file_storage import save_processing_results
+from services.file.request_manager import generate_request_metadata, create_request_structure, create_page_structure, create_block_file_path
+from services.file.storage import RequestStorage
 
 router = APIRouter()
 
 # Global dependencies that will be injected
 server_stats = None
 extractor = None
+output_dir = None
 
-def set_dependencies(stats, doc_extractor):
-    global server_stats, extractor
+def set_dependencies(stats, doc_extractor, out_dir=None):
+    global server_stats, extractor, output_dir
     server_stats = stats
     extractor = doc_extractor
+    output_dir = out_dir or "output"
 
-@router.post("/process-image", response_model=ProcessingResult)
+@router.post("/process-image")
 async def process_image(
     file: UploadFile = File(...),
     merge_blocks: Optional[bool] = Query(True, description="인접한 블록들을 병합하여 문장 단위로 그룹화"),
@@ -73,31 +76,55 @@ async def process_image(
             server_stats["total_blocks_extracted"] += len(blocks)
             server_stats["total_processing_time"] += processing_time
 
-            # Output 파일 저장
-            result_data = {
-                "filename": file.filename,
+            # UUID 기반 새로운 구조로 저장
+            file_stats = Path(tmp_path).stat() if Path(tmp_path).exists() else None
+            file_size = file_stats.st_size if file_stats else 0
+
+            # RequestStorage를 사용해서 저장
+            storage = RequestStorage(output_dir)
+
+            # 요청 생성
+            request_id = storage.create_request(file.filename, "image", file_size, total_pages=1)
+
+            # 페이지 결과 저장
+            storage.save_page_result(request_id, 1, blocks, processing_time)
+
+            # 시각화 저장
+            if tmp_path and os.path.exists(tmp_path):
+                try:
+                    request_dir = Path(output_dir) / request_id
+                    viz_path = request_dir / "pages" / "001" / "visualization.png"
+                    extractor.visualize_blocks(tmp_path, {'blocks': blocks}, str(viz_path))
+                except Exception as e:
+                    print(f"시각화 생성 실패: {e}")
+
+            # 요청 완료 처리
+            summary_data = {
+                "total_pages": 1,
                 "total_blocks": len(blocks),
-                "average_confidence": round(avg_confidence, 3),
+                "overall_confidence": round(avg_confidence, 3),
                 "processing_time": round(processing_time, 3),
-                "blocks": [block.dict() for block in block_infos],
-                "image_info": {
-                    "width": result.get('image_width', 0),
-                    "height": result.get('image_height', 0)
-                }
+                "completed_at": datetime.now().isoformat()
+            }
+            storage.complete_request(request_id, summary_data)
+
+            output_files = {
+                "request_id": request_id,
+                "processing_url": f"/requests/{request_id}",
+                "page_url": f"/requests/{request_id}/pages/1",
+                "visualization_url": f"/requests/{request_id}/pages/1/visualization"
             }
 
-            output_files = save_processing_results(
-                file.filename, result_data, blocks, tmp_path, file_type="image"
-            )
-
-            return ProcessingResult(
-                filename=file.filename,
-                total_blocks=len(blocks),
-                average_confidence=round(avg_confidence, 3),
-                blocks=block_infos,
-                processing_time=round(processing_time, 3),
-                output_files=output_files
-            )
+            return {
+                "request_id": request_id,
+                "status": "completed",
+                "original_filename": file.filename,
+                "file_type": "image",
+                "file_size": file_size,
+                "total_pages": 1,
+                "processing_time": round(processing_time, 3),
+                "processing_url": f"/requests/{request_id}"
+            }
 
         finally:
             if os.path.exists(tmp_path):

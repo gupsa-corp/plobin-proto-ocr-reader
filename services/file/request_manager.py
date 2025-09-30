@@ -98,14 +98,17 @@ def create_page_structure(request_dir: Path, page_number: int) -> Dict[str, Path
     Returns:
         페이지 관련 경로들의 딕셔너리
     """
-    page_dir = request_dir / f"page_{page_number:03d}"
+    pages_dir = request_dir / "pages"
+    page_dir = pages_dir / f"{page_number:03d}"
     blocks_dir = page_dir / "blocks"
 
     # 디렉토리 생성
+    pages_dir.mkdir(exist_ok=True)
     page_dir.mkdir(exist_ok=True)
     blocks_dir.mkdir(exist_ok=True)
 
     paths = {
+        'pages_dir': pages_dir,
         'page_dir': page_dir,
         'blocks_dir': blocks_dir,
         'page_info_file': page_dir / 'page_info.json',

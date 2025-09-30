@@ -1,0 +1,74 @@
+{
+  "page_number": 1,
+  "total_blocks": 2,
+  "average_confidence": 0.9683743119239807,
+  "processing_time": 0.1495976448059082,
+  "blocks": [
+    {
+      "id": 0,
+      "text": "Test CCR Document",
+      "confidence": 0.9692415595054626,
+      "bbox": {
+        "x_min": 9,
+        "y_min": 50,
+        "x_max": 103,
+        "y_max": 64,
+        "width": 94,
+        "height": 14
+      },
+      "bbox_points": [
+        [
+          9,
+          50
+        ],
+        [
+          103,
+          50
+        ],
+        [
+          103,
+          64
+        ],
+        [
+          9,
+          64
+        ]
+      ],
+      "type": "other",
+      "area": 1316
+    },
+    {
+      "id": 1,
+      "text": "This is a test image",
+      "confidence": 0.9675070643424988,
+      "bbox": {
+        "x_min": 9,
+        "y_min": 100,
+        "x_max": 95,
+        "y_max": 114,
+        "width": 86,
+        "height": 14
+      },
+      "bbox_points": [
+        [
+          9,
+          100
+        ],
+        [
+          95,
+          100
+        ],
+        [
+          95,
+          114
+        ],
+        [
+          9,
+          114
+        ]
+      ],
+      "type": "other",
+      "area": 1204
+    }
+  ]
+}
