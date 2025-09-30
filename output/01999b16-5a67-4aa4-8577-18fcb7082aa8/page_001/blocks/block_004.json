@@ -1,0 +1,27 @@
+{
+  "block_id": 4,
+  "text": "Other |VERSIT 100 UNA Title",
+  "confidence": 0.9822147190570831,
+  "bbox": [
+    [
+      226,
+      142
+    ],
+    [
+      2065,
+      142
+    ],
+    [
+      2065,
+      195
+    ],
+    [
+      226,
+      195
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 27,
+  "created_at": "2025-09-30T23:46:04.672904",
+  "version": "1.0"
+}

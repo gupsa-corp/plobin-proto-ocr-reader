@@ -1,0 +1,514 @@
+{
+  "page_number": 1,
+  "total_blocks": 22,
+  "average_confidence": 0.9804208333895663,
+  "processing_time": 5.237219572067261,
+  "blocks": [
+    {
+      "text": "Document Analysis Test",
+      "confidence": 0.9999938408533732,
+      "bbox": [
+        [
+          52,
+          53
+        ],
+        [
+          374,
+          53
+        ],
+        [
+          374,
+          78
+        ],
+        [
+          52,
+          78
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "PaddleOCR Block Extraction Example",
+      "confidence": 0.9999349564313889,
+      "bbox": [
+        [
+          50,
+          108
+        ],
+        [
+          313,
+          108
+        ],
+        [
+          313,
+          128
+        ],
+        [
+          50,
+          128
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "This is the first paragraph of Our test document",
+      "confidence": 0.9592985113461813,
+      "bbox": [
+        [
+          47,
+          157
+        ],
+        [
+          386,
+          157
+        ],
+        [
+          386,
+          179
+        ],
+        [
+          47,
+          179
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "It contains multiple lines to demonstrate text block",
+      "confidence": 0.981220006942749,
+      "bbox": [
+        [
+          49,
+          185
+        ],
+        [
+          409,
+          185
+        ],
+        [
+          409,
+          201
+        ],
+        [
+          49,
+          201
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "detection and Classification Capabilities",
+      "confidence": 0.996059387922287,
+      "bbox": [
+        [
+          50,
+          210
+        ],
+        [
+          329,
+          210
+        ],
+        [
+          329,
+          226
+        ],
+        [
+          50,
+          226
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "The Extractoi should identify this 25 '' paragraph block",
+      "confidence": 0.9452333781454298,
+      "bbox": [
+        [
+          51,
+          234
+        ],
+        [
+          439,
+          234
+        ],
+        [
+          439,
+          254
+        ],
+        [
+          51,
+          254
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Key Features:",
+      "confidence": 0.9998085796833038,
+      "bbox": [
+        [
+          49,
+          279
+        ],
+        [
+          145,
+          279
+        ],
+        [
+          145,
+          297
+        ],
+        [
+          49,
+          297
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "GPL acceleration With RTX 3090",
+      "confidence": 0.9674824357032776,
+      "bbox": [
+        [
+          84,
+          307
+        ],
+        [
+          309,
+          307
+        ],
+        [
+          309,
+          327
+        ],
+        [
+          84,
+          327
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Korean and English [ext recognition",
+      "confidence": 0.9968228578567505,
+      "bbox": [
+        [
+          80,
+          335
+        ],
+        [
+          332,
+          335
+        ],
+        [
+          332,
+          352
+        ],
+        [
+          80,
+          352
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Block type Classification",
+      "confidence": 0.9918311436971029,
+      "bbox": [
+        [
+          81,
+          360
+        ],
+        [
+          252,
+          360
+        ],
+        [
+          252,
+          377
+        ],
+        [
+          81,
+          377
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Confidence scoring",
+      "confidence": 0.9905873239040375,
+      "bbox": [
+        [
+          82,
+          384
+        ],
+        [
+          217,
+          384
+        ],
+        [
+          217,
+          402
+        ],
+        [
+          82,
+          402
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Visualization tools",
+      "confidence": 0.9998325407505035,
+      "bbox": [
+        [
+          82,
+          410
+        ],
+        [
+          210,
+          410
+        ],
+        [
+          210,
+          425
+        ],
+        [
+          82,
+          425
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Performance Metrics",
+      "confidence": 0.9995972812175751,
+      "bbox": [
+        [
+          49,
+          465
+        ],
+        [
+          195,
+          465
+        ],
+        [
+          195,
+          480
+        ],
+        [
+          49,
+          480
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Metric I Value I unit",
+      "confidence": 0.9927534759044647,
+      "bbox": [
+        [
+          70,
+          494
+        ],
+        [
+          267,
+          494
+        ],
+        [
+          267,
+          512
+        ],
+        [
+          70,
+          512
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Accuracy 952% 1%",
+      "confidence": 0.9404614865779877,
+      "bbox": [
+        [
+          69,
+          544
+        ],
+        [
+          270,
+          544
+        ],
+        [
+          270,
+          564
+        ],
+        [
+          69,
+          564
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Processing Time I 12 I sec",
+      "confidence": 0.967119057973226,
+      "bbox": [
+        [
+          69,
+          570
+        ],
+        [
+          284,
+          570
+        ],
+        [
+          284,
+          588
+        ],
+        [
+          69,
+          588
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "GPU Memory 121 I GB",
+      "confidence": 0.9900772571563721,
+      "bbox": [
+        [
+          70,
+          595
+        ],
+        [
+          280,
+          595
+        ],
+        [
+          280,
+          612
+        ],
+        [
+          70,
+          612
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "This document demonstrates the Capabilities of Our",
+      "confidence": 0.968502232006618,
+      "bbox": [
+        [
+          49,
+          650
+        ],
+        [
+          412,
+          650
+        ],
+        [
+          412,
+          666
+        ],
+        [
+          49,
+          666
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "PaddleOCR-based document block extraction system",
+      "confidence": 0.966674518585205,
+      "bbox": [
+        [
+          50,
+          675
+        ],
+        [
+          424,
+          675
+        ],
+        [
+          424,
+          692
+        ],
+        [
+          50,
+          692
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "It can identify different types of Content block5",
+      "confidence": 0.941738418170384,
+      "bbox": [
+        [
+          49,
+          699
+        ],
+        [
+          377,
+          699
+        ],
+        [
+          377,
+          717
+        ],
+        [
+          49,
+          717
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "including titles paragraphs lists and tables",
+      "confidence": 0.9774068693319956,
+      "bbox": [
+        [
+          49,
+          724
+        ],
+        [
+          364,
+          724
+        ],
+        [
+          364,
+          743
+        ],
+        [
+          49,
+          743
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "PaddleOCR",
+      "confidence": 0.9968227744102478,
+      "bbox": [
+        [
+          93,
+          821
+        ],
+        [
+          180,
+          821
+        ],
+        [
+          180,
+          835
+        ],
+        [
+          93,
+          835
+        ]
+      ],
+      "block_type": "other"
+    }
+  ]
+}

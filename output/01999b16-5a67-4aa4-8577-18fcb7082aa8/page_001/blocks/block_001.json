@@ -1,0 +1,27 @@
+{
+  "block_id": 1,
+  "text": "Document Blocks Detection [78 blocks",
+  "confidence": 0.9715604543685913,
+  "bbox": [
+    [
+      477,
+      21
+    ],
+    [
+      1775,
+      21
+    ],
+    [
+      1775,
+      96
+    ],
+    [
+      477,
+      96
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 36,
+  "created_at": "2025-09-30T23:46:04.672795",
+  "version": "1.0"
+}

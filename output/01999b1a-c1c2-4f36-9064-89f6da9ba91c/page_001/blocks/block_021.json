@@ -1,0 +1,27 @@
+{
+  "block_id": 21,
+  "text": "including titles paragraphs lists and tables",
+  "confidence": 0.9774068693319956,
+  "bbox": [
+    [
+      49,
+      724
+    ],
+    [
+      364,
+      724
+    ],
+    [
+      364,
+      743
+    ],
+    [
+      49,
+      743
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 44,
+  "created_at": "2025-09-30T23:50:51.320257",
+  "version": "1.0"
+}

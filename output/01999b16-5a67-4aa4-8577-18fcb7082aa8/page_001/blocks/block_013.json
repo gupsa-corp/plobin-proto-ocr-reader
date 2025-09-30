@@ -1,0 +1,27 @@
+{
+  "block_id": 13,
+  "text": "The following sample includes APA-style citations and Jererences",
+  "confidence": 0.9507274627685547,
+  "bbox": [
+    [
+      630,
+      657
+    ],
+    [
+      1674,
+      657
+    ],
+    [
+      1674,
+      688
+    ],
+    [
+      630,
+      688
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 64,
+  "created_at": "2025-09-30T23:46:04.673150",
+  "version": "1.0"
+}

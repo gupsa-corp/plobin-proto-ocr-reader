@@ -1,0 +1,27 @@
+{
+  "block_id": 16,
+  "text": "othe Other 100 Iother 100",
+  "confidence": 0.9592207670211792,
+  "bbox": [
+    [
+      444,
+      957
+    ],
+    [
+      1560,
+      957
+    ],
+    [
+      1560,
+      1006
+    ],
+    [
+      444,
+      1006
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 25,
+  "created_at": "2025-09-30T23:46:04.673229",
+  "version": "1.0"
+}

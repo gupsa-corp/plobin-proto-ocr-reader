@@ -1,0 +1,629 @@
+{
+  "page_number": 1,
+  "total_blocks": 27,
+  "average_confidence": 0.9615967460191299,
+  "processing_time": 7.1925365924835205,
+  "blocks": [
+    {
+      "text": "Document Blocks Detection [78 blocks",
+      "confidence": 0.9715604543685913,
+      "bbox": [
+        [
+          477,
+          21
+        ],
+        [
+          1775,
+          21
+        ],
+        [
+          1775,
+          96
+        ],
+        [
+          477,
+          96
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "other other",
+      "confidence": 0.999675452709198,
+      "bbox": [
+        [
+          219,
+          74
+        ],
+        [
+          579,
+          74
+        ],
+        [
+          579,
+          122
+        ],
+        [
+          219,
+          122
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "other othero",
+      "confidence": 0.998805046081543,
+      "bbox": [
+        [
+          223,
+          111
+        ],
+        [
+          570,
+          111
+        ],
+        [
+          570,
+          162
+        ],
+        [
+          223,
+          162
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Other |VERSIT 100 UNA Title",
+      "confidence": 0.9822147190570831,
+      "bbox": [
+        [
+          226,
+          142
+        ],
+        [
+          2065,
+          142
+        ],
+        [
+          2065,
+          195
+        ],
+        [
+          226,
+          195
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "100 BAL CAMPUS Paragraph",
+      "confidence": 0.9956160187721252,
+      "bbox": [
+        [
+          226,
+          188
+        ],
+        [
+          2188,
+          188
+        ],
+        [
+          2188,
+          248
+        ],
+        [
+          226,
+          248
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Writing Cente Table",
+      "confidence": 0.9914695024490356,
+      "bbox": [
+        [
+          229,
+          242
+        ],
+        [
+          2079,
+          242
+        ],
+        [
+          2079,
+          314
+        ],
+        [
+          229,
+          314
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "List",
+      "confidence": 0.9999856948852539,
+      "bbox": [
+        [
+          1967,
+          328
+        ],
+        [
+          2053,
+          328
+        ],
+        [
+          2053,
+          375
+        ],
+        [
+          1967,
+          375
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Other",
+      "confidence": 0.9999569654464722,
+      "bbox": [
+        [
+          1970,
+          393
+        ],
+        [
+          2093,
+          393
+        ],
+        [
+          2093,
+          437
+        ],
+        [
+          1970,
+          437
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "other othe other otherother other other",
+      "confidence": 0.9905249297618866,
+      "bbox": [
+        [
+          456,
+          489
+        ],
+        [
+          1723,
+          489
+        ],
+        [
+          1723,
+          533
+        ],
+        [
+          456,
+          533
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "100 1094| 097 100099 100 100",
+      "confidence": 0.9868509411811829,
+      "bbox": [
+        [
+          450,
+          533
+        ],
+        [
+          1701,
+          533
+        ],
+        [
+          1701,
+          573
+        ],
+        [
+          450,
+          573
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Format yd Lothere according to your assignment instructions: other Chicago Style",
+      "confidence": 0.9862949649492899,
+      "bbox": [
+        [
+          456,
+          570
+        ],
+        [
+          1848,
+          570
+        ],
+        [
+          1848,
+          616
+        ],
+        [
+          456,
+          616
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "099 100",
+      "confidence": 0.9981328248977661,
+      "bbox": [
+        [
+          627,
+          616
+        ],
+        [
+          1579,
+          616
+        ],
+        [
+          1579,
+          653
+        ],
+        [
+          627,
+          653
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "The following sample includes APA-style citations and Jererences",
+      "confidence": 0.9507274627685547,
+      "bbox": [
+        [
+          630,
+          657
+        ],
+        [
+          1674,
+          657
+        ],
+        [
+          1674,
+          688
+        ],
+        [
+          630,
+          688
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Other Other Other",
+      "confidence": 0.9635129570960999,
+      "bbox": [
+        [
+          918,
+          845
+        ],
+        [
+          1313,
+          845
+        ],
+        [
+          1313,
+          870
+        ],
+        [
+          918,
+          870
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "oth other other othoth Gothe other other",
+      "confidence": 0.9427506625652313,
+      "bbox": [
+        [
+          438,
+          920
+        ],
+        [
+          1570,
+          920
+        ],
+        [
+          1570,
+          957
+        ],
+        [
+          438,
+          957
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "othe Other 100 Iother 100",
+      "confidence": 0.9592207670211792,
+      "bbox": [
+        [
+          444,
+          957
+        ],
+        [
+          1560,
+          957
+        ],
+        [
+          1560,
+          1006
+        ],
+        [
+          444,
+          1006
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "100 096 티bor e business and",
+      "confidence": 0.8858230610688528,
+      "bbox": [
+        [
+          447,
+          997
+        ],
+        [
+          1750,
+          997
+        ],
+        [
+          1750,
+          1041
+        ],
+        [
+          447,
+          1041
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Ot Other otherother",
+      "confidence": 0.9578330665826797,
+      "bbox": [
+        [
+          450,
+          1062
+        ],
+        [
+          1756,
+          1062
+        ],
+        [
+          1756,
+          1093
+        ],
+        [
+          450,
+          1093
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Other t other! Other",
+      "confidence": 0.885326107343038,
+      "bbox": [
+        [
+          438,
+          1102
+        ],
+        [
+          1793,
+          1102
+        ],
+        [
+          1793,
+          1152
+        ],
+        [
+          438,
+          1152
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Other 1oul 1500 064",
+      "confidence": 0.962273582816124,
+      "bbox": [
+        [
+          434,
+          1143
+        ],
+        [
+          1781,
+          1143
+        ],
+        [
+          1781,
+          1186
+        ],
+        [
+          434,
+          1186
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "100 Charts",
+      "confidence": 0.999882310628891,
+      "bbox": [
+        [
+          438,
+          1192
+        ],
+        [
+          1689,
+          1192
+        ],
+        [
+          1689,
+          1223
+        ],
+        [
+          438,
+          1223
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Othe other",
+      "confidence": 0.9485570788383484,
+      "bbox": [
+        [
+          493,
+          1248
+        ],
+        [
+          1871,
+          1248
+        ],
+        [
+          1871,
+          1305
+        ],
+        [
+          493,
+          1305
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Othelother Other Ot Other O0 093 OC 100",
+      "confidence": 0.9383767187595368,
+      "bbox": [
+        [
+          443,
+          1294
+        ],
+        [
+          1854,
+          1294
+        ],
+        [
+          1854,
+          1338
+        ],
+        [
+          443,
+          1338
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "1001|00 00 S0O meaning the audience consists",
+      "confidence": 0.9114168385664622,
+      "bbox": [
+        [
+          447,
+          1335
+        ],
+        [
+          1778,
+          1335
+        ],
+        [
+          1778,
+          1375
+        ],
+        [
+          447,
+          1375
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "INIOSE Trom Withiit [Ne business",
+      "confidence": 0.8571661949157715,
+      "bbox": [
+        [
+          450,
+          1381
+        ],
+        [
+          939,
+          1381
+        ],
+        [
+          939,
+          1412
+        ],
+        [
+          450,
+          1412
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "100 other other 097 othother 1g100 other 100 [100 other other 100 [097 other 100 other other 100",
+      "confidence": 0.9932469634546174,
+      "bbox": [
+        [
+          253,
+          2470
+        ],
+        [
+          1796,
+          2470
+        ],
+        [
+          1796,
+          2552
+        ],
+        [
+          253,
+          2552
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "*This I sample paper was adapted by Thie UAGC WVT[1[11 Trom ari |OLgLIIa paper by a student' Used by pernission",
+      "confidence": 0.9059108555316925,
+      "bbox": [
+        [
+          266,
+          2548
+        ],
+        [
+          1983,
+          2548
+        ],
+        [
+          1983,
+          2590
+        ],
+        [
+          266,
+          2590
+        ]
+      ],
+      "block_type": "other"
+    }
+  ]
+}

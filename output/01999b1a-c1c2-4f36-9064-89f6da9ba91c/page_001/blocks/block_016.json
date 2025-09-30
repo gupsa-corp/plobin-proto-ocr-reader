@@ -1,0 +1,27 @@
+{
+  "block_id": 16,
+  "text": "Processing Time I 12 I sec",
+  "confidence": 0.967119057973226,
+  "bbox": [
+    [
+      69,
+      570
+    ],
+    [
+      284,
+      570
+    ],
+    [
+      284,
+      588
+    ],
+    [
+      69,
+      588
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 26,
+  "created_at": "2025-09-30T23:50:51.320079",
+  "version": "1.0"
+}

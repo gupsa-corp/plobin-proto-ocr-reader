@@ -1,0 +1,27 @@
+{
+  "block_id": 11,
+  "text": "Confidence scoring",
+  "confidence": 0.9905873239040375,
+  "bbox": [
+    [
+      82,
+      384
+    ],
+    [
+      217,
+      384
+    ],
+    [
+      217,
+      402
+    ],
+    [
+      82,
+      402
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 18,
+  "created_at": "2025-09-30T23:50:51.319936",
+  "version": "1.0"
+}

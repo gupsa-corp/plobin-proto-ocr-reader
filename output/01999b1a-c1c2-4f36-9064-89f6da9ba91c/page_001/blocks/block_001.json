@@ -1,0 +1,27 @@
+{
+  "block_id": 1,
+  "text": "Document Analysis Test",
+  "confidence": 0.9999938408533732,
+  "bbox": [
+    [
+      52,
+      53
+    ],
+    [
+      374,
+      53
+    ],
+    [
+      374,
+      78
+    ],
+    [
+      52,
+      78
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 22,
+  "created_at": "2025-09-30T23:50:51.319636",
+  "version": "1.0"
+}

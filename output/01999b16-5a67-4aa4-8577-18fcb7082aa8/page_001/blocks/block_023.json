@@ -1,0 +1,27 @@
+{
+  "block_id": 23,
+  "text": "Othelother Other Ot Other O0 093 OC 100",
+  "confidence": 0.9383767187595368,
+  "bbox": [
+    [
+      443,
+      1294
+    ],
+    [
+      1854,
+      1294
+    ],
+    [
+      1854,
+      1338
+    ],
+    [
+      443,
+      1338
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 39,
+  "created_at": "2025-09-30T23:46:04.673495",
+  "version": "1.0"
+}

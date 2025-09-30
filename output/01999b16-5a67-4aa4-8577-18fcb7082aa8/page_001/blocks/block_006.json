@@ -1,0 +1,27 @@
+{
+  "block_id": 6,
+  "text": "Writing Cente Table",
+  "confidence": 0.9914695024490356,
+  "bbox": [
+    [
+      229,
+      242
+    ],
+    [
+      2079,
+      242
+    ],
+    [
+      2079,
+      314
+    ],
+    [
+      229,
+      314
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 19,
+  "created_at": "2025-09-30T23:46:04.672959",
+  "version": "1.0"
+}

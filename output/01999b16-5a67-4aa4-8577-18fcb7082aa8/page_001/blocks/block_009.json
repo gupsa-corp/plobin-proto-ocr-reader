@@ -1,0 +1,27 @@
+{
+  "block_id": 9,
+  "text": "other othe other otherother other other",
+  "confidence": 0.9905249297618866,
+  "bbox": [
+    [
+      456,
+      489
+    ],
+    [
+      1723,
+      489
+    ],
+    [
+      1723,
+      533
+    ],
+    [
+      456,
+      533
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 39,
+  "created_at": "2025-09-30T23:46:04.673039",
+  "version": "1.0"
+}

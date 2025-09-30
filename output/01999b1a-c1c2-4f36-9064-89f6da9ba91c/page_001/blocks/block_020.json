@@ -1,0 +1,27 @@
+{
+  "block_id": 20,
+  "text": "It can identify different types of Content block5",
+  "confidence": 0.941738418170384,
+  "bbox": [
+    [
+      49,
+      699
+    ],
+    [
+      377,
+      699
+    ],
+    [
+      377,
+      717
+    ],
+    [
+      49,
+      717
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 49,
+  "created_at": "2025-09-30T23:50:51.320187",
+  "version": "1.0"
+}

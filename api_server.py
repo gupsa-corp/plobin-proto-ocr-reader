@@ -3,11 +3,11 @@ from pathlib import Path
 from datetime import datetime
 
 # Import internal components
-from document_block_extractor import DocumentBlockExtractor
-from pdf_to_image_processor import PDFToImageProcessor
+from services.ocr import DocumentBlockExtractor
+from services.pdf import PDFToImageProcessor
 
 # Import API modules
-from api.endpoints import root, process_image, process_pdf, output_list, output_stats, output_files, blocks
+from api.endpoints import root, process_image, process_pdf, output_list, output_stats, output_files, blocks, requests
 from api.utils import file_storage
 
 # Initialize FastAPI app
@@ -47,6 +47,8 @@ process_pdf.set_dependencies(server_stats, extractor, pdf_processor)
 output_list.set_dependencies(output_dir)
 output_stats.set_dependencies(output_dir)
 output_files.set_dependencies(output_dir)
+requests.set_dependencies(str(output_dir))
+requests.set_processing_dependencies(extractor, pdf_processor)
 
 # Include routers
 app.include_router(root.router, tags=["Root"])
@@ -56,6 +58,7 @@ app.include_router(output_list.router, tags=["Output Management"])
 app.include_router(output_stats.router, tags=["Output Management"])
 app.include_router(output_files.router, tags=["Output Management"])
 app.include_router(blocks.router, tags=["Block Management"])
+app.include_router(requests.router, tags=["Request Management"])
 
 if __name__ == "__main__":
     import uvicorn

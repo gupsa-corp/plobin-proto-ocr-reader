@@ -1,0 +1,27 @@
+{
+  "block_id": 5,
+  "text": "100 BAL CAMPUS Paragraph",
+  "confidence": 0.9956160187721252,
+  "bbox": [
+    [
+      226,
+      188
+    ],
+    [
+      2188,
+      188
+    ],
+    [
+      2188,
+      248
+    ],
+    [
+      226,
+      248
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 24,
+  "created_at": "2025-09-30T23:46:04.672933",
+  "version": "1.0"
+}
