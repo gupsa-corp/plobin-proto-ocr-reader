@@ -150,9 +150,27 @@ async def process_image_request(request_id: str, image_path: str, original_filen
 
         # 시각화 이미지 생성
         visualization_data = None
-        if blocks and 'visualization_path' in result:
-            with open(result['visualization_path'], 'rb') as f:
-                visualization_data = f.read()
+        if blocks:
+            import tempfile
+            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as viz_tmp:
+                viz_path = viz_tmp.name
+
+            try:
+                # 시각화 생성
+                extractor.visualize_blocks(image_path, result, viz_path)
+
+                # 시각화 파일 읽기
+                if Path(viz_path).exists():
+                    with open(viz_path, 'rb') as f:
+                        visualization_data = f.read()
+
+            except Exception as e:
+                print(f"시각화 생성 실패: {e}")
+                visualization_data = None
+            finally:
+                # 임시 시각화 파일 정리
+                if Path(viz_path).exists():
+                    Path(viz_path).unlink()
 
         # 원본 이미지 데이터 읽기
         original_image_data = None
@@ -208,9 +226,27 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
 
             # 시각화 이미지 생성
             visualization_data = None
-            if blocks and 'visualization_path' in result:
-                with open(result['visualization_path'], 'rb') as f:
-                    visualization_data = f.read()
+            if blocks:
+                import tempfile
+                with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as viz_tmp:
+                    viz_path = viz_tmp.name
+
+                try:
+                    # 시각화 생성
+                    extractor.visualize_blocks(image_path, result, viz_path)
+
+                    # 시각화 파일 읽기
+                    if Path(viz_path).exists():
+                        with open(viz_path, 'rb') as f:
+                            visualization_data = f.read()
+
+                except Exception as e:
+                    print(f"페이지 {page_num} 시각화 생성 실패: {e}")
+                    visualization_data = None
+                finally:
+                    # 임시 시각화 파일 정리
+                    if Path(viz_path).exists():
+                        Path(viz_path).unlink()
 
             # 원본 페이지 이미지 데이터 읽기
             original_image_data = None
