@@ -1,5 +1,5 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException
-from typing import List
+from fastapi import APIRouter, File, UploadFile, HTTPException, Query
+from typing import List, Optional
 import tempfile
 import shutil
 import time
@@ -23,7 +23,11 @@ def set_dependencies(stats, doc_extractor, pdf_proc):
     pdf_processor = pdf_proc
 
 @router.post("/process-pdf", response_model=List[ProcessingResult])
-async def process_pdf(file: UploadFile = File(...)):
+async def process_pdf(
+    file: UploadFile = File(...),
+    merge_blocks: Optional[bool] = Query(True, description="인접한 블록들을 병합하여 문장 단위로 그룹화"),
+    merge_threshold: Optional[int] = Query(30, description="블록 병합 임계값 (픽셀 단위)")
+):
     start_time = time.time()
     server_stats["total_requests"] += 1
     server_stats["last_request_time"] = datetime.now()
@@ -44,7 +48,7 @@ async def process_pdf(file: UploadFile = File(...)):
                 results = []
 
                 for i, image_path in enumerate(image_paths):
-                    result = extractor.extract_blocks(image_path)
+                    result = extractor.extract_blocks(image_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold)
                     blocks = result.get('blocks', [])
 
                     if blocks:

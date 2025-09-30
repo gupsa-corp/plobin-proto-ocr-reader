@@ -1,10 +1,11 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, File, UploadFile, HTTPException, Query
 from pathlib import Path
 import tempfile
 import shutil
 import time
 import os
 from datetime import datetime
+from typing import Optional
 
 from api.models.schemas import ProcessingResult, BlockInfo
 from api.utils.file_storage import save_processing_results
@@ -21,7 +22,11 @@ def set_dependencies(stats, doc_extractor):
     extractor = doc_extractor
 
 @router.post("/process-image", response_model=ProcessingResult)
-async def process_image(file: UploadFile = File(...)):
+async def process_image(
+    file: UploadFile = File(...),
+    merge_blocks: Optional[bool] = Query(True, description="인접한 블록들을 병합하여 문장 단위로 그룹화"),
+    merge_threshold: Optional[int] = Query(30, description="블록 병합 임계값 (픽셀 단위)")
+):
     start_time = time.time()
     server_stats["total_requests"] += 1
     server_stats["last_request_time"] = datetime.now()
@@ -36,7 +41,7 @@ async def process_image(file: UploadFile = File(...)):
             tmp_path = tmp_file.name
 
         try:
-            result = extractor.extract_blocks(tmp_path)
+            result = extractor.extract_blocks(tmp_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold)
             blocks = result.get('blocks', [])
 
             if not blocks:
