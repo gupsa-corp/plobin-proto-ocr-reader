@@ -1,0 +1,27 @@
+{
+  "block_id": 12,
+  "text": "Design Consultatior 10 $15000 $150000",
+  "confidence": 0.999085083603859,
+  "bbox": [
+    [
+      199,
+      852
+    ],
+    [
+      1057,
+      852
+    ],
+    [
+      1057,
+      875
+    ],
+    [
+      199,
+      875
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 37,
+  "created_at": "2025-10-01T01:42:15.508330",
+  "version": "1.0"
+}

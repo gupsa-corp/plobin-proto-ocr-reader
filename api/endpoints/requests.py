@@ -154,6 +154,14 @@ async def process_image_request(request_id: str, image_path: str, original_filen
             with open(result['visualization_path'], 'rb') as f:
                 visualization_data = f.read()
 
+        # 원본 이미지 데이터 읽기
+        original_image_data = None
+        try:
+            with open(image_path, 'rb') as f:
+                original_image_data = f.read()
+        except Exception:
+            original_image_data = None
+
         # 처리 시간 계산
         processing_time = time.time() - start_time
 
@@ -163,7 +171,8 @@ async def process_image_request(request_id: str, image_path: str, original_filen
             page_number=1,
             blocks=processed_blocks,
             processing_time=processing_time,
-            visualization_data=visualization_data
+            visualization_data=visualization_data,
+            original_image_data=original_image_data
         )
 
     except Exception as e:
@@ -203,6 +212,14 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
                 with open(result['visualization_path'], 'rb') as f:
                     visualization_data = f.read()
 
+            # 원본 페이지 이미지 데이터 읽기
+            original_image_data = None
+            try:
+                with open(image_path, 'rb') as f:
+                    original_image_data = f.read()
+            except Exception:
+                original_image_data = None
+
             # 페이지 처리 시간 계산
             page_processing_time = time.time() - page_start_time
 
@@ -212,7 +229,8 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
                 page_number=page_num,
                 blocks=processed_blocks,
                 processing_time=page_processing_time,
-                visualization_data=visualization_data
+                visualization_data=visualization_data,
+                original_image_data=original_image_data
             )
 
             # 임시 이미지 파일 정리
@@ -335,7 +353,7 @@ async def download_page_visualization(request_id: str, page_number: int):
         raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
 
     try:
-        visualization_path = request_storage.base_output_dir / request_id / f"page_{page_number:03d}" / "visualization.png"
+        visualization_path = request_storage.base_output_dir / request_id / "pages" / f"{page_number:03d}" / "visualization.png"
 
         if not visualization_path.exists():
             raise HTTPException(status_code=404, detail="시각화 파일을 찾을 수 없습니다")

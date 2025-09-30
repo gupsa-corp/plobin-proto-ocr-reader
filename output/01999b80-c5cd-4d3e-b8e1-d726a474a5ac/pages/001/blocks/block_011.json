@@ -1,0 +1,27 @@
+{
+  "block_id": 11,
+  "text": "Web Development Services 40 $10000 $400000",
+  "confidence": 0.9951323568820953,
+  "bbox": [
+    [
+      199,
+      815
+    ],
+    [
+      1058,
+      815
+    ],
+    [
+      1058,
+      839
+    ],
+    [
+      199,
+      839
+    ]
+  ],
+  "block_type": "other",
+  "text_length": 42,
+  "created_at": "2025-10-01T01:42:15.508301",
+  "version": "1.0"
+}
