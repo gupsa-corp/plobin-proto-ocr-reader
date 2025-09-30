@@ -1,0 +1,58 @@
+{
+  "templates": [
+    {
+      "template_id": "invoice_standard_001",
+      "name": "표준 송장 템플릿",
+      "category": "financial_document",
+      "document_type": "invoice",
+      "version": "1.0",
+      "file_path": "definitions/invoice_standard_001.json",
+      "preview_path": "visualizations/invoice_standard_001_preview.png",
+      "sample_count": 0,
+      "usage_count": 0,
+      "accuracy_rate": 0.0,
+      "created_at": "2025-10-01T10:00:00Z",
+      "last_used": null,
+      "status": "active"
+    },
+    {
+      "template_id": "receipt_retail_002",
+      "name": "소매 영수증 템플릿",
+      "category": "financial_document",
+      "document_type": "receipt",
+      "version": "1.0",
+      "file_path": "definitions/receipt_retail_002.json",
+      "preview_path": "visualizations/receipt_retail_002_preview.png",
+      "sample_count": 0,
+      "usage_count": 0,
+      "accuracy_rate": 0.0,
+      "created_at": "2025-10-01T10:00:00Z",
+      "last_used": null,
+      "status": "active"
+    },
+    {
+      "template_id": "form_business_003",
+      "name": "사업자등록신청서 템플릿",
+      "category": "government_form",
+      "document_type": "business_registration",
+      "version": "1.0",
+      "file_path": "definitions/form_business_003.json",
+      "preview_path": "visualizations/form_business_003_preview.png",
+      "sample_count": 0,
+      "usage_count": 0,
+      "accuracy_rate": 0.0,
+      "created_at": "2025-10-01T10:00:00Z",
+      "last_used": null,
+      "status": "active"
+    }
+  ],
+  "statistics": {
+    "total_templates": 3,
+    "active_templates": 3,
+    "categories": {
+      "financial_document": 2,
+      "government_form": 1
+    }
+  },
+  "last_updated": "2025-10-01T10:00:00Z"
+}

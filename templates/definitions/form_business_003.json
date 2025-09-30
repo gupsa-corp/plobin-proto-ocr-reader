@@ -1,0 +1,324 @@
+{
+  "template_id": "form_business_003",
+  "name": "사업자등록신청서 템플릿",
+  "document_type": "business_registration",
+  "category": "government_form",
+  "version": "1.0",
+  "created_at": "2025-10-01T10:00:00Z",
+  "updated_at": "2025-10-01T10:00:00Z",
+  "author": "system",
+  "language": "ko",
+  "confidence_threshold": 0.9,
+  "page_layout": {
+    "width": 1024,
+    "height": 1448,
+    "unit": "pixels",
+    "orientation": "portrait"
+  },
+  "fields": [
+    {
+      "field_id": "form_title",
+      "name": "양식 제목",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 200,
+        "y1": 50,
+        "x2": 824,
+        "y2": 100
+      },
+      "validation": {
+        "regex": ".*사업자.*등록.*신청.*",
+        "required": true
+      },
+      "extraction_hint": "페이지 최상단 중앙의 양식 제목"
+    },
+    {
+      "field_id": "business_name",
+      "name": "상호(법인명)",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 200,
+        "y1": 200,
+        "x2": 600,
+        "y2": 240
+      },
+      "validation": {
+        "max_length": 50,
+        "required": true
+      },
+      "extraction_hint": "'상호' 또는 '법인명' 라벨 옆 입력란"
+    },
+    {
+      "field_id": "business_type",
+      "name": "사업자구분",
+      "type": "checkbox",
+      "required": true,
+      "bbox": {
+        "x1": 650,
+        "y1": 200,
+        "x2": 900,
+        "y2": 240
+      },
+      "validation": {
+        "multiple_selection": false
+      },
+      "extraction_hint": "개인사업자/법인사업자 체크박스"
+    },
+    {
+      "field_id": "representative_name",
+      "name": "대표자 성명",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 200,
+        "y1": 280,
+        "x2": 500,
+        "y2": 320
+      },
+      "validation": {
+        "max_length": 30,
+        "required": true
+      },
+      "extraction_hint": "'대표자' 또는 '성명' 라벨 옆"
+    },
+    {
+      "field_id": "registration_number",
+      "name": "주민등록번호",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 550,
+        "y1": 280,
+        "x2": 800,
+        "y2": 320
+      },
+      "validation": {
+        "regex": "^[0-9]{6}-[0-9*]{7}$",
+        "required": true
+      },
+      "extraction_hint": "주민등록번호 형식 (******-*******)"
+    },
+    {
+      "field_id": "business_address",
+      "name": "사업장 주소",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 200,
+        "y1": 360,
+        "x2": 800,
+        "y2": 400
+      },
+      "validation": {
+        "max_length": 100,
+        "required": true
+      },
+      "extraction_hint": "'사업장 소재지' 라벨 옆 주소 입력란"
+    },
+    {
+      "field_id": "business_phone",
+      "name": "사업장 전화번호",
+      "type": "phone",
+      "required": false,
+      "bbox": {
+        "x1": 200,
+        "y1": 420,
+        "x2": 450,
+        "y2": 460
+      },
+      "validation": {
+        "format": "^[0-9-]+$",
+        "max_length": 20
+      },
+      "extraction_hint": "사업장 전화번호 입력란"
+    },
+    {
+      "field_id": "home_address",
+      "name": "주거지 주소",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 200,
+        "y1": 480,
+        "x2": 800,
+        "y2": 520
+      },
+      "validation": {
+        "max_length": 100
+      },
+      "extraction_hint": "'주거지' 또는 '거주지' 라벨 옆"
+    },
+    {
+      "field_id": "business_items",
+      "name": "업태",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 200,
+        "y1": 560,
+        "x2": 500,
+        "y2": 600
+      },
+      "validation": {
+        "max_length": 50,
+        "required": true
+      },
+      "extraction_hint": "'업태' 라벨 옆 입력란"
+    },
+    {
+      "field_id": "business_details",
+      "name": "종목",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 550,
+        "y1": 560,
+        "x2": 800,
+        "y2": 600
+      },
+      "validation": {
+        "max_length": 50,
+        "required": true
+      },
+      "extraction_hint": "'종목' 라벨 옆 입력란"
+    },
+    {
+      "field_id": "start_date",
+      "name": "개업일자",
+      "type": "date",
+      "required": true,
+      "bbox": {
+        "x1": 200,
+        "y1": 640,
+        "x2": 400,
+        "y2": 680
+      },
+      "validation": {
+        "date_format": "%Y-%m-%d",
+        "required": true
+      },
+      "extraction_hint": "'개업일자' 라벨 옆 날짜 입력란"
+    },
+    {
+      "field_id": "capital_amount",
+      "name": "자본금",
+      "type": "currency",
+      "required": false,
+      "bbox": {
+        "x1": 450,
+        "y1": 640,
+        "x2": 650,
+        "y2": 680
+      },
+      "validation": {
+        "currency_code": "KRW",
+        "min_value": 0
+      },
+      "extraction_hint": "'자본금' 라벨 옆 (법인의 경우)"
+    },
+    {
+      "field_id": "employee_count",
+      "name": "종업원수",
+      "type": "number",
+      "required": false,
+      "bbox": {
+        "x1": 700,
+        "y1": 640,
+        "x2": 800,
+        "y2": 680
+      },
+      "validation": {
+        "min_value": 0,
+        "max_value": 99999
+      },
+      "extraction_hint": "'종업원수' 라벨 옆 숫자"
+    },
+    {
+      "field_id": "application_date",
+      "name": "신청일자",
+      "type": "date",
+      "required": true,
+      "bbox": {
+        "x1": 600,
+        "y1": 1200,
+        "x2": 800,
+        "y2": 1240
+      },
+      "validation": {
+        "date_format": "%Y년 %m월 %d일",
+        "required": true
+      },
+      "extraction_hint": "문서 하단 신청일자"
+    },
+    {
+      "field_id": "applicant_signature",
+      "name": "신청인 서명",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 600,
+        "y1": 1260,
+        "x2": 800,
+        "y2": 1320
+      },
+      "validation": {
+        "max_length": 30
+      },
+      "extraction_hint": "신청인 서명란"
+    },
+    {
+      "field_id": "tax_office",
+      "name": "관할세무서",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 200,
+        "y1": 1350,
+        "x2": 400,
+        "y2": 1390
+      },
+      "validation": {
+        "max_length": 30
+      },
+      "extraction_hint": "'관할세무서' 라벨 옆"
+    }
+  ],
+  "matching_rules": {
+    "key_indicators": [
+      {
+        "text": "사업자등록신청서",
+        "weight": 0.4
+      },
+      {
+        "text": "상호",
+        "weight": 0.2
+      },
+      {
+        "text": "대표자",
+        "weight": 0.2
+      },
+      {
+        "text": "업태",
+        "weight": 0.1
+      },
+      {
+        "text": "개업일자",
+        "weight": 0.1
+      }
+    ],
+    "layout_similarity_threshold": 0.8,
+    "text_similarity_threshold": 0.7
+  },
+  "preprocessing": {
+    "auto_rotate": true,
+    "denoise": true,
+    "enhance_contrast": true,
+    "deskew": true
+  },
+  "status": "active",
+  "usage_count": 0,
+  "accuracy_rate": 0.0,
+  "last_used": null
+}

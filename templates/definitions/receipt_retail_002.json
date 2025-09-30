@@ -1,0 +1,309 @@
+{
+  "template_id": "receipt_retail_002",
+  "name": "소매 영수증 템플릿",
+  "description": "일반적인 소매점 영수증을 위한 템플릿",
+  "document_type": "receipt",
+  "category": "financial_document",
+  "version": "1.0",
+  "created_at": "2025-10-01T10:00:00Z",
+  "updated_at": "2025-10-01T10:00:00Z",
+  "author": "system",
+  "language": "ko",
+  "confidence_threshold": 0.85,
+  "page_layout": {
+    "width": 576,
+    "height": 1024,
+    "unit": "pixels",
+    "orientation": "portrait"
+  },
+  "fields": [
+    {
+      "field_id": "store_name",
+      "name": "상호명",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 50,
+        "y1": 50,
+        "x2": 526,
+        "y2": 100
+      },
+      "validation": {
+        "max_length": 50,
+        "required": true
+      },
+      "extraction_hint": "영수증 상단 중앙, 가장 큰 글씨"
+    },
+    {
+      "field_id": "store_address",
+      "name": "매장 주소",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 50,
+        "y1": 110,
+        "x2": 526,
+        "y2": 150
+      },
+      "validation": {
+        "max_length": 100
+      },
+      "extraction_hint": "상호명 아래 주소 정보"
+    },
+    {
+      "field_id": "store_phone",
+      "name": "매장 전화번호",
+      "type": "phone",
+      "required": false,
+      "bbox": {
+        "x1": 50,
+        "y1": 160,
+        "x2": 526,
+        "y2": 190
+      },
+      "validation": {
+        "format": "^[0-9-]+$",
+        "max_length": 20
+      },
+      "extraction_hint": "매장 연락처 정보"
+    },
+    {
+      "field_id": "receipt_number",
+      "name": "영수증 번호",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 50,
+        "y1": 200,
+        "x2": 526,
+        "y2": 230
+      },
+      "validation": {
+        "regex": "^[A-Z0-9-]+$",
+        "max_length": 30,
+        "required": true
+      },
+      "extraction_hint": "'영수증번호' 또는 'Receipt No.' 라벨 근처"
+    },
+    {
+      "field_id": "transaction_date",
+      "name": "거래일시",
+      "type": "date",
+      "required": true,
+      "bbox": {
+        "x1": 50,
+        "y1": 240,
+        "x2": 300,
+        "y2": 270
+      },
+      "validation": {
+        "date_format": "%Y-%m-%d %H:%M:%S",
+        "required": true
+      },
+      "extraction_hint": "날짜와 시간 정보"
+    },
+    {
+      "field_id": "cashier_id",
+      "name": "계산원 ID",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 310,
+        "y1": 240,
+        "x2": 526,
+        "y2": 270
+      },
+      "validation": {
+        "max_length": 20
+      },
+      "extraction_hint": "'계산원' 또는 'Cashier' 라벨 근처"
+    },
+    {
+      "field_id": "pos_number",
+      "name": "POS 번호",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 50,
+        "y1": 280,
+        "x2": 200,
+        "y2": 310
+      },
+      "validation": {
+        "max_length": 10
+      },
+      "extraction_hint": "'POS' 또는 '단말기' 라벨 근처"
+    },
+    {
+      "field_id": "items_table",
+      "name": "구매 품목",
+      "type": "table",
+      "required": true,
+      "bbox": {
+        "x1": 50,
+        "y1": 350,
+        "x2": 526,
+        "y2": 650
+      },
+      "table_structure": {
+        "columns": [
+          {
+            "name": "상품명",
+            "type": "text"
+          },
+          {
+            "name": "수량",
+            "type": "number"
+          },
+          {
+            "name": "단가",
+            "type": "currency"
+          },
+          {
+            "name": "금액",
+            "type": "currency"
+          }
+        ]
+      },
+      "extraction_hint": "중앙 영역의 구매 품목 리스트"
+    },
+    {
+      "field_id": "subtotal",
+      "name": "소계",
+      "type": "currency",
+      "required": false,
+      "bbox": {
+        "x1": 350,
+        "y1": 680,
+        "x2": 526,
+        "y2": 710
+      },
+      "validation": {
+        "currency_code": "KRW",
+        "min_value": 0
+      },
+      "extraction_hint": "'소계' 또는 'Subtotal' 라벨 근처"
+    },
+    {
+      "field_id": "tax_amount",
+      "name": "부가세",
+      "type": "currency",
+      "required": false,
+      "bbox": {
+        "x1": 350,
+        "y1": 720,
+        "x2": 526,
+        "y2": 750
+      },
+      "validation": {
+        "currency_code": "KRW",
+        "min_value": 0
+      },
+      "extraction_hint": "'부가세' 또는 'VAT' 라벨 근처"
+    },
+    {
+      "field_id": "total_amount",
+      "name": "합계",
+      "type": "currency",
+      "required": true,
+      "bbox": {
+        "x1": 350,
+        "y1": 780,
+        "x2": 526,
+        "y2": 820
+      },
+      "validation": {
+        "currency_code": "KRW",
+        "min_value": 0,
+        "required": true
+      },
+      "extraction_hint": "'합계' 또는 'Total' 라벨 근처, 보통 굵은 글씨"
+    },
+    {
+      "field_id": "payment_method",
+      "name": "결제방법",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 50,
+        "y1": 850,
+        "x2": 300,
+        "y2": 880
+      },
+      "validation": {
+        "max_length": 30
+      },
+      "extraction_hint": "'현금', '카드', 'Cash', 'Card' 등의 결제 수단"
+    },
+    {
+      "field_id": "card_number",
+      "name": "카드번호",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 50,
+        "y1": 890,
+        "x2": 526,
+        "y2": 920
+      },
+      "validation": {
+        "regex": "^[*0-9]+$",
+        "max_length": 20
+      },
+      "extraction_hint": "마스킹된 카드번호 (****로 표시)"
+    },
+    {
+      "field_id": "approval_number",
+      "name": "승인번호",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 50,
+        "y1": 930,
+        "x2": 300,
+        "y2": 960
+      },
+      "validation": {
+        "regex": "^[A-Z0-9]+$",
+        "max_length": 20
+      },
+      "extraction_hint": "카드 결제 승인번호"
+    }
+  ],
+  "matching_rules": {
+    "key_indicators": [
+      {
+        "text": "영수증",
+        "weight": 0.3
+      },
+      {
+        "text": "RECEIPT",
+        "weight": 0.2
+      },
+      {
+        "text": "거래일시",
+        "weight": 0.2
+      },
+      {
+        "text": "합계",
+        "weight": 0.2
+      },
+      {
+        "text": "결제방법",
+        "weight": 0.1
+      }
+    ],
+    "layout_similarity_threshold": 0.7,
+    "text_similarity_threshold": 0.6
+  },
+  "preprocessing": {
+    "auto_rotate": true,
+    "denoise": true,
+    "enhance_contrast": true,
+    "deskew": true
+  },
+  "status": "active",
+  "usage_count": 0,
+  "accuracy_rate": 0.0,
+  "last_used": null
+}

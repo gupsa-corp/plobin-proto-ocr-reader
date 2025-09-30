@@ -1,0 +1,255 @@
+{
+  "template_id": "invoice_standard_001",
+  "name": "표준 송장 템플릿",
+  "description": "일반적인 B2B 송장 문서를 위한 기본 템플릿",
+  "document_type": "invoice",
+  "category": "financial_document",
+  "version": "1.0",
+  "created_at": "2025-10-01T10:00:00Z",
+  "updated_at": "2025-10-01T10:00:00Z",
+  "author": "system",
+  "language": "ko",
+  "confidence_threshold": 0.85,
+  "page_layout": {
+    "width": 1024,
+    "height": 1448,
+    "unit": "pixels",
+    "orientation": "portrait"
+  },
+  "fields": [
+    {
+      "field_id": "invoice_number",
+      "name": "송장번호",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 700,
+        "y1": 150,
+        "x2": 950,
+        "y2": 180
+      },
+      "validation": {
+        "regex": "^[A-Z0-9-]+$",
+        "max_length": 20,
+        "required": true
+      },
+      "extraction_hint": "페이지 상단 우측, 'Invoice No.' 또는 '송장번호' 라벨 근처"
+    },
+    {
+      "field_id": "invoice_date",
+      "name": "발행일자",
+      "type": "date",
+      "required": true,
+      "bbox": {
+        "x1": 700,
+        "y1": 200,
+        "x2": 950,
+        "y2": 230
+      },
+      "validation": {
+        "date_format": "%Y-%m-%d",
+        "required": true
+      },
+      "extraction_hint": "송장번호 아래, 날짜 형식"
+    },
+    {
+      "field_id": "vendor_name",
+      "name": "공급업체명",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 100,
+        "y1": 280,
+        "x2": 500,
+        "y2": 320
+      },
+      "validation": {
+        "max_length": 100,
+        "required": true
+      },
+      "extraction_hint": "페이지 상단 좌측, 회사명 영역"
+    },
+    {
+      "field_id": "vendor_address",
+      "name": "공급업체 주소",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 100,
+        "y1": 330,
+        "x2": 500,
+        "y2": 400
+      },
+      "validation": {
+        "max_length": 200
+      },
+      "extraction_hint": "공급업체명 아래 주소 영역"
+    },
+    {
+      "field_id": "customer_name",
+      "name": "고객명",
+      "type": "text",
+      "required": true,
+      "bbox": {
+        "x1": 100,
+        "y1": 450,
+        "x2": 500,
+        "y2": 480
+      },
+      "validation": {
+        "max_length": 100,
+        "required": true
+      },
+      "extraction_hint": "'Bill To:' 또는 '수신자' 라벨 근처"
+    },
+    {
+      "field_id": "customer_address",
+      "name": "고객 주소",
+      "type": "text",
+      "required": false,
+      "bbox": {
+        "x1": 100,
+        "y1": 490,
+        "x2": 500,
+        "y2": 560
+      },
+      "validation": {
+        "max_length": 200
+      },
+      "extraction_hint": "고객명 아래 주소 영역"
+    },
+    {
+      "field_id": "subtotal",
+      "name": "소계",
+      "type": "currency",
+      "required": false,
+      "bbox": {
+        "x1": 700,
+        "y1": 1100,
+        "x2": 900,
+        "y2": 1130
+      },
+      "validation": {
+        "currency_code": "KRW",
+        "min_value": 0
+      },
+      "extraction_hint": "총액 계산 영역, 'Subtotal' 라벨 근처"
+    },
+    {
+      "field_id": "tax_amount",
+      "name": "세액",
+      "type": "currency",
+      "required": false,
+      "bbox": {
+        "x1": 700,
+        "y1": 1140,
+        "x2": 900,
+        "y2": 1170
+      },
+      "validation": {
+        "currency_code": "KRW",
+        "min_value": 0
+      },
+      "extraction_hint": "세금 항목, 'Tax' 또는 'VAT' 라벨 근처"
+    },
+    {
+      "field_id": "total_amount",
+      "name": "총액",
+      "type": "currency",
+      "required": true,
+      "bbox": {
+        "x1": 700,
+        "y1": 1200,
+        "x2": 900,
+        "y2": 1240
+      },
+      "validation": {
+        "currency_code": "KRW",
+        "min_value": 0,
+        "required": true
+      },
+      "extraction_hint": "최종 총액, 'Total' 라벨 근처, 보통 굵은 글씨"
+    },
+    {
+      "field_id": "due_date",
+      "name": "결제기한",
+      "type": "date",
+      "required": false,
+      "bbox": {
+        "x1": 100,
+        "y1": 1200,
+        "x2": 300,
+        "y2": 1230
+      },
+      "validation": {
+        "date_format": "%Y-%m-%d"
+      },
+      "extraction_hint": "'Due Date' 또는 '결제기한' 라벨 근처"
+    },
+    {
+      "field_id": "line_items",
+      "name": "품목 리스트",
+      "type": "table",
+      "required": false,
+      "bbox": {
+        "x1": 100,
+        "y1": 600,
+        "x2": 900,
+        "y2": 1050
+      },
+      "table_structure": {
+        "columns": [
+          {
+            "name": "품목명",
+            "type": "text"
+          },
+          {
+            "name": "수량",
+            "type": "number"
+          },
+          {
+            "name": "단가",
+            "type": "currency"
+          },
+          {
+            "name": "금액",
+            "type": "currency"
+          }
+        ]
+      },
+      "extraction_hint": "중앙 영역의 표 형태 데이터"
+    }
+  ],
+  "matching_rules": {
+    "key_indicators": [
+      {
+        "text": "INVOICE",
+        "weight": 0.3
+      },
+      {
+        "text": "송장",
+        "weight": 0.3
+      },
+      {
+        "text": "청구서",
+        "weight": 0.2
+      },
+      {
+        "text": "Invoice No",
+        "weight": 0.2
+      }
+    ],
+    "layout_similarity_threshold": 0.75,
+    "text_similarity_threshold": 0.6
+  },
+  "preprocessing": {
+    "auto_rotate": true,
+    "denoise": true,
+    "enhance_contrast": true,
+    "deskew": true
+  },
+  "status": "active",
+  "usage_count": 0,
+  "accuracy_rate": 0.0,
+  "last_used": null
+}

@@ -1,0 +1,63 @@
+{
+  "categories": {
+    "financial_document": {
+      "name": "금융 문서",
+      "description": "송장, 영수증, 견적서 등",
+      "subcategories": ["invoice", "receipt", "quotation", "tax_document"]
+    },
+    "government_form": {
+      "name": "정부 양식",
+      "description": "각종 정부 신청서 및 양식",
+      "subcategories": ["tax_form", "registration", "permit", "certificate"]
+    },
+    "business_document": {
+      "name": "비즈니스 문서",
+      "description": "계약서, 제안서, 보고서 등",
+      "subcategories": ["contract", "proposal", "report", "memo"]
+    },
+    "medical_record": {
+      "name": "의료 기록",
+      "description": "처방전, 진료기록 등",
+      "subcategories": ["prescription", "medical_report", "test_result"]
+    },
+    "identity_document": {
+      "name": "신분 문서",
+      "description": "신분증, 여권, 면허증 등",
+      "subcategories": ["id_card", "passport", "license", "certificate"]
+    }
+  },
+  "field_types": {
+    "text": {
+      "description": "일반 텍스트",
+      "validation": ["max_length", "min_length", "regex"]
+    },
+    "number": {
+      "description": "숫자",
+      "validation": ["min_value", "max_value", "decimal_places"]
+    },
+    "currency": {
+      "description": "화폐",
+      "validation": ["currency_code", "min_value", "max_value"]
+    },
+    "date": {
+      "description": "날짜",
+      "validation": ["format", "min_date", "max_date"]
+    },
+    "email": {
+      "description": "이메일 주소",
+      "validation": ["domain_whitelist"]
+    },
+    "phone": {
+      "description": "전화번호",
+      "validation": ["country_code", "format"]
+    },
+    "table": {
+      "description": "테이블/표",
+      "validation": ["min_rows", "max_rows", "column_count"]
+    },
+    "checkbox": {
+      "description": "체크박스",
+      "validation": ["multiple_selection"]
+    }
+  }
+}

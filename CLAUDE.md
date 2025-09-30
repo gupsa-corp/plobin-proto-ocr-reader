@@ -51,6 +51,23 @@ PaddleOCR을 기반으로 한 문서 텍스트 추출 및 블록 분류 API 서�
 - `GET /output/{filename}/blocks/stats` - 블록 통계
 - `GET /output/{filename}/blocks/by_position` - 좌표 기반 블록 검색
 
+### 템플릿 관리 (신규)
+- `POST /templates` - 새 템플릿 생성
+- `GET /templates` - 템플릿 목록 조회 (필터링 지원)
+- `GET /templates/{template_id}` - 특정 템플릿 조회
+- `PUT /templates/{template_id}` - 템플릿 수정
+- `DELETE /templates/{template_id}` - 템플릿 삭제
+- `POST /templates/{template_id}/duplicate` - 템플릿 복제
+- `GET /templates/search` - 템플릿 검색
+- `GET /templates/statistics` - 템플릿 통계
+- `POST /templates/validate` - 템플릿 검증
+- `POST /templates/{template_id}/match` - 특정 템플릿으로 문서 처리
+- `POST /templates/auto-match` - 자동 템플릿 매칭으로 문서 처리
+- `GET /templates/{template_id}/preview` - 템플릿 시각화 미리보기
+- `POST /templates/{template_id}/validate-document` - 템플릿으로 문서 검증
+- `POST /templates/{template_id}/usage` - 템플릿 사용 횟수 증가
+- `POST /templates/{template_id}/accuracy` - 템플릿 정확도 업데이트
+
 ## 지원 파일 포맷
 - **이미지**: JPEG, PNG, BMP, TIFF, WEBP
 - **문서**: PDF
@@ -107,6 +124,14 @@ curl -X GET http://localhost:6003/requests/{request_id}/pages/1
 curl -X GET http://localhost:6003/requests/{request_id}/pages/1/blocks/1
 curl -X GET http://localhost:6003/requests/{request_id}/pages/1/visualization
 curl -X DELETE http://localhost:6003/requests/{request_id}
+
+# 템플릿 API 테스트
+curl -X GET http://localhost:6003/templates
+curl -X GET http://localhost:6003/templates/invoice_standard_001
+curl -X GET http://localhost:6003/templates/statistics
+curl -X GET "http://localhost:6003/templates/search?query=송장"
+curl -X POST -F "file=@demo/invoices/sample_invoice.pdf" http://localhost:6003/templates/invoice_standard_001/match
+curl -X POST -F "file=@demo/invoices/sample_invoice.pdf" http://localhost:6003/templates/auto-match
 ```
 
 ## 출력 파일 구조
@@ -168,8 +193,16 @@ output/
     - `rendering.py` - 바운딩 박스 렌더링
     - `legend.py` - 범례 생성
     - `export.py` - 시각화 내보내기
+  - `template/` - 템플릿 관리 도메인 (신규)
+    - `manager.py` - 템플릿 CRUD 관리
+    - `storage.py` - 템플릿 파일 저장/로드
+    - `validator.py` - 템플릿 유효성 검증
+    - `matcher.py` - 템플릿 매칭 알고리즘 (구현 예정)
+    - `generator.py` - 자동 템플릿 생성 (구현 예정)
+    - `visualization.py` - 템플릿 시각화 (구현 예정)
 - `api/endpoints/` - API 엔드포인트 모듈들
   - `requests.py` - 새로운 UUID 기반 요청 처리 API
+  - `templates.py` - 템플릿 관리 API (신규)
 - `api/models/` - Pydantic 스키마 모델들
 - `api/utils/` - 유틸리티 함수들
 - `test_api.py` - API 테스트 스크립트

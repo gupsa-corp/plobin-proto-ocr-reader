@@ -7,7 +7,7 @@ from services.ocr import DocumentBlockExtractor
 from services.pdf import PDFToImageProcessor
 
 # Import API modules
-from api.endpoints import root, process_image, process_pdf, output_list, output_stats, output_files, blocks, requests
+from api.endpoints import root, process_image, process_pdf, output_list, output_stats, output_files, blocks, requests, templates
 from api.utils import file_storage
 
 # Initialize FastAPI app
@@ -59,6 +59,7 @@ app.include_router(output_stats.router, tags=["Output Management"])
 app.include_router(output_files.router, tags=["Output Management"])
 app.include_router(blocks.router, tags=["Block Management"])
 app.include_router(requests.router, tags=["Request Management"])
+app.include_router(templates.router, tags=["Template Management"])
 
 if __name__ == "__main__":
     import uvicorn
