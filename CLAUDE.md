@@ -29,6 +29,8 @@ PaddleOCR을 기반으로 한 문서 텍스트 추출 및 블록 분류 API 서�
 - `GET /requests/{request_id}/pages/{page_number}` - 특정 페이지 결과 조회
 - `GET /requests/{request_id}/pages/{page_number}/blocks/{block_id}` - 특정 블록 데이터 조회
 - `GET /requests/{request_id}/pages/{page_number}/visualization` - 페이지 시각화 다운로드
+- `GET /requests/{request_id}/pages/{page_number}/original` - 페이지 원본 이미지 다운로드
+- `GET /requests/{request_id}/pages/{page_number}/blocks/{block_id}/image` - 블록 크롭 이미지 다운로드
 - `DELETE /requests/{request_id}` - 요청 삭제
 
 ### 서버 상태 및 결과 관리
@@ -114,7 +116,7 @@ curl -X DELETE http://localhost:6003/requests/{request_id}
 - **시각화 이미지**: 바운딩 박스가 표시된 원본 이미지
 - **자동 파일명**: `원본파일명_YYYYMMDD_HHMMSS_result.json/visualization.png`
 
-### 새로운 UUID 기반 구조
+### 새로운 UUID 기반 구조 (이미지 저장 포함)
 ```
 output/
 └── {UUID}/                          # 시간 기반 UUID (예: 01890a5d-ac96-774b-bcce-b302099a8057)
@@ -124,10 +126,13 @@ output/
         ├── 001/                     # 페이지별 폴더 (3자리 숫자)
         │   ├── page_info.json      # 페이지 메타데이터
         │   ├── result.json         # 페이지 OCR 결과
-        │   ├── visualization.png   # 페이지 시각화
+        │   ├── original.png        # 원본 페이지 이미지
+        │   ├── visualization.png   # 바운딩 박스 시각화
         │   └── blocks/             # 블록별 상세 데이터
-        │       ├── block_001.json
+        │       ├── block_001.json  # 블록 메타데이터
+        │       ├── block_001.png   # 크롭된 블록 이미지
         │       ├── block_002.json
+        │       ├── block_002.png
         │       └── ...
         ├── 002/
         └── ...

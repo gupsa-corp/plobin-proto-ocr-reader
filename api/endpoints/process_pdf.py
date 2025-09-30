@@ -9,6 +9,7 @@ from datetime import datetime
 from api.models.schemas import ProcessingResult, BlockInfo
 from services.file.request_manager import generate_request_metadata, create_request_structure, create_page_structure, create_block_file_path
 from services.file.storage import RequestStorage
+from services.ocr.extraction import crop_all_blocks
 
 router = APIRouter()
 
@@ -74,6 +75,20 @@ async def process_pdf(
 
                     # 페이지 결과 저장
                     storage.save_page_result(request_id, page_num, blocks, page_processing_time)
+
+                    # 원본 이미지 저장 (PDF에서 변환된 페이지 이미지)
+                    try:
+                        storage.save_original_image(request_id, page_num, image_path)
+                    except Exception as e:
+                        print(f"페이지 {page_num} 원본 이미지 저장 실패: {e}")
+
+                    # 블록별 이미지 크롭 및 저장
+                    if blocks:
+                        try:
+                            cropped_blocks = crop_all_blocks(image_path, blocks, padding=5)
+                            storage.save_block_images(request_id, page_num, cropped_blocks)
+                        except Exception as e:
+                            print(f"페이지 {page_num} 블록 이미지 저장 실패: {e}")
 
                     # 시각화 저장
                     if blocks:

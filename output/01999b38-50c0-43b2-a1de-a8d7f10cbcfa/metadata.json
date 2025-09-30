@@ -1,0 +1,12 @@
+{
+  "request_id": "01999b38-50c0-43b2-a1de-a8d7f10cbcfa",
+  "original_filename": "test_image.png",
+  "timestamp": "20251001_002303",
+  "created_at": "2025-10-01T00:23:03.232467",
+  "file_type": "image",
+  "file_size": 2856,
+  "total_pages": 1,
+  "processing_status": "completed",
+  "version": "1.0",
+  "completed_at": "2025-10-01T00:23:03.641450"
+}

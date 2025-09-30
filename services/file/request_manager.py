@@ -113,6 +113,7 @@ def create_page_structure(request_dir: Path, page_number: int) -> Dict[str, Path
         'blocks_dir': blocks_dir,
         'page_info_file': page_dir / 'page_info.json',
         'result_file': page_dir / 'result.json',
+        'original_image_file': page_dir / 'original.png',
         'visualization_file': page_dir / 'visualization.png'
     }
 

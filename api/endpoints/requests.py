@@ -374,3 +374,53 @@ async def delete_request(request_id: str) -> Dict[str, Any]:
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"요청 삭제 중 오류: {str(e)}")
+
+
+@router.get("/requests/{request_id}/pages/{page_number}/original", summary="페이지 원본 이미지 다운로드")
+async def get_page_original_image(request_id: str, page_number: int):
+    """페이지의 원본 이미지를 다운로드"""
+    if not validate_request_id(request_id):
+        raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
+
+    try:
+        from fastapi.responses import FileResponse
+
+        # 원본 이미지 파일 경로
+        original_file = request_storage.base_output_dir / request_id / "pages" / f"{page_number:03d}" / "original.png"
+
+        if not original_file.exists():
+            raise HTTPException(status_code=404, detail="원본 이미지를 찾을 수 없습니다")
+
+        return FileResponse(
+            path=str(original_file),
+            media_type="image/png",
+            filename=f"page_{page_number:03d}_original.png"
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"원본 이미지 다운로드 중 오류: {str(e)}")
+
+
+@router.get("/requests/{request_id}/pages/{page_number}/blocks/{block_id}/image", summary="블록 이미지 다운로드")
+async def get_block_image(request_id: str, page_number: int, block_id: int):
+    """개별 블록의 크롭된 이미지를 다운로드"""
+    if not validate_request_id(request_id):
+        raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
+
+    try:
+        from fastapi.responses import FileResponse
+
+        # 블록 이미지 파일 경로
+        block_image_file = request_storage.base_output_dir / request_id / "pages" / f"{page_number:03d}" / "blocks" / f"block_{block_id:03d}.png"
+
+        if not block_image_file.exists():
+            raise HTTPException(status_code=404, detail="블록 이미지를 찾을 수 없습니다")
+
+        return FileResponse(
+            path=str(block_image_file),
+            media_type="image/png",
+            filename=f"page_{page_number:03d}_block_{block_id:03d}.png"
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"블록 이미지 다운로드 중 오류: {str(e)}")

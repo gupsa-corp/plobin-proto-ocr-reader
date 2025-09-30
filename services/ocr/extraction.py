@@ -6,7 +6,7 @@ Extract text blocks from images using OCR
 import os
 import cv2
 import numpy as np
-from typing import Dict
+from typing import Dict, List, Tuple
 from .merging import merge_adjacent_blocks
 
 
@@ -98,4 +98,60 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
     }
 
 
-__all__ = ['extract_blocks']
+def crop_block_image(image_path: str, bbox: Dict, padding: int = 5) -> np.ndarray:
+    """
+    이미지에서 특정 블록 영역을 크롭
+
+    Args:
+        image_path: 원본 이미지 경로
+        bbox: 바운딩 박스 정보 {'x_min', 'y_min', 'x_max', 'y_max'}
+        padding: 크롭 시 추가할 패딩 (픽셀)
+
+    Returns:
+        크롭된 이미지 (numpy 배열)
+    """
+    # 이미지 읽기
+    image = cv2.imread(image_path)
+    if image is None:
+        raise ValueError(f"이미지를 읽을 수 없습니다: {image_path}")
+
+    height, width = image.shape[:2]
+
+    # 패딩을 포함한 크롭 영역 계산
+    x_min = max(0, bbox['x_min'] - padding)
+    y_min = max(0, bbox['y_min'] - padding)
+    x_max = min(width, bbox['x_max'] + padding)
+    y_max = min(height, bbox['y_max'] + padding)
+
+    # 크롭 실행
+    cropped_image = image[y_min:y_max, x_min:x_max]
+
+    return cropped_image
+
+
+def crop_all_blocks(image_path: str, blocks: List[Dict], padding: int = 5) -> List[Tuple[int, np.ndarray]]:
+    """
+    모든 블록 이미지를 크롭
+
+    Args:
+        image_path: 원본 이미지 경로
+        blocks: 블록 정보 리스트
+        padding: 크롭 시 추가할 패딩
+
+    Returns:
+        (블록_id, 크롭된_이미지) 튜플 리스트
+    """
+    cropped_blocks = []
+
+    for block in blocks:
+        try:
+            cropped_image = crop_block_image(image_path, block['bbox'], padding)
+            cropped_blocks.append((block['id'], cropped_image))
+        except Exception as e:
+            print(f"블록 {block['id']} 크롭 실패: {e}")
+            continue
+
+    return cropped_blocks
+
+
+__all__ = ['extract_blocks', 'crop_block_image', 'crop_all_blocks']

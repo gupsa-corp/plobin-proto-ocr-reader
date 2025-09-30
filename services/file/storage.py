@@ -4,8 +4,10 @@ File storage services for OCR results
 """
 
 import json
+import cv2
+import numpy as np
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from .request_manager import (
     create_request_structure,
     create_page_structure,
@@ -93,7 +95,7 @@ class RequestStorage:
 
     def save_page_result(self, request_id: str, page_number: int,
                         blocks: List[Dict[str, Any]], processing_time: float,
-                        visualization_data: bytes = None) -> Dict[str, str]:
+                        visualization_data: bytes = None, original_image_data: bytes = None) -> Dict[str, str]:
         """
         페이지 OCR 결과 저장
 
@@ -103,6 +105,7 @@ class RequestStorage:
             blocks: 블록 데이터 리스트
             processing_time: 처리 시간
             visualization_data: 시각화 이미지 데이터
+            original_image_data: 원본 페이지 이미지 데이터
 
         Returns:
             저장된 파일 경로들
@@ -146,6 +149,11 @@ class RequestStorage:
             block_file = create_block_file_path(page_paths['blocks_dir'], i + 1)
             save_metadata(block_metadata, block_file)
 
+        # 원본 이미지 저장
+        if original_image_data:
+            with open(page_paths['original_image_file'], 'wb') as f:
+                f.write(original_image_data)
+
         # 시각화 저장
         if visualization_data:
             with open(page_paths['visualization_file'], 'wb') as f:
@@ -154,6 +162,7 @@ class RequestStorage:
         return {
             'page_info': str(page_paths['page_info_file']),
             'result': str(page_paths['result_file']),
+            'original_image': str(page_paths['original_image_file']) if original_image_data else None,
             'visualization': str(page_paths['visualization_file']) if visualization_data else None,
             'blocks_dir': str(page_paths['blocks_dir'])
         }
@@ -223,6 +232,91 @@ class RequestStorage:
         blocks_dir = self.base_output_dir / request_id / "pages" / f"{page_number:03d}" / 'blocks'
         block_file = create_block_file_path(blocks_dir, block_id)
         return load_metadata(block_file)
+
+    def save_block_images(self, request_id: str, page_number: int,
+                         block_images: List[tuple]) -> Dict[str, str]:
+        """
+        블록 이미지들을 저장
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+            block_images: (블록_id, 이미지_데이터) 튜플 리스트
+
+        Returns:
+            저장된 블록 이미지 경로들
+        """
+        request_dir = self.base_output_dir / request_id
+        if not request_dir.exists():
+            raise ValueError(f"요청 ID를 찾을 수 없습니다: {request_id}")
+
+        blocks_dir = request_dir / "pages" / f"{page_number:03d}" / "blocks"
+        if not blocks_dir.exists():
+            raise ValueError(f"블록 디렉토리를 찾을 수 없습니다: {blocks_dir}")
+
+        saved_paths = {}
+
+        for block_id, image_data in block_images:
+            try:
+                # 블록 이미지 파일 경로
+                image_file = blocks_dir / f"block_{block_id + 1:03d}.png"
+
+                # numpy 배열인 경우 PNG로 저장
+                if isinstance(image_data, np.ndarray):
+                    cv2.imwrite(str(image_file), image_data)
+                # bytes 데이터인 경우 직접 저장
+                elif isinstance(image_data, bytes):
+                    with open(image_file, 'wb') as f:
+                        f.write(image_data)
+                else:
+                    print(f"지원되지 않는 이미지 데이터 타입: {type(image_data)}")
+                    continue
+
+                saved_paths[f"block_{block_id + 1:03d}"] = str(image_file)
+
+            except Exception as e:
+                print(f"블록 {block_id} 이미지 저장 실패: {e}")
+                continue
+
+        return saved_paths
+
+    def save_original_image(self, request_id: str, page_number: int, image_path: str) -> Optional[str]:
+        """
+        원본 이미지를 요청 디렉토리에 복사 저장
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+            image_path: 원본 이미지 경로
+
+        Returns:
+            저장된 이미지 경로
+        """
+        request_dir = self.base_output_dir / request_id
+        if not request_dir.exists():
+            raise ValueError(f"요청 ID를 찾을 수 없습니다: {request_id}")
+
+        page_dir = request_dir / "pages" / f"{page_number:03d}"
+        if not page_dir.exists():
+            raise ValueError(f"페이지 디렉토리를 찾을 수 없습니다: {page_dir}")
+
+        try:
+            # 원본 이미지 읽기
+            image = cv2.imread(image_path)
+            if image is None:
+                raise ValueError(f"이미지를 읽을 수 없습니다: {image_path}")
+
+            # 저장 경로
+            original_file = page_dir / "original.png"
+
+            # 이미지 저장
+            cv2.imwrite(str(original_file), image)
+
+            return str(original_file)
+
+        except Exception as e:
+            print(f"원본 이미지 저장 실패: {e}")
+            return None
 
 
 __all__ = ['save_result', 'load_result', 'RequestStorage']
