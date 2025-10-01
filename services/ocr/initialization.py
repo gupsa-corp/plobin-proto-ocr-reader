@@ -6,21 +6,31 @@ OCR initialization service
 from paddleocr import PaddleOCR
 
 
-def initialize_ocr(use_gpu: bool = True, lang: str = 'korean'):
+def initialize_ocr(use_gpu: bool = True, lang: str = 'korean', enable_layout_analysis: bool = True):
     """
-    PaddleOCR 초기화
+    PaddleOCR 초기화 (표 인식 및 레이아웃 분석 기능 포함)
 
     Args:
         use_gpu: GPU 사용 여부 (RTX 3090 활용)
         lang: 인식 언어 ('korean', 'en', 'ch' 등)
+        enable_layout_analysis: 레이아웃 분석 및 표 인식 활성화
 
     Returns:
         초기화된 PaddleOCR 인스턴스
     """
     try:
-        # 먼저 기본 설정으로 시도
-        ocr = PaddleOCR(lang=lang)
-        print(f"PaddleOCR 초기화 완료 - 언어: {lang}")
+        # 고급 설정으로 초기화 (표 인식 및 레이아웃 분석 포함)
+        if enable_layout_analysis:
+            ocr = PaddleOCR(
+                lang=lang,
+                use_angle_cls=True,    # 텍스트 방향 분류 활성화
+                show_log=False         # 로그 출력 최소화
+            )
+            print(f"PaddleOCR 초기화 완료 - 언어: {lang}, 레이아웃 분석: 활성화")
+        else:
+            # 기본 설정
+            ocr = PaddleOCR(lang=lang, show_log=False)
+            print(f"PaddleOCR 초기화 완료 - 언어: {lang}, 기본 모드")
 
         # GPU 사용 여부는 PaddlePaddle 환경에 따라 자동 결정됨
         if use_gpu:

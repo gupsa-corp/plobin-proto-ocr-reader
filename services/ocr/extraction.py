@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Extract text blocks from images using OCR
+Extract text blocks from images using OCR with enhanced table recognition
 """
 
 import os
 import cv2
 import numpy as np
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from .merging import merge_adjacent_blocks
+from .table_recognition import create_table_recognizer
 
 
 def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True, merge_threshold: int = 30) -> Dict:
@@ -96,6 +97,161 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
             'merge_threshold': merge_threshold
         }
     }
+
+
+def extract_blocks_with_layout_analysis(ocr_instance, image_path: str, confidence_threshold: float = 0.5,
+                                        merge_blocks: bool = True, merge_threshold: int = 30,
+                                        enable_table_recognition: bool = True) -> Dict:
+    """
+    레이아웃 분석 및 표 인식을 포함한 향상된 블록 추출
+
+    Args:
+        ocr_instance: PaddleOCR 인스턴스
+        image_path: 이미지 파일 경로
+        confidence_threshold: 신뢰도 임계값
+        merge_blocks: 블록 병합 여부
+        merge_threshold: 병합 임계값
+        enable_table_recognition: 표 인식 활성화 여부
+
+    Returns:
+        레이아웃 분석 결과가 포함된 블록 정보 딕셔너리
+    """
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"이미지 파일을 찾을 수 없습니다: {image_path}")
+
+    # 기본 OCR 블록 추출
+    basic_result = extract_blocks(ocr_instance, image_path, confidence_threshold,
+                                 merge_blocks, merge_threshold)
+
+    blocks = basic_result['blocks']
+    layout_info = {'tables': [], 'layout_elements': {}}
+
+    # 표 인식 수행 (선택적)
+    if enable_table_recognition:
+        try:
+            print("표 인식 및 레이아웃 분석 수행 중...")
+
+            # 표 인식기 생성
+            table_recognizer = create_table_recognizer(lang='korean', use_gpu=False)
+
+            # 표 감지
+            detected_tables = table_recognizer.detect_tables(image_path)
+            layout_analysis = table_recognizer.analyze_layout(image_path)
+
+            # 표 정보 추가
+            layout_info['tables'] = detected_tables
+            layout_info['layout_elements'] = layout_analysis.get('layout_elements', {})
+            layout_info['layout_summary'] = layout_analysis.get('summary', {})
+
+            # 기존 블록들의 타입을 레이아웃 분석 결과로 업데이트
+            blocks = _enhance_blocks_with_layout_info(blocks, layout_analysis)
+
+            print(f"표 {len(detected_tables)}개 감지됨")
+
+        except Exception as e:
+            print(f"표 인식 중 오류 (기본 OCR로 계속): {e}")
+
+    return {
+        'metadata': {
+            'image_path': image_path,
+            'total_blocks': len(blocks),
+            'tables_detected': len(layout_info.get('tables', [])),
+            'layout_analysis_enabled': enable_table_recognition
+        },
+        'blocks': blocks,
+        'layout_info': layout_info,
+        'processing_info': {
+            'confidence_threshold': confidence_threshold,
+            'language': 'korean',
+            'merge_blocks': merge_blocks,
+            'merge_threshold': merge_threshold,
+            'table_recognition': enable_table_recognition
+        }
+    }
+
+
+def _enhance_blocks_with_layout_info(blocks: List[Dict], layout_analysis: Dict) -> List[Dict]:
+    """
+    레이아웃 분석 결과를 사용해 블록 타입을 향상
+
+    Args:
+        blocks: 기존 블록 리스트
+        layout_analysis: 레이아웃 분석 결과
+
+    Returns:
+        타입이 향상된 블록 리스트
+    """
+    try:
+        layout_elements = layout_analysis.get('layout_elements', {})
+
+        for block in blocks:
+            block_bbox = block.get('bbox', {})
+            block_center = (
+                (block_bbox.get('x_min', 0) + block_bbox.get('x_max', 0)) / 2,
+                (block_bbox.get('y_min', 0) + block_bbox.get('y_max', 0)) / 2
+            )
+
+            # 각 레이아웃 요소와 비교하여 타입 결정
+            best_match_type = 'other'
+            best_overlap = 0
+
+            for element_type, elements in layout_elements.items():
+                if element_type == 'tables':
+                    element_type_name = 'table'
+                elif element_type == 'titles':
+                    element_type_name = 'title'
+                elif element_type == 'paragraphs':
+                    element_type_name = 'paragraph'
+                else:
+                    element_type_name = 'other'
+
+                for element in elements:
+                    element_bbox = element.get('bbox', [])
+                    if len(element_bbox) >= 4:
+                        # 겹침 정도 계산
+                        overlap = _calculate_overlap_ratio(
+                            [block_bbox.get('x_min', 0), block_bbox.get('y_min', 0),
+                             block_bbox.get('x_max', 0), block_bbox.get('y_max', 0)],
+                            element_bbox
+                        )
+
+                        if overlap > best_overlap:
+                            best_overlap = overlap
+                            best_match_type = element_type_name
+
+            # 일정 겹침 비율 이상일 때만 타입 업데이트
+            if best_overlap > 0.3:
+                block['type'] = best_match_type
+                block['layout_confidence'] = best_overlap
+
+    except Exception as e:
+        print(f"블록 타입 향상 중 오류: {e}")
+
+    return blocks
+
+
+def _calculate_overlap_ratio(bbox1: List[float], bbox2: List[float]) -> float:
+    """두 바운딩 박스의 겹침 비율 계산"""
+    try:
+        x1_min, y1_min, x1_max, y1_max = bbox1
+        x2_min, y2_min, x2_max, y2_max = bbox2
+
+        # 겹치는 영역 계산
+        overlap_x_min = max(x1_min, x2_min)
+        overlap_y_min = max(y1_min, y2_min)
+        overlap_x_max = min(x1_max, x2_max)
+        overlap_y_max = min(y1_max, y2_max)
+
+        if overlap_x_min >= overlap_x_max or overlap_y_min >= overlap_y_max:
+            return 0.0
+
+        overlap_area = (overlap_x_max - overlap_x_min) * (overlap_y_max - overlap_y_min)
+        bbox1_area = (x1_max - x1_min) * (y1_max - y1_min)
+
+        return overlap_area / bbox1_area if bbox1_area > 0 else 0.0
+
+    except Exception:
+        return 0.0
 
 
 def crop_block_image(image_path: str, bbox: Dict, padding: int = 5) -> np.ndarray:
