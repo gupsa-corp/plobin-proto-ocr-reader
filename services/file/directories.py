@@ -124,13 +124,18 @@ def list_page_directories(base_output_dir: str, request_id: str) -> List[int]:
     if not request_path.exists():
         return []
 
+    # pages 하위 디렉토리에서 3자리 숫자 디렉토리 찾기
+    pages_path = request_path / "pages"
+    if not pages_path.exists():
+        return []
+
     page_numbers = []
-    for item in request_path.iterdir():
-        if item.is_dir() and item.name.startswith('page_'):
+    for item in pages_path.iterdir():
+        if item.is_dir() and item.name.isdigit() and len(item.name) == 3:
             try:
-                page_num = int(item.name.split('_')[1])
+                page_num = int(item.name)
                 page_numbers.append(page_num)
-            except (IndexError, ValueError):
+            except ValueError:
                 continue
 
     return sorted(page_numbers)

@@ -3,7 +3,7 @@
 Request-based API endpoints for OCR processing
 """
 
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Query
 from fastapi.responses import JSONResponse, FileResponse
 from pathlib import Path
 from typing import Dict, Any, List, Optional
@@ -294,13 +294,20 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
         raise Exception(f"PDF 처리 중 오류: {str(e)}")
 
 
-@router.get("/requests", summary="UUID v7 요청 목록 조회 (시간순 정렬)")
-async def list_requests() -> Dict[str, Any]:
+@router.get("/requests", summary="UUID v7 요청 목록 조회 (페이지네이션 지원)")
+async def list_requests(
+    page: int = Query(1, ge=1, description="페이지 번호 (1부터 시작)"),
+    limit: int = Query(20, ge=1, le=100, description="페이지당 항목 수 (1-100)"),
+    search: Optional[str] = Query(None, description="파일명 검색어"),
+    file_type: Optional[str] = Query(None, description="파일 타입 필터 (pdf, jpg, png 등)")
+) -> Dict[str, Any]:
     """
-    모든 UUID v7 요청 목록을 시간순으로 조회
+    UUID v7 요청 목록을 페이지네이션과 검색 기능과 함께 조회
 
     - UUID v7의 자연 정렬 특성을 활용한 시간순 정렬
-    - 각 요청의 기본 메타데이터 포함
+    - 페이지네이션 지원 (page, limit 파라미터)
+    - 파일명 검색 기능 (search 파라미터)
+    - 파일 타입 필터링 (file_type 파라미터)
     - 최신 요청부터 내림차순 정렬
     """
     try:
@@ -318,21 +325,47 @@ async def list_requests() -> Dict[str, Any]:
                 # 메타데이터의 created_at을 fallback으로 사용
                 created_at = extracted_timestamp.isoformat() if extracted_timestamp else metadata.get('created_at')
 
+                # 파일명과 타입 정보 가져오기
+                original_filename = metadata.get('original_filename', '')
+                file_type_meta = metadata.get('file_type', '')
+
+                # 검색 필터링
+                if search and search.lower() not in original_filename.lower():
+                    continue
+
+                # 파일 타입 필터링
+                if file_type and file_type.lower() != file_type_meta.lower():
+                    continue
+
                 requests_info.append({
                     "request_id": request_id,
-                    "original_filename": metadata.get('original_filename'),
-                    "file_type": metadata.get('file_type'),
+                    "original_filename": original_filename,
+                    "file_type": file_type_meta,
                     "total_pages": metadata.get('total_pages', 1),
                     "status": metadata.get('processing_status'),
                     "created_at": created_at,
-                    # timestamp 필드 제거 - created_at으로 통일
                 })
             except Exception:
                 continue
 
+        # 전체 개수 (필터링 후)
+        total_requests = len(requests_info)
+
+        # 페이지네이션 적용
+        start = (page - 1) * limit
+        end = start + limit
+        paginated_requests = requests_info[start:end]
+
         return {
-            "total_requests": len(requests_info),
-            "requests": requests_info
+            "requests": paginated_requests,
+            "pagination": {
+                "page": page,
+                "limit": limit,
+                "total": total_requests,
+                "total_pages": (total_requests + limit - 1) // limit,
+                "has_next": end < total_requests,
+                "has_prev": page > 1
+            }
         }
 
     except Exception as e:
@@ -694,3 +727,272 @@ async def regenerate_page_visualization(request_id: str, page_number: int) -> Di
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"시각화 재생성 중 오류: {str(e)}")
+
+
+@router.get("/requests/{request_id}/pages/{page_number}/metadata", summary="페이지 이미지 메타데이터 조회")
+async def get_page_metadata(request_id: str, page_number: int) -> Dict[str, Any]:
+    """
+    페이지 이미지의 메타데이터 정보 조회
+
+    이미지 뷰어 구현에 필요한 기본 정보들을 제공합니다:
+    - 이미지 크기 (width, height)
+    - 파일 크기
+    - 이미지 포맷
+    """
+    if not validate_request_id(request_id):
+        raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
+
+    try:
+        # 원본 이미지 파일 경로
+        original_file = request_storage.base_output_dir / request_id / "pages" / f"{page_number:03d}" / "original.png"
+
+        if not original_file.exists():
+            raise HTTPException(status_code=404, detail="원본 이미지를 찾을 수 없습니다")
+
+        # 이미지 메타데이터 추출
+        import cv2
+        import numpy as np
+
+        image = cv2.imread(str(original_file))
+        if image is None:
+            raise HTTPException(status_code=500, detail="이미지를 읽을 수 없습니다")
+
+        height, width = image.shape[:2]
+        channels = image.shape[2] if len(image.shape) == 3 else 1
+
+        # 파일 크기
+        file_size = original_file.stat().st_size
+
+        # 이미지 통계 정보
+        file_stat = original_file.stat()
+
+        return {
+            "request_id": request_id,
+            "page_number": page_number,
+            "image_metadata": {
+                "width": int(width),
+                "height": int(height),
+                "channels": int(channels),
+                "format": "PNG",
+                "file_size": file_size,
+                "file_size_mb": round(file_size / 1024 / 1024, 2),
+                "aspect_ratio": round(width / height, 3),
+                "resolution": f"{width}x{height}",
+                "megapixels": round(width * height / 1000000, 2)
+            },
+            "file_info": {
+                "created_at": file_stat.st_ctime,
+                "modified_at": file_stat.st_mtime,
+                "file_path": str(original_file.relative_to(request_storage.base_output_dir))
+            }
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"메타데이터 조회 중 오류: {str(e)}")
+
+
+@router.get("/requests/{request_id}/pages/{page_number}/thumbnail", summary="페이지 썸네일 이미지 조회")
+async def get_page_thumbnail(
+    request_id: str,
+    page_number: int,
+    size: int = Query(300, ge=50, le=800, description="썸네일 크기 (픽셀)")
+):
+    """
+    페이지의 썸네일 이미지를 조회합니다
+
+    썸네일이 존재하지 않으면 자동으로 생성합니다.
+    """
+    if not validate_request_id(request_id):
+        raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
+
+    try:
+        # 썸네일 파일 경로
+        thumbnail_dir = request_storage.base_output_dir / request_id / "pages" / f"{page_number:03d}" / "thumbnails"
+        thumbnail_file = thumbnail_dir / f"thumb_{size}.png"
+
+        # 썸네일이 이미 존재하면 반환
+        if thumbnail_file.exists():
+            return FileResponse(
+                path=str(thumbnail_file),
+                media_type="image/png",
+                filename=f"page_{page_number}_thumb_{size}.png"
+            )
+
+        # 썸네일이 없으면 생성
+        original_file = request_storage.base_output_dir / request_id / "pages" / f"{page_number:03d}" / "original.png"
+
+        if not original_file.exists():
+            raise HTTPException(status_code=404, detail="원본 이미지를 찾을 수 없습니다")
+
+        # 썸네일 디렉토리 생성
+        thumbnail_dir.mkdir(exist_ok=True)
+
+        # PIL로 썸네일 생성
+        from PIL import Image
+
+        with Image.open(original_file) as img:
+            # 비율 유지하면서 리사이즈
+            img.thumbnail((size, size), Image.Resampling.LANCZOS)
+
+            # PNG로 저장
+            img.save(thumbnail_file, "PNG", optimize=True)
+
+        return FileResponse(
+            path=str(thumbnail_file),
+            media_type="image/png",
+            filename=f"page_{page_number}_thumb_{size}.png"
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"썸네일 생성 중 오류: {str(e)}")
+
+
+@router.post("/requests/{request_id}/generate-thumbnails", summary="요청의 모든 페이지 썸네일 일괄 생성")
+async def generate_all_thumbnails(
+    request_id: str,
+    size: int = Query(300, ge=50, le=800, description="썸네일 크기 (픽셀)")
+) -> Dict[str, Any]:
+    """
+    요청의 모든 페이지에 대해 썸네일을 일괄 생성합니다
+    """
+    if not validate_request_id(request_id):
+        raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
+
+    try:
+        # 페이지 목록 가져오기
+        page_numbers = list_page_directories(str(request_storage.base_output_dir), request_id)
+
+        generated = []
+        failed = []
+
+        for page_num in page_numbers:
+            try:
+                # 각 페이지의 썸네일 생성
+                original_file = request_storage.base_output_dir / request_id / "pages" / f"{page_num:03d}" / "original.png"
+
+                if original_file.exists():
+                    thumbnail_dir = request_storage.base_output_dir / request_id / "pages" / f"{page_num:03d}" / "thumbnails"
+                    thumbnail_file = thumbnail_dir / f"thumb_{size}.png"
+
+                    # 이미 존재하지 않을 때만 생성
+                    if not thumbnail_file.exists():
+                        thumbnail_dir.mkdir(exist_ok=True)
+
+                        from PIL import Image
+                        with Image.open(original_file) as img:
+                            img.thumbnail((size, size), Image.Resampling.LANCZOS)
+                            img.save(thumbnail_file, "PNG", optimize=True)
+
+                    generated.append(page_num)
+                else:
+                    failed.append({"page": page_num, "reason": "원본 이미지 없음"})
+
+            except Exception as e:
+                failed.append({"page": page_num, "reason": str(e)})
+
+        return {
+            "request_id": request_id,
+            "thumbnail_size": size,
+            "total_pages": len(page_numbers),
+            "generated_count": len(generated),
+            "failed_count": len(failed),
+            "generated_pages": generated,
+            "failed_pages": failed
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"썸네일 일괄 생성 중 오류: {str(e)}")
+
+
+@router.get("/search/blocks", summary="전체 블록 텍스트 검색")
+async def search_blocks(
+    q: str = Query(..., min_length=2, description="검색어 (최소 2자)"),
+    request_id: Optional[str] = Query(None, description="특정 요청 내에서만 검색"),
+    limit: int = Query(50, ge=1, le=200, description="최대 결과 수")
+) -> Dict[str, Any]:
+    """
+    모든 블록의 텍스트에서 검색합니다
+
+    - 전체 요청에서 검색하거나 특정 요청 내에서만 검색 가능
+    - 대소문자 구분 없이 검색
+    - 검색어가 포함된 블록의 상세 정보 반환
+    """
+    try:
+        results = []
+        search_term = q.lower()
+
+        # 검색 대상 요청 목록 결정
+        if request_id:
+            if not validate_request_id(request_id):
+                raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
+            request_ids = [request_id]
+        else:
+            request_ids = list_request_directories(str(request_storage.base_output_dir))
+
+        # 각 요청의 모든 페이지에서 검색
+        for rid in request_ids:
+            try:
+                page_numbers = list_page_directories(str(request_storage.base_output_dir), rid)
+
+                for page_num in page_numbers:
+                    try:
+                        # 페이지 결과 로드
+                        page_data = request_storage.get_page_result(rid, page_num)
+                        blocks = page_data.get('blocks', [])
+
+                        for i, block in enumerate(blocks):
+                            block_text = block.get('text', '').lower()
+
+                            if search_term in block_text:
+                                # 검색어 하이라이트
+                                original_text = block.get('text', '')
+                                highlighted_text = original_text.replace(
+                                    q, f"**{q}**"
+                                ) if q in original_text else original_text
+
+                                results.append({
+                                    "request_id": rid,
+                                    "page_number": page_num,
+                                    "block_index": i + 1,
+                                    "text": original_text,
+                                    "highlighted_text": highlighted_text,
+                                    "confidence": block.get('confidence', 0),
+                                    "block_type": block.get('block_type', 'text'),
+                                    "bbox": block.get('bbox', {}),
+                                    "match_position": block_text.find(search_term)
+                                })
+
+                                # 제한 수에 도달하면 중단
+                                if len(results) >= limit:
+                                    break
+
+                    except Exception:
+                        continue
+
+                    if len(results) >= limit:
+                        break
+
+            except Exception:
+                continue
+
+            if len(results) >= limit:
+                break
+
+        # 신뢰도 순으로 정렬
+        results.sort(key=lambda x: x['confidence'], reverse=True)
+
+        return {
+            "query": q,
+            "total_results": len(results),
+            "limit": limit,
+            "results": results[:limit]
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"블록 검색 중 오류: {str(e)}")
