@@ -34,7 +34,7 @@ def set_processing_dependencies(doc_extractor, pdf_proc):
     pdf_processor = pdf_proc
 
 
-@router.post("/process-request", summary="새로운 요청 기반 문서 처리")
+@router.post("/process-request", summary="UUID 기반 문서 처리 요청 생성")
 async def process_request(
     file: UploadFile = File(...),
     description: Optional[str] = Form(None),
@@ -42,9 +42,12 @@ async def process_request(
     merge_threshold: Optional[int] = Form(30)
 ) -> Dict[str, Any]:
     """
-    새로운 요청 기반 문서 처리
+    UUID v7 기반 문서 처리 요청 생성
 
-    파일을 업로드하고 UUID 기반 요청으로 처리합니다.
+    - 파일 업로드 및 시간 기반 UUID v7 생성
+    - 이미지/PDF 파일의 OCR 처리
+    - 계층적 디렉토리 구조로 결과 저장
+    - 블록별 개별 접근 가능한 구조 생성
     """
     import tempfile
     import shutil
@@ -291,17 +294,29 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
         raise Exception(f"PDF 처리 중 오류: {str(e)}")
 
 
-@router.get("/requests", summary="모든 요청 목록 조회")
+@router.get("/requests", summary="UUID v7 요청 목록 조회 (시간순 정렬)")
 async def list_requests() -> Dict[str, Any]:
-    """모든 요청 목록을 시간순으로 조회"""
+    """
+    모든 UUID v7 요청 목록을 시간순으로 조회
+
+    - UUID v7의 자연 정렬 특성을 활용한 시간순 정렬
+    - 각 요청의 기본 메타데이터 포함
+    - 최신 요청부터 내림차순 정렬
+    """
     try:
         request_ids = list_request_directories(str(request_storage.base_output_dir))
+
+        # UUID v7의 자연 정렬 특성 활용 (시간순 정렬)
+        request_ids.sort(reverse=True)  # 최신 순으로 정렬
 
         requests_info = []
         for request_id in request_ids:
             try:
                 metadata = request_storage.get_request_metadata(request_id)
-                timestamp = extract_timestamp_from_uuid(request_id)
+                # UUID v7에서 타임스탬프 추출 (primary source)
+                extracted_timestamp = extract_timestamp_from_uuid(request_id)
+                # 메타데이터의 created_at을 fallback으로 사용
+                created_at = extracted_timestamp.isoformat() if extracted_timestamp else metadata.get('created_at')
 
                 requests_info.append({
                     "request_id": request_id,
@@ -309,8 +324,8 @@ async def list_requests() -> Dict[str, Any]:
                     "file_type": metadata.get('file_type'),
                     "total_pages": metadata.get('total_pages', 1),
                     "status": metadata.get('processing_status'),
-                    "created_at": metadata.get('created_at'),
-                    "timestamp": timestamp.isoformat() if timestamp else None
+                    "created_at": created_at,
+                    # timestamp 필드 제거 - created_at으로 통일
                 })
             except Exception:
                 continue
@@ -324,9 +339,15 @@ async def list_requests() -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"요청 목록 조회 중 오류: {str(e)}")
 
 
-@router.get("/requests/{request_id}", summary="특정 요청 정보 조회")
+@router.get("/requests/{request_id}", summary="UUID v7 요청 상세 정보 조회")
 async def get_request_info(request_id: str) -> Dict[str, Any]:
-    """특정 요청의 상세 정보 조회"""
+    """
+    특정 UUID v7 요청의 상세 정보 조회
+
+    - UUID v7에서 타임스탬프 자동 추출
+    - 모든 페이지 요약 정보 포함
+    - 처리 상태 및 메타데이터 제공
+    """
     if not validate_request_id(request_id):
         raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
 
@@ -349,10 +370,20 @@ async def get_request_info(request_id: str) -> Dict[str, Any]:
             except Exception:
                 continue
 
+        # UUID v7에서 타임스탬프 추출하여 통합 응답 구조 생성
+        extracted_timestamp = extract_timestamp_from_uuid(request_id)
+        created_at = extracted_timestamp.isoformat() if extracted_timestamp else metadata.get('created_at')
+
         return {
             "request_id": request_id,
-            "metadata": metadata,
+            "original_filename": metadata.get('original_filename'),
+            "file_type": metadata.get('file_type'),
+            "file_size": metadata.get('file_size'),
+            "status": metadata.get('processing_status'),
+            "created_at": created_at,
+            "completed_at": metadata.get('completed_at'),
             "total_pages": len(pages_info),
+            "total_processing_time": metadata.get('total_processing_time'),
             "pages": pages_info
         }
 
@@ -362,9 +393,15 @@ async def get_request_info(request_id: str) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"요청 정보 조회 중 오류: {str(e)}")
 
 
-@router.get("/requests/{request_id}/pages/{page_number}", summary="특정 페이지 결과 조회")
+@router.get("/requests/{request_id}/pages/{page_number}", summary="UUID 요청의 페이지별 OCR 결과 조회")
 async def get_page_result(request_id: str, page_number: int) -> Dict[str, Any]:
-    """특정 요청의 특정 페이지 결과 조회"""
+    """
+    특정 UUID 요청의 페이지별 OCR 결과 조회
+
+    - 페이지별 블록 데이터 포함
+    - 네비게이션 정보 자동 생성
+    - 원본/시각화 이미지 링크 제공
+    """
     if not validate_request_id(request_id):
         raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
 
@@ -431,9 +468,15 @@ async def download_page_visualization(request_id: str, page_number: int):
         raise HTTPException(status_code=500, detail=f"시각화 다운로드 중 오류: {str(e)}")
 
 
-@router.delete("/requests/{request_id}", summary="요청 삭제")
+@router.delete("/requests/{request_id}", summary="UUID 요청 및 관련 데이터 완전 삭제")
 async def delete_request(request_id: str) -> Dict[str, Any]:
-    """특정 요청과 관련된 모든 데이터 삭제"""
+    """
+    특정 UUID 요청과 관련된 모든 데이터 완전 삭제
+
+    - 요청 디렉토리 전체 삭제 (페이지, 블록, 이미지 포함)
+    - 복구 불가능한 완전 삭제
+    - UUID 유효성 검증 후 실행
+    """
     if not validate_request_id(request_id):
         raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
 
@@ -575,28 +618,45 @@ async def regenerate_page_visualization(request_id: str, page_number: int) -> Di
             # OCR 결과 형태로 변환 (시각화 함수가 기대하는 형식으로)
             converted_blocks = []
             for block in blocks:
-                # bbox 좌표 배열을 x_min, y_min, width, height 형태로 변환
-                bbox_coords = block.get('bbox', [])
-                if len(bbox_coords) >= 4:
-                    x_coords = [point[0] for point in bbox_coords]
-                    y_coords = [point[1] for point in bbox_coords]
+                bbox_data = block.get('bbox', {})
+
+                # bbox 형식 확인 및 변환
+                if isinstance(bbox_data, list) and len(bbox_data) >= 4:
+                    # 좌표 배열 형식: [[x1,y1], [x2,y2], [x3,y3], [x4,y4]]
+                    x_coords = [point[0] for point in bbox_data]
+                    y_coords = [point[1] for point in bbox_data]
                     x_min, x_max = min(x_coords), max(x_coords)
                     y_min, y_max = min(y_coords), max(y_coords)
 
-                    converted_block = {
-                        'text': block.get('text', ''),
-                        'confidence': block.get('confidence', 0.0),
-                        'type': block.get('block_type', 'other'),  # block_type -> type
-                        'bbox': {
-                            'x_min': x_min,
-                            'y_min': y_min,
-                            'width': x_max - x_min,
-                            'height': y_max - y_min,
-                            'x_max': x_max,
-                            'y_max': y_max
-                        }
+                    bbox_converted = {
+                        'x_min': x_min,
+                        'y_min': y_min,
+                        'width': x_max - x_min,
+                        'height': y_max - y_min,
+                        'x_max': x_max,
+                        'y_max': y_max
                     }
-                    converted_blocks.append(converted_block)
+                elif isinstance(bbox_data, dict) and 'x_min' in bbox_data:
+                    # 이미 객체 형식: {x_min, y_min, x_max, y_max, width, height}
+                    bbox_converted = {
+                        'x_min': bbox_data.get('x_min', 0),
+                        'y_min': bbox_data.get('y_min', 0),
+                        'width': bbox_data.get('width', bbox_data.get('x_max', 0) - bbox_data.get('x_min', 0)),
+                        'height': bbox_data.get('height', bbox_data.get('y_max', 0) - bbox_data.get('y_min', 0)),
+                        'x_max': bbox_data.get('x_max', bbox_data.get('x_min', 0) + bbox_data.get('width', 0)),
+                        'y_max': bbox_data.get('y_max', bbox_data.get('y_min', 0) + bbox_data.get('height', 0))
+                    }
+                else:
+                    # 유효하지 않은 bbox 데이터는 건너뛰기
+                    continue
+
+                converted_block = {
+                    'text': block.get('text', ''),
+                    'confidence': block.get('confidence', 0.0),
+                    'type': block.get('block_type', block.get('type', 'other')),  # block_type 또는 type
+                    'bbox': bbox_converted
+                }
+                converted_blocks.append(converted_block)
 
             ocr_result = {'blocks': converted_blocks}
 

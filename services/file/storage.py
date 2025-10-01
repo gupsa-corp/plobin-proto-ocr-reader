@@ -151,10 +151,11 @@ class RequestStorage:
             save_metadata(block_metadata, block_file)
 
             # 블록 이미지 크롭 및 저장
-            if original_image_data and block.get('bbox'):
+            bbox_data = block.get('bbox_points') or block.get('bbox')
+            if original_image_data and bbox_data:
                 self._save_block_image(
                     original_image_data,
-                    block['bbox'],
+                    bbox_data,
                     page_paths['blocks_dir'],
                     i + 1
                 )
@@ -334,13 +335,13 @@ class RequestStorage:
             print(f"원본 이미지 저장 실패: {e}")
             return None
 
-    def _save_block_image(self, original_image_data: bytes, bbox: list, blocks_dir: Path, block_id: int) -> None:
+    def _save_block_image(self, original_image_data: bytes, bbox, blocks_dir: Path, block_id: int) -> None:
         """
         블록 영역을 크롭하여 이미지로 저장
 
         Args:
             original_image_data: 원본 이미지 바이트 데이터
-            bbox: 바운딩 박스 좌표 [[x1,y1], [x2,y2], [x3,y3], [x4,y4]]
+            bbox: 바운딩 박스 좌표 (리스트 형태: [[x1,y1], [x2,y2], [x3,y3], [x4,y4]] 또는 딕셔너리 형태: {x_min, y_min, x_max, y_max})
             blocks_dir: 블록 디렉토리 경로
             block_id: 블록 ID
         """
@@ -353,30 +354,45 @@ class RequestStorage:
                 print(f"블록 {block_id}: 이미지 디코딩 실패")
                 return
 
-            # 바운딩 박스에서 min/max 좌표 추출
-            if len(bbox) >= 4 and all(len(point) >= 2 for point in bbox):
+            # bbox 형식에 따라 좌표 추출
+            if isinstance(bbox, dict):
+                # 딕셔너리 형태: {x_min, y_min, x_max, y_max}
+                x_min = bbox.get('x_min', 0)
+                y_min = bbox.get('y_min', 0)
+                x_max = bbox.get('x_max', x_min)
+                y_max = bbox.get('y_max', y_min)
+            elif isinstance(bbox, list) and len(bbox) >= 4 and all(len(point) >= 2 for point in bbox):
+                # 리스트 형태: [[x1,y1], [x2,y2], [x3,y3], [x4,y4]]
                 x_coords = [point[0] for point in bbox]
                 y_coords = [point[1] for point in bbox]
-
-                x_min, x_max = max(0, min(x_coords)), min(image.shape[1], max(x_coords))
-                y_min, y_max = max(0, min(y_coords)), min(image.shape[0], max(y_coords))
-
-                # 유효한 영역인지 확인
-                if x_max > x_min and y_max > y_min:
-                    # 이미지 크롭
-                    cropped = image[y_min:y_max, x_min:x_max]
-
-                    # 블록 이미지 저장
-                    block_image_path = blocks_dir / f"block_{block_id:03d}.png"
-                    cv2.imwrite(str(block_image_path), cropped)
-                    print(f"블록 {block_id} 이미지 저장 완료: {block_image_path}")
-                else:
-                    print(f"블록 {block_id}: 유효하지 않은 바운딩 박스 영역")
+                x_min, x_max = min(x_coords), max(x_coords)
+                y_min, y_max = min(y_coords), max(y_coords)
             else:
-                print(f"블록 {block_id}: 잘못된 바운딩 박스 형식")
+                print(f"블록 {block_id}: 잘못된 바운딩 박스 형식 - {type(bbox)}: {bbox}")
+                return
+
+            # 좌표 유효성 검사 및 클리핑
+            x_min = max(0, int(x_min))
+            y_min = max(0, int(y_min))
+            x_max = min(image.shape[1], int(x_max))
+            y_max = min(image.shape[0], int(y_max))
+
+            # 유효한 영역인지 확인
+            if x_max > x_min and y_max > y_min:
+                # 이미지 크롭
+                cropped = image[y_min:y_max, x_min:x_max]
+
+                # 블록 이미지 저장
+                block_image_path = blocks_dir / f"block_{block_id:03d}.png"
+                cv2.imwrite(str(block_image_path), cropped)
+                print(f"블록 {block_id} 이미지 저장 완료: {block_image_path}")
+            else:
+                print(f"블록 {block_id}: 유효하지 않은 바운딩 박스 영역 - ({x_min},{y_min}) to ({x_max},{y_max})")
 
         except Exception as e:
             print(f"블록 {block_id} 이미지 크롭 실패: {e}")
+            import traceback
+            traceback.print_exc()
 
     def get_all_pages_summary(self, request_id: str) -> List[Dict[str, Any]]:
         """

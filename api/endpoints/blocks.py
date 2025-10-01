@@ -40,7 +40,7 @@ class BlockCreate(BaseModel):
     block_type: Optional[str] = "other"
 
 
-@router.get("/requests/{request_id}/pages/{page_number}/blocks", summary="페이지의 블록 목록 조회")
+@router.get("/requests/{request_id}/pages/{page_number}/blocks", summary="UUID 요청 페이지의 블록 필터링 조회")
 async def get_blocks_filtered(
     request_id: str,
     page_number: int,
@@ -50,18 +50,18 @@ async def get_blocks_filtered(
     limit: int = 100
 ) -> Dict[str, Any]:
     """
-    페이지의 블록 목록을 필터링하여 조회
+    UUID 요청의 특정 페이지에서 블록 목록을 필터링하여 조회
 
     Args:
-        request_id: 요청 ID
-        page_number: 페이지 번호
+        request_id: UUID v7 요청 ID
+        page_number: 페이지 번호 (1부터 시작)
         block_type: 블록 타입 필터 (title, paragraph, table, list, other)
         confidence_min: 최소 신뢰도 (0.0-1.0)
-        start: 시작 인덱스
-        limit: 최대 개수
+        start: 시작 인덱스 (페이지네이션용)
+        limit: 최대 반환 개수
 
     Returns:
-        필터링된 블록 목록과 메타데이터
+        필터링된 블록 목록, 통계 정보, 페이지네이션 메타데이터
     """
     if not validate_request_id(request_id):
         raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
@@ -102,18 +102,18 @@ async def get_blocks_filtered(
         raise HTTPException(status_code=500, detail=f"블록 목록 조회 중 오류: {str(e)}")
 
 
-@router.get("/requests/{request_id}/pages/{page_number}/blocks/{block_id}", summary="특정 블록 상세 정보")
+@router.get("/requests/{request_id}/pages/{page_number}/blocks/{block_id}", summary="UUID 요청의 개별 블록 상세 조회")
 async def get_block_details(request_id: str, page_number: int, block_id: int) -> Dict[str, Any]:
     """
-    특정 블록의 상세 정보 조회
+    UUID 요청의 특정 페이지에서 개별 블록 상세 정보 조회
 
     Args:
-        request_id: 요청 ID
-        page_number: 페이지 번호
+        request_id: UUID v7 요청 ID
+        page_number: 페이지 번호 (1부터 시작)
         block_id: 블록 ID (1부터 시작)
 
     Returns:
-        블록 상세 정보
+        블록 상세 정보 (텍스트, 신뢰도, 바운딩 박스, 타입)
     """
     if not validate_request_id(request_id):
         raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
@@ -136,7 +136,7 @@ async def get_block_details(request_id: str, page_number: int, block_id: int) ->
         raise HTTPException(status_code=500, detail=f"블록 조회 중 오류: {str(e)}")
 
 
-@router.put("/requests/{request_id}/pages/{page_number}/blocks/{block_id}", summary="블록 정보 수정")
+@router.put("/requests/{request_id}/pages/{page_number}/blocks/{block_id}", summary="UUID 요청의 블록 정보 수정")
 async def update_block(
     request_id: str,
     page_number: int,
@@ -144,10 +144,10 @@ async def update_block(
     block_update: BlockUpdate
 ) -> Dict[str, Any]:
     """
-    블록 정보 수정
+    UUID 요청의 특정 블록 정보 수정 (텍스트, 신뢰도, 바운딩 박스, 타입)
 
     Args:
-        request_id: 요청 ID
+        request_id: UUID v7 요청 ID
         page_number: 페이지 번호
         block_id: 블록 ID (1부터 시작)
         block_update: 수정할 블록 정보

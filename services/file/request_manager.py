@@ -6,32 +6,57 @@ Request management services for OCR processing
 import uuid
 import time
 import re
+import struct
+import secrets
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional
 
 
-def generate_time_based_uuid():
+def generate_uuid_v7():
     """
-    시간 기반 UUID 생성 (UUID v7 유사)
+    UUID v7 표준 구현 (RFC 9562)
+
+    UUID v7 구조:
+    - 48비트: 타임스탬프 (milliseconds since Unix epoch)
+    - 12비트: 순서 보장을 위한 추가 정밀도
+    - 2비트: 버전 (0b01)
+    - 62비트: 랜덤 데이터
 
     Returns:
-        시간 순서를 보장하는 UUID 문자열
+        UUID v7 문자열
     """
-    # 현재 시간을 밀리초 단위로 가져오기
-    timestamp = int(time.time() * 1000)
+    # 현재 시간을 밀리초 단위로 가져오기 (48비트)
+    timestamp_ms = int(time.time() * 1000)
 
-    # UUID v4를 생성하고 첫 8자리를 타임스탬프로 교체
-    base_uuid = uuid.uuid4()
-    uuid_hex = base_uuid.hex
+    # 48비트 타임스탬프를 바이트로 변환
+    timestamp_bytes = struct.pack('>Q', timestamp_ms)[2:]  # 상위 48비트만 사용
 
-    # 타임스탬프를 16진수로 변환 (8자리)
-    timestamp_hex = f"{timestamp:012x}"[-12:]  # 12자리로 제한
+    # 12비트 추가 정밀도 + 4비트 버전 필드 (0x7xxx)
+    # 12비트 랜덤 + 버전 7
+    ver_and_rand = 0x7000 | (secrets.randbits(12))
+    ver_bytes = struct.pack('>H', ver_and_rand)
 
-    # UUID 형식으로 조합
-    time_uuid = f"{timestamp_hex[:8]}-{timestamp_hex[8:]}-{uuid_hex[12:16]}-{uuid_hex[16:20]}-{uuid_hex[20:]}"
+    # 2비트 variant (0b10) + 62비트 랜덤
+    variant_and_rand = 0x8000000000000000 | secrets.randbits(62)
+    variant_bytes = struct.pack('>Q', variant_and_rand)
 
-    return time_uuid
+    # 모든 바이트 조합
+    uuid_bytes = timestamp_bytes + ver_bytes + variant_bytes
+
+    # UUID 포맷으로 변환
+    uuid_hex = uuid_bytes.hex()
+    uuid_str = f"{uuid_hex[:8]}-{uuid_hex[8:12]}-{uuid_hex[12:16]}-{uuid_hex[16:20]}-{uuid_hex[20:]}"
+
+    return uuid_str
+
+
+def generate_time_based_uuid():
+    """
+    레거시 호환성을 위한 래퍼 함수
+    이제 실제 UUID v7을 생성
+    """
+    return generate_uuid_v7()
 
 
 def generate_request_id():
@@ -134,23 +159,39 @@ def create_block_file_path(blocks_dir: Path, block_id: int) -> Path:
     return blocks_dir / f"block_{block_id:03d}.json"
 
 
-def extract_timestamp_from_uuid(request_id: str) -> Optional[datetime]:
+def extract_timestamp_from_uuid_v7(uuid_str: str) -> Optional[datetime]:
     """
-    시간 기반 UUID에서 타임스탬프 추출
+    UUID v7에서 정확한 타임스탬프 추출
 
     Args:
-        request_id: 요청 ID
+        uuid_str: UUID v7 문자열
 
     Returns:
         추출된 datetime 객체 또는 None
     """
     try:
-        # UUID의 첫 12자리에서 타임스탬프 추출
-        timestamp_hex = request_id.replace('-', '')[:12]
+        # UUID v7 형식 검증
+        if not validate_request_id(uuid_str):
+            return None
+
+        # 하이픈 제거하고 16진수 문자열로 변환
+        uuid_hex = uuid_str.replace('-', '')
+
+        # 첫 12자리(48비트)가 타임스탬프
+        timestamp_hex = uuid_hex[:12]
         timestamp_ms = int(timestamp_hex, 16)
+
         return datetime.fromtimestamp(timestamp_ms / 1000)
-    except (ValueError, IndexError):
+    except (ValueError, IndexError, OverflowError):
         return None
+
+
+def extract_timestamp_from_uuid(request_id: str) -> Optional[datetime]:
+    """
+    레거시 호환성을 위한 래퍼 함수
+    UUID v7 타임스탬프 추출
+    """
+    return extract_timestamp_from_uuid_v7(request_id)
 
 
 def generate_request_metadata(original_filename: str, file_type: str,
