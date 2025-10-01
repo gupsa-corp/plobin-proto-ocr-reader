@@ -7,8 +7,7 @@ from services.ocr import DocumentBlockExtractor
 from services.pdf import PDFToImageProcessor
 
 # Import API modules
-from api.endpoints import root, process_image, process_pdf, blocks, requests, templates, pages
-from api.utils import file_storage
+from api.endpoints import root, process_image, process_pdf, blocks, requests, templates, pages, images
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -37,9 +36,6 @@ pdf_processor = PDFToImageProcessor()
 output_dir = Path("output")
 output_dir.mkdir(exist_ok=True)
 
-# Set up dependencies for utility modules
-file_storage.set_global_dependencies(output_dir, extractor)
-
 # Set up dependencies for endpoint modules
 root.set_server_stats(server_stats)
 process_image.set_dependencies(server_stats, extractor, str(output_dir))
@@ -48,6 +44,7 @@ requests.set_dependencies(str(output_dir))
 requests.set_processing_dependencies(extractor, pdf_processor)
 pages.set_dependencies(str(output_dir))
 blocks.set_dependencies(str(output_dir))
+images.set_dependencies(str(output_dir))
 
 # Include routers
 app.include_router(root.router, tags=["Root"])
@@ -57,6 +54,7 @@ app.include_router(requests.router, tags=["Request Management"])
 app.include_router(templates.router, tags=["Template Management"])
 app.include_router(pages.router, tags=["Page Navigation"])
 app.include_router(blocks.router, tags=["Block Editing"])
+app.include_router(images.router, tags=["Image Processing"])
 
 if __name__ == "__main__":
     import uvicorn
