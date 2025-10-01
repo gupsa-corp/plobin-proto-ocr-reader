@@ -538,15 +538,99 @@ async def get_page_content_summary(request_id: str, page_number: int) -> Dict[st
         raise HTTPException(status_code=500, detail=f"요약 조회 중 오류: {str(e)}")
 
 
-@router.get("/requests/{request_id}/pages/{page_number}/regenerate-visualization", summary="페이지 시각화 재생성")
+@router.post("/requests/{request_id}/pages/{page_number}/regenerate-visualization", summary="페이지 시각화 재생성")
 async def regenerate_page_visualization(request_id: str, page_number: int) -> Dict[str, Any]:
     """페이지 시각화 이미지를 재생성합니다"""
     try:
         if not validate_request_id(request_id):
             raise HTTPException(status_code=400, detail="잘못된 요청 ID 형식")
 
-        # 재생성 로직 구현 (추후)
-        raise HTTPException(status_code=500, detail="시각화 재생성 실패")
+        # 페이지 디렉토리 확인
+        page_dir = Path(request_storage.base_output_dir) / request_id / "pages" / f"{page_number:03d}"
 
+        if not page_dir.exists():
+            raise HTTPException(status_code=404, detail="페이지를 찾을 수 없습니다")
+
+        # 필요한 파일들 확인
+        result_file = page_dir / "result.json"
+        original_file = page_dir / "original.png"
+
+        if not result_file.exists():
+            raise HTTPException(status_code=404, detail="페이지 결과 파일을 찾을 수 없습니다")
+
+        if not original_file.exists():
+            raise HTTPException(status_code=404, detail="원본 이미지를 찾을 수 없습니다")
+
+        # 결과 데이터 로드
+        from services.file.metadata import load_metadata
+        result_data = load_metadata(result_file)
+        blocks = result_data.get('blocks', [])
+
+        # 시각화 생성
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as viz_tmp:
+            viz_path = viz_tmp.name
+
+        try:
+            # OCR 결과 형태로 변환 (시각화 함수가 기대하는 형식으로)
+            converted_blocks = []
+            for block in blocks:
+                # bbox 좌표 배열을 x_min, y_min, width, height 형태로 변환
+                bbox_coords = block.get('bbox', [])
+                if len(bbox_coords) >= 4:
+                    x_coords = [point[0] for point in bbox_coords]
+                    y_coords = [point[1] for point in bbox_coords]
+                    x_min, x_max = min(x_coords), max(x_coords)
+                    y_min, y_max = min(y_coords), max(y_coords)
+
+                    converted_block = {
+                        'text': block.get('text', ''),
+                        'confidence': block.get('confidence', 0.0),
+                        'type': block.get('block_type', 'other'),  # block_type -> type
+                        'bbox': {
+                            'x_min': x_min,
+                            'y_min': y_min,
+                            'width': x_max - x_min,
+                            'height': y_max - y_min,
+                            'x_max': x_max,
+                            'y_max': y_max
+                        }
+                    }
+                    converted_blocks.append(converted_block)
+
+            ocr_result = {'blocks': converted_blocks}
+
+            # 시각화 생성
+            if extractor:
+                extractor.visualize_blocks(str(original_file), ocr_result, viz_path)
+            else:
+                raise Exception("OCR 추출기가 초기화되지 않았습니다")
+
+            # 시각화 파일이 생성되었는지 확인
+            if Path(viz_path).exists():
+                # 기존 시각화 파일을 새 것으로 교체
+                visualization_file = page_dir / "visualization.png"
+                import shutil
+                shutil.move(viz_path, visualization_file)
+
+                return {
+                    "request_id": request_id,
+                    "page_number": page_number,
+                    "status": "success",
+                    "message": "시각화가 성공적으로 재생성되었습니다",
+                    "visualization_file": str(visualization_file),
+                    "file_size": visualization_file.stat().st_size
+                }
+            else:
+                raise Exception("시각화 파일이 생성되지 않았습니다")
+
+        except Exception as e:
+            # 임시 파일 정리
+            if Path(viz_path).exists():
+                Path(viz_path).unlink()
+            raise Exception(f"시각화 생성 실패: {str(e)}")
+
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"시각화 재생성 중 오류: {str(e)}")
