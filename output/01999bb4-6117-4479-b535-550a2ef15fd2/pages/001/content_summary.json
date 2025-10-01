@@ -1,0 +1,436 @@
+{
+  "page_summary": {
+    "document_type": "invoice",
+    "main_content": "Invoice from From: ABC Company Ltd",
+    "key_entities": {
+      "companies": [
+        "Client Company",
+        "Company Ltd"
+      ],
+      "dates": [
+        "2024-04-15",
+        "2025-09-29"
+      ],
+      "amounts": [
+        "15000 $",
+        "$57000",
+        "10000 $",
+        "10 $",
+        "$570000"
+      ],
+      "emails": [],
+      "phones": [],
+      "invoice_numbers": [
+        "date",
+        "INV-2024-001"
+      ]
+    },
+    "content_sections": {
+      "title": 2,
+      "header": 4,
+      "body": 0,
+      "table": 7,
+      "footer": 0,
+      "other": 5
+    },
+    "quality_metrics": {
+      "overall_confidence": 0.987,
+      "readability": "high",
+      "completeness": "complete",
+      "high_confidence_blocks": 18,
+      "low_confidence_blocks": 0
+    },
+    "language_distribution": {
+      "korean": 0.0,
+      "english": 0.609,
+      "other": 0.391
+    },
+    "structural_analysis": {
+      "has_header": true,
+      "has_footer": true,
+      "column_layout": "single",
+      "text_alignment": "mixed"
+    },
+    "total_blocks": 18,
+    "total_characters": 516,
+    "analyzed_at": "2025-10-01T02:38:38.197451"
+  },
+  "block_summaries": [
+    {
+      "content_type": "title",
+      "language": "english",
+      "text_preview": "NVOICE",
+      "keywords": [
+        "nvoice"
+      ],
+      "confidence_level": "medium",
+      "estimated_importance": "critical",
+      "contains_numbers": false,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 6,
+      "word_count": 1,
+      "analyzed_at": "2025-10-01T02:38:38.195918"
+    },
+    {
+      "content_type": "header",
+      "language": "english",
+      "text_preview": "From: ABC Company Ltd",
+      "keywords": [
+        "from",
+        "abc",
+        "company",
+        "ltd"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "important",
+      "contains_numbers": false,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 21,
+      "word_count": 4,
+      "analyzed_at": "2025-10-01T02:38:38.195972"
+    },
+    {
+      "content_type": "header",
+      "language": "english",
+      "text_preview": "123 Business Street To: Client...",
+      "keywords": [
+        "123",
+        "business",
+        "street",
+        "client",
+        "company"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "important",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 38,
+      "word_count": 6,
+      "analyzed_at": "2025-10-01T02:38:38.195993"
+    },
+    {
+      "content_type": "table",
+      "language": "english",
+      "text_preview": "Seoul Korea 12345 456 Client A...",
+      "keywords": [
+        "seoul",
+        "korea",
+        "12345",
+        "456",
+        "client"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "important",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 35,
+      "word_count": 6,
+      "analyzed_at": "2025-10-01T02:38:38.196031"
+    },
+    {
+      "content_type": "table",
+      "language": "english",
+      "text_preview": "Tel: 02 123-4567 Busan Korea 5...",
+      "keywords": [
+        "tel",
+        "123",
+        "4567",
+        "busan",
+        "korea"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "normal",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 34,
+      "word_count": 6,
+      "analyzed_at": "2025-10-01T02:38:38.196052"
+    },
+    {
+      "content_type": "other",
+      "language": "english",
+      "text_preview": "Email: infooabccom",
+      "keywords": [
+        "email",
+        "infooabccom"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "low",
+      "contains_numbers": false,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 18,
+      "word_count": 2,
+      "analyzed_at": "2025-10-01T02:38:38.196094"
+    },
+    {
+      "content_type": "title",
+      "language": "english",
+      "text_preview": "Invoice #: INV-2024-001",
+      "keywords": [
+        "invoice",
+        "inv",
+        "2024",
+        "001"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "critical",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 23,
+      "word_count": 3,
+      "analyzed_at": "2025-10-01T02:38:38.196106"
+    },
+    {
+      "content_type": "header",
+      "language": "english",
+      "text_preview": "Date: 2025-09-29",
+      "keywords": [
+        "date",
+        "2025"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "important",
+      "contains_numbers": true,
+      "contains_dates": true,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 16,
+      "word_count": 2,
+      "analyzed_at": "2025-10-01T02:38:38.196118"
+    },
+    {
+      "content_type": "header",
+      "language": "english",
+      "text_preview": "Due Date: 2024-04-15",
+      "keywords": [
+        "due",
+        "date",
+        "2024"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "critical",
+      "contains_numbers": true,
+      "contains_dates": true,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 20,
+      "word_count": 3,
+      "analyzed_at": "2025-10-01T02:38:38.196128"
+    },
+    {
+      "content_type": "other",
+      "language": "english",
+      "text_preview": "Description Quantity Unit Pric...",
+      "keywords": [
+        "description",
+        "quantity",
+        "unit",
+        "price",
+        "amount"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "critical",
+      "contains_numbers": false,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 38,
+      "word_count": 5,
+      "analyzed_at": "2025-10-01T02:38:38.196147"
+    },
+    {
+      "content_type": "table",
+      "language": "english",
+      "text_preview": "Web Development Services 40 $1...",
+      "keywords": [
+        "web",
+        "development",
+        "services",
+        "10000",
+        "400000"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "normal",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": true,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 42,
+      "word_count": 6,
+      "analyzed_at": "2025-10-01T02:38:38.196164"
+    },
+    {
+      "content_type": "table",
+      "language": "english",
+      "text_preview": "Design Consultatior 10 $15000 ...",
+      "keywords": [
+        "design",
+        "consultatior",
+        "15000",
+        "150000"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "normal",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": true,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 37,
+      "word_count": 5,
+      "analyzed_at": "2025-10-01T02:38:38.196178"
+    },
+    {
+      "content_type": "table",
+      "language": "english",
+      "text_preview": "Domain & Hosting $20000 $20000",
+      "keywords": [
+        "20000",
+        "domain",
+        "hosting"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "normal",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": true,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 30,
+      "word_count": 5,
+      "analyzed_at": "2025-10-01T02:38:38.196191"
+    },
+    {
+      "content_type": "number",
+      "language": "english",
+      "text_preview": "Subtotal: $570000",
+      "keywords": [
+        "subtotal",
+        "570000"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "critical",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": true,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 17,
+      "word_count": 2,
+      "analyzed_at": "2025-10-01T02:38:38.196200"
+    },
+    {
+      "content_type": "table",
+      "language": "english",
+      "text_preview": "Tax 10% $57000",
+      "keywords": [
+        "tax",
+        "57000"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "important",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": true,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 14,
+      "word_count": 3,
+      "analyzed_at": "2025-10-01T02:38:38.196210"
+    },
+    {
+      "content_type": "number",
+      "language": "english",
+      "text_preview": "Total: $627000",
+      "keywords": [
+        "total",
+        "627000"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "critical",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": true,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 14,
+      "word_count": 2,
+      "analyzed_at": "2025-10-01T02:38:38.196218"
+    },
+    {
+      "content_type": "other",
+      "language": "english",
+      "text_preview": "Payment Terms:",
+      "keywords": [
+        "payment",
+        "terms"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "critical",
+      "contains_numbers": false,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 14,
+      "word_count": 2,
+      "analyzed_at": "2025-10-01T02:38:38.196229"
+    },
+    {
+      "content_type": "table",
+      "language": "english",
+      "text_preview": "Payment is due within 30 days ...",
+      "keywords": [
+        "payment",
+        "due",
+        "within",
+        "days",
+        "invoice"
+      ],
+      "confidence_level": "high",
+      "estimated_importance": "critical",
+      "contains_numbers": true,
+      "contains_dates": false,
+      "contains_money": false,
+      "contains_email": false,
+      "contains_phone": false,
+      "text_length": 82,
+      "word_count": 16,
+      "analyzed_at": "2025-10-01T02:38:38.196250"
+    }
+  ],
+  "insights": [
+    "매우 높은 OCR 정확도로 신뢰할 수 있는 결과입니다.",
+    "총 5개의 금액이 발견되었습니다.",
+    "8개의 중요한 정보 블록이 식별되었습니다."
+  ],
+  "recommendations": [
+    "인보이스 데이터를 회계 시스템으로 자동 가져오기가 가능합니다.",
+    "테이블 데이터를 스프레드시트 형태로 내보내기를 고려해보세요."
+  ]
+}

@@ -95,7 +95,8 @@ class RequestStorage:
 
     def save_page_result(self, request_id: str, page_number: int,
                         blocks: List[Dict[str, Any]], processing_time: float,
-                        visualization_data: bytes = None, original_image_data: bytes = None) -> Dict[str, str]:
+                        visualization_data: bytes = None, original_image_data: bytes = None,
+                        content_summary: Dict[str, Any] = None) -> Dict[str, str]:
         """
         페이지 OCR 결과 저장
 
@@ -168,11 +169,17 @@ class RequestStorage:
             with open(page_paths['visualization_file'], 'wb') as f:
                 f.write(visualization_data)
 
+        # 콘텐츠 요약 저장
+        if content_summary:
+            summary_file = page_paths['page_dir'] / 'content_summary.json'
+            save_metadata(content_summary, summary_file)
+
         return {
             'page_info': str(page_paths['page_info_file']),
             'result': str(page_paths['result_file']),
             'original_image': str(page_paths['original_image_file']) if original_image_data else None,
             'visualization': str(page_paths['visualization_file']) if visualization_data else None,
+            'content_summary': str(summary_file) if content_summary else None,
             'blocks_dir': str(page_paths['blocks_dir'])
         }
 

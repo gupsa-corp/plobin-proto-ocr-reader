@@ -1,0 +1,422 @@
+{
+  "page_number": 1,
+  "total_blocks": 18,
+  "average_confidence": 0.9869622738549003,
+  "processing_time": 4.2896153926849365,
+  "blocks": [
+    {
+      "text": "NVOICE",
+      "confidence": 0.933597981929779,
+      "bbox": [
+        [
+          540,
+          177
+        ],
+        [
+          738,
+          177
+        ],
+        [
+          738,
+          213
+        ],
+        [
+          540,
+          213
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "From: ABC Company Ltd",
+      "confidence": 0.9928393264611561,
+      "bbox": [
+        [
+          210,
+          326
+        ],
+        [
+          509,
+          326
+        ],
+        [
+          509,
+          354
+        ],
+        [
+          210,
+          354
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "123 Business Street To: Client Company",
+      "confidence": 0.9650601016150581,
+      "bbox": [
+        [
+          338,
+          363
+        ],
+        [
+          885,
+          363
+        ],
+        [
+          885,
+          389
+        ],
+        [
+          338,
+          389
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Seoul Korea 12345 456 Client Avenue",
+      "confidence": 0.9999339282512665,
+      "bbox": [
+        [
+          332,
+          400
+        ],
+        [
+          906,
+          400
+        ],
+        [
+          906,
+          428
+        ],
+        [
+          332,
+          428
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Tel: 02 123-4567 Busan Korea 54321",
+      "confidence": 0.9989094833532969,
+      "bbox": [
+        [
+          333,
+          438
+        ],
+        [
+          925,
+          438
+        ],
+        [
+          925,
+          462
+        ],
+        [
+          333,
+          462
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Email: infooabccom",
+      "confidence": 0.9660903215408325,
+      "bbox": [
+        [
+          331,
+          476
+        ],
+        [
+          532,
+          478
+        ],
+        [
+          532,
+          502
+        ],
+        [
+          331,
+          500
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Invoice #: INV-2024-001",
+      "confidence": 0.9525992274284363,
+      "bbox": [
+        [
+          386,
+          584
+        ],
+        [
+          738,
+          584
+        ],
+        [
+          738,
+          605
+        ],
+        [
+          386,
+          605
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Date: 2025-09-29",
+      "confidence": 0.9857870936393738,
+      "bbox": [
+        [
+          386,
+          619
+        ],
+        [
+          718,
+          619
+        ],
+        [
+          718,
+          646
+        ],
+        [
+          386,
+          646
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Due Date: 2024-04-15",
+      "confidence": 0.9992468506097794,
+      "bbox": [
+        [
+          386,
+          658
+        ],
+        [
+          717,
+          658
+        ],
+        [
+          717,
+          683
+        ],
+        [
+          386,
+          683
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Description Quantity Unit Price Amount",
+      "confidence": 0.9967449381947517,
+      "bbox": [
+        [
+          199,
+          759
+        ],
+        [
+          1058,
+          759
+        ],
+        [
+          1058,
+          789
+        ],
+        [
+          199,
+          789
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Web Development Services 40 $10000 $400000",
+      "confidence": 0.9951323568820953,
+      "bbox": [
+        [
+          199,
+          815
+        ],
+        [
+          1058,
+          815
+        ],
+        [
+          1058,
+          839
+        ],
+        [
+          199,
+          839
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Design Consultatior 10 $15000 $150000",
+      "confidence": 0.999085083603859,
+      "bbox": [
+        [
+          199,
+          852
+        ],
+        [
+          1057,
+          852
+        ],
+        [
+          1057,
+          875
+        ],
+        [
+          199,
+          875
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Domain & Hosting $20000 $20000",
+      "confidence": 0.9894189768367343,
+      "bbox": [
+        [
+          195,
+          886
+        ],
+        [
+          1050,
+          886
+        ],
+        [
+          1050,
+          915
+        ],
+        [
+          195,
+          915
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Subtotal: $570000",
+      "confidence": 0.9989441931247711,
+      "bbox": [
+        [
+          819,
+          930
+        ],
+        [
+          1057,
+          930
+        ],
+        [
+          1057,
+          949
+        ],
+        [
+          819,
+          949
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Tax 10% $57000",
+      "confidence": 0.9985084682703018,
+      "bbox": [
+        [
+          812,
+          966
+        ],
+        [
+          1050,
+          966
+        ],
+        [
+          1050,
+          987
+        ],
+        [
+          812,
+          987
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Total: $627000",
+      "confidence": 0.9961899220943451,
+      "bbox": [
+        [
+          837,
+          1002
+        ],
+        [
+          1058,
+          1002
+        ],
+        [
+          1058,
+          1026
+        ],
+        [
+          837,
+          1026
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Payment Terms:",
+      "confidence": 0.9998394548892975,
+      "bbox": [
+        [
+          163,
+          1120
+        ],
+        [
+          359,
+          1120
+        ],
+        [
+          359,
+          1152
+        ],
+        [
+          163,
+          1152
+        ]
+      ],
+      "block_type": "other"
+    },
+    {
+      "text": "Payment is due within 30 days of invoice date Late payments may be subject to fees",
+      "confidence": 0.9973932206630707,
+      "bbox": [
+        [
+          161,
+          1162
+        ],
+        [
+          949,
+          1162
+        ],
+        [
+          949,
+          1188
+        ],
+        [
+          161,
+          1188
+        ]
+      ],
+      "block_type": "other"
+    }
+  ]
+}

@@ -183,6 +183,11 @@ async def process_image_request(request_id: str, image_path: str, original_filen
         # 처리 시간 계산
         processing_time = time.time() - start_time
 
+        # 콘텐츠 요약 생성
+        from services.analysis import ContentSummarizer
+        summarizer = ContentSummarizer()
+        content_summary = summarizer.create_comprehensive_summary(processed_blocks)
+
         # 결과 저장
         request_storage.save_page_result(
             request_id=request_id,
@@ -190,7 +195,8 @@ async def process_image_request(request_id: str, image_path: str, original_filen
             blocks=processed_blocks,
             processing_time=processing_time,
             visualization_data=visualization_data,
-            original_image_data=original_image_data
+            original_image_data=original_image_data,
+            content_summary=content_summary
         )
 
     except Exception as e:
@@ -259,6 +265,11 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
             # 페이지 처리 시간 계산
             page_processing_time = time.time() - page_start_time
 
+            # 콘텐츠 요약 생성
+            from services.analysis import ContentSummarizer
+            summarizer = ContentSummarizer()
+            content_summary = summarizer.create_comprehensive_summary(processed_blocks)
+
             # 페이지 결과 저장
             request_storage.save_page_result(
                 request_id=request_id,
@@ -266,7 +277,8 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
                 blocks=processed_blocks,
                 processing_time=page_processing_time,
                 visualization_data=visualization_data,
-                original_image_data=original_image_data
+                original_image_data=original_image_data,
+                content_summary=content_summary
             )
 
             # 임시 이미지 파일 정리
@@ -493,3 +505,48 @@ async def get_block_image(request_id: str, page_number: int, block_id: int):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"블록 이미지 다운로드 중 오류: {str(e)}")
+
+
+@router.get("/requests/{request_id}/pages/{page_number}/content-summary", summary="페이지 콘텐츠 요약 조회")
+async def get_page_content_summary(request_id: str, page_number: int) -> Dict[str, Any]:
+    """페이지의 콘텐츠 요약 정보를 조회합니다"""
+    try:
+        if not validate_request_id(request_id):
+            raise HTTPException(status_code=400, detail="잘못된 요청 ID 형식")
+
+        # 요약 파일 경로
+        summary_file = Path(request_storage.base_output_dir) / request_id / "pages" / f"{page_number:03d}" / "content_summary.json"
+
+        if not summary_file.exists():
+            raise HTTPException(status_code=404, detail="콘텐츠 요약을 찾을 수 없습니다")
+
+        # 요약 데이터 로드
+        from services.file.metadata import load_metadata
+        summary_data = load_metadata(summary_file)
+
+        return {
+            "request_id": request_id,
+            "page_number": page_number,
+            "content_summary": summary_data,
+            "summary_created_at": summary_data.get('page_summary', {}).get('analyzed_at'),
+            "summary_file_path": str(summary_file)
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"요약 조회 중 오류: {str(e)}")
+
+
+@router.get("/requests/{request_id}/pages/{page_number}/regenerate-visualization", summary="페이지 시각화 재생성")
+async def regenerate_page_visualization(request_id: str, page_number: int) -> Dict[str, Any]:
+    """페이지 시각화 이미지를 재생성합니다"""
+    try:
+        if not validate_request_id(request_id):
+            raise HTTPException(status_code=400, detail="잘못된 요청 ID 형식")
+
+        # 재생성 로직 구현 (추후)
+        raise HTTPException(status_code=500, detail="시각화 재생성 실패")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

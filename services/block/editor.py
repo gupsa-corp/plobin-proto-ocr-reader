@@ -50,6 +50,16 @@ class BlockEditor:
             # 블록 이미지 URL 추가
             block['image_url'] = f"/requests/{request_id}/pages/{page_number}/blocks/{block_id}/image"
 
+            # 블록 요약 정보 추가 (옵션)
+            try:
+                from services.analysis import ContentSummarizer
+                summarizer = ContentSummarizer()
+                block_summary = summarizer.create_block_summary(block)
+                block['summary'] = block_summary
+            except Exception as summary_error:
+                print(f"블록 요약 생성 실패: {summary_error}")
+                block['summary'] = None
+
             return block
 
         except Exception as e:
