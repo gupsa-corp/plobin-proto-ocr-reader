@@ -9,6 +9,8 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional
 from .merging import merge_adjacent_blocks
 from .table_recognition import create_table_recognizer
+from ..cache import get_ocr_cache
+from ..analysis import create_chart_detector
 
 
 def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True, merge_threshold: int = 30) -> Dict:
@@ -101,9 +103,9 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
 
 def extract_blocks_with_layout_analysis(ocr_instance, image_path: str, confidence_threshold: float = 0.5,
                                         merge_blocks: bool = True, merge_threshold: int = 30,
-                                        enable_table_recognition: bool = True) -> Dict:
+                                        enable_table_recognition: bool = True, use_cache: bool = True) -> Dict:
     """
-    레이아웃 분석 및 표 인식을 포함한 향상된 블록 추출
+    레이아웃 분석 및 표 인식을 포함한 향상된 블록 추출 (캐싱 지원)
 
     Args:
         ocr_instance: PaddleOCR 인스턴스
@@ -112,12 +114,30 @@ def extract_blocks_with_layout_analysis(ocr_instance, image_path: str, confidenc
         merge_blocks: 블록 병합 여부
         merge_threshold: 병합 임계값
         enable_table_recognition: 표 인식 활성화 여부
+        use_cache: 캐싱 사용 여부
 
     Returns:
         레이아웃 분석 결과가 포함된 블록 정보 딕셔너리
     """
     if not os.path.exists(image_path):
         raise FileNotFoundError(f"이미지 파일을 찾을 수 없습니다: {image_path}")
+
+    # 캐시 설정
+    cache_config = {
+        'confidence_threshold': confidence_threshold,
+        'merge_blocks': merge_blocks,
+        'merge_threshold': merge_threshold,
+        'enable_table_recognition': enable_table_recognition,
+        'function': 'extract_blocks_with_layout_analysis'
+    }
+
+    # 캐시 확인
+    if use_cache:
+        cache = get_ocr_cache()
+        cached_result = cache.get(image_path, cache_config)
+        if cached_result:
+            print("캐시된 결과 사용")
+            return cached_result
 
     # 기본 OCR 블록 추출
     basic_result = extract_blocks(ocr_instance, image_path, confidence_threshold,
@@ -151,7 +171,25 @@ def extract_blocks_with_layout_analysis(ocr_instance, image_path: str, confidenc
         except Exception as e:
             print(f"표 인식 중 오류 (기본 OCR로 계속): {e}")
 
-    return {
+    # 경량 차트 감지 수행 (선택적)
+    if enable_table_recognition:
+        try:
+            print("경량 차트 감지 수행 중...")
+            chart_detector = create_chart_detector()
+            detected_charts = chart_detector.detect_charts(image_path, blocks)
+
+            # 차트 정보를 레이아웃 정보에 추가
+            layout_info['charts'] = detected_charts
+
+            # 차트 영역과 겹치는 블록들을 chart 타입으로 재분류
+            blocks = _update_blocks_with_chart_info(blocks, detected_charts)
+
+            print(f"경량 차트 {len(detected_charts)}개 감지됨")
+
+        except Exception as e:
+            print(f"차트 감지 중 오류 (무시하고 계속): {e}")
+
+    result = {
         'metadata': {
             'image_path': image_path,
             'total_blocks': len(blocks),
@@ -168,6 +206,13 @@ def extract_blocks_with_layout_analysis(ocr_instance, image_path: str, confidenc
             'table_recognition': enable_table_recognition
         }
     }
+
+    # 결과 캐시에 저장
+    if use_cache:
+        cache = get_ocr_cache()
+        cache.set(image_path, cache_config, result)
+
+    return result
 
 
 def _enhance_blocks_with_layout_info(blocks: List[Dict], layout_analysis: Dict) -> List[Dict]:
@@ -202,6 +247,8 @@ def _enhance_blocks_with_layout_info(blocks: List[Dict], layout_analysis: Dict) 
                     element_type_name = 'title'
                 elif element_type == 'paragraphs':
                     element_type_name = 'paragraph'
+                elif element_type == 'figures':
+                    element_type_name = 'figure'
                 else:
                     element_type_name = 'other'
 
@@ -223,9 +270,163 @@ def _enhance_blocks_with_layout_info(blocks: List[Dict], layout_analysis: Dict) 
             if best_overlap > 0.3:
                 block['type'] = best_match_type
                 block['layout_confidence'] = best_overlap
+            else:
+                # 레이아웃 분석이 실패한 경우 텍스트 기반 분류 시도
+                enhanced_type = _classify_block_by_content(block)
+                if enhanced_type != 'other':
+                    block['type'] = enhanced_type
+                    block['content_confidence'] = 0.8
 
     except Exception as e:
         print(f"블록 타입 향상 중 오류: {e}")
+
+    return blocks
+
+
+def _classify_block_by_content(block: Dict) -> str:
+    """
+    텍스트 내용을 기반으로 블록 타입을 분류
+
+    Args:
+        block: 블록 정보
+
+    Returns:
+        분류된 블록 타입
+    """
+    import re
+
+    text = block.get('text', '').strip()
+    if not text:
+        return 'other'
+
+    text_lower = text.lower()
+
+    # 수식 패턴 (간단한 수학 기호 감지)
+    math_patterns = [
+        r'[∑∏∫∂∇αβγδεζηθικλμνξοπρστυφχψω]',  # 그리스 문자 및 수학 기호
+        r'\b\d+[\+\-\×\÷]\d+\b',  # 간단한 수식
+        r'\$.*\$',  # LaTeX 수식
+        r'[=≠<>≤≥±∞]',  # 수학 연산자
+        r'\b(sin|cos|tan|log|ln|exp|sqrt)\b'  # 수학 함수
+    ]
+
+    # 금액/가격 패턴
+    money_patterns = [
+        r'[\$￦€£¥]\s*[\d,]+',  # 통화 기호 + 숫자
+        r'\b\d+원\b',  # 원화
+        r'\btotal\s*[:=]\s*[\$￦]\d+',  # 총계
+        r'\bsubtotal\s*[:=]',  # 소계
+        r'\btax\s*[:=]'  # 세금
+    ]
+
+    # 제목 패턴 (크기나 위치 정보도 고려)
+    title_patterns = [
+        r'^[A-Z\s]{3,50}$',  # 모두 대문자인 짧은 텍스트
+        r'^\d+\.\s+[A-Z]',  # 번호가 있는 제목
+        r'^(CHAPTER|SECTION|PART)\s+\d+',  # 챕터/섹션
+        r'^(제\s*\d+\s*장|제\s*\d+\s*절)',  # 한국어 장/절
+    ]
+
+    # 서명 패턴
+    signature_patterns = [
+        r'(signature|서명|sign)',
+        r'(date|날짜|일자).*\d{4}',
+        r'^[A-Za-z가-힣\s]{2,20}$'  # 사람 이름 길이의 텍스트
+    ]
+
+    # 차트/그래프 관련 패턴
+    chart_patterns = [
+        r'(chart|graph|그래프|차트|도표)',
+        r'(figure|fig\.|그림)\s*\d+',
+        r'(table|표)\s*\d+',
+        r'\b(x-axis|y-axis|축)\b'
+    ]
+
+    bbox = block.get('bbox', {})
+    width = bbox.get('x_max', 0) - bbox.get('x_min', 0)
+    height = bbox.get('y_max', 0) - bbox.get('y_min', 0)
+
+    # 수식 검사
+    for pattern in math_patterns:
+        if re.search(pattern, text):
+            return 'equation'
+
+    # 금액/표 관련 검사
+    for pattern in money_patterns:
+        if re.search(pattern, text_lower):
+            return 'table'
+
+    # 차트/그래프 검사
+    for pattern in chart_patterns:
+        if re.search(pattern, text_lower):
+            return 'figure'
+
+    # 제목 검사 (텍스트 크기도 고려)
+    if height > 20:  # 큰 텍스트일 가능성
+        for pattern in title_patterns:
+            if re.search(pattern, text):
+                return 'title'
+
+    # 서명 검사 (작고 독립적인 텍스트)
+    if len(text) < 30 and width < 200:
+        for pattern in signature_patterns:
+            if re.search(pattern, text_lower):
+                return 'signature'
+
+    # 로고 패턴 (매우 짧고 위쪽에 위치)
+    if len(text) < 10 and bbox.get('y_min', 1000) < 100:
+        if re.search(r'^[A-Z]{2,8}$', text) or '©' in text or '®' in text:
+            return 'logo'
+
+    return 'other'
+
+
+def _update_blocks_with_chart_info(blocks: List[Dict], charts: List[Dict]) -> List[Dict]:
+    """
+    차트 정보를 사용해 블록 타입을 업데이트
+
+    Args:
+        blocks: OCR 블록 리스트
+        charts: 감지된 차트 리스트
+
+    Returns:
+        업데이트된 블록 리스트
+    """
+    try:
+        for block in blocks:
+            block_bbox = [
+                block.get('bbox', {}).get('x_min', 0),
+                block.get('bbox', {}).get('y_min', 0),
+                block.get('bbox', {}).get('x_max', 0),
+                block.get('bbox', {}).get('y_max', 0)
+            ]
+
+            for chart in charts:
+                chart_bbox = chart.get('bbox', [])
+                if len(chart_bbox) >= 4:
+                    overlap = _calculate_overlap_ratio(block_bbox, chart_bbox)
+
+                    # 차트와 겹치는 블록을 차트 관련 타입으로 분류
+                    if overlap > 0.3:  # 30% 이상 겹침
+                        chart_type = chart.get('type', 'chart')
+                        if chart_type == 'bar_chart':
+                            block['type'] = 'chart'
+                            block['chart_subtype'] = 'bar'
+                        elif chart_type == 'line_chart':
+                            block['type'] = 'chart'
+                            block['chart_subtype'] = 'line'
+                        elif chart_type == 'pie_chart':
+                            block['type'] = 'chart'
+                            block['chart_subtype'] = 'pie'
+                        else:
+                            block['type'] = 'figure'
+
+                        block['chart_confidence'] = chart.get('confidence', 0.5)
+                        block['chart_overlap'] = overlap
+                        break
+
+    except Exception as e:
+        print(f"차트 블록 업데이트 중 오류: {e}")
 
     return blocks
 

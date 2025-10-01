@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-"""
-Analysis services for OCR content
-"""
-
-from .block_analyzer import BlockAnalyzer
-from .page_analyzer import PageAnalyzer
-from .content_summarizer import ContentSummarizer
-
-__all__ = ['BlockAnalyzer', 'PageAnalyzer', 'ContentSummarizer']
+# Analysis domain
+from .chart_detector import LightweightChartDetector, create_chart_detector
+try:
+    from .content_summarizer import ContentSummarizer
+    __all__ = ['LightweightChartDetector', 'create_chart_detector', 'ContentSummarizer']
+except ImportError:
+    __all__ = ['LightweightChartDetector', 'create_chart_detector']
