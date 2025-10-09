@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Extract text blocks from images using OCR with enhanced table recognition
+Extract text blocks from images using OCR with enhanced Korean accuracy
 """
 
 import os
@@ -9,13 +9,17 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional
 from .merging import merge_adjacent_blocks
 from .table_recognition import create_table_recognizer
+from .image_preprocessing import KoreanImagePreprocessor
+from .korean_postprocessing import KoreanTextPostProcessor
 from ..cache import get_ocr_cache
 from ..analysis import create_chart_detector
 
 
-def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True, merge_threshold: int = 30) -> Dict:
+def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True,
+                  merge_threshold: int = 30, use_korean_enhancement: bool = True,
+                  preprocessing_level: str = 'medium') -> Dict:
     """
-    이미지에서 문서 블록 추출
+    이미지에서 문서 블록 추출 (한글 정확도 향상 포함)
 
     Args:
         ocr_instance: PaddleOCR 인스턴스
@@ -23,6 +27,8 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
         confidence_threshold: 신뢰도 임계값
         merge_blocks: 블록 병합 여부
         merge_threshold: 병합 임계값
+        use_korean_enhancement: 한글 정확도 향상 기능 사용 여부
+        preprocessing_level: 전처리 강도 ('light', 'medium', 'strong')
 
     Returns:
         블록 정보가 포함된 딕셔너리
@@ -35,9 +41,23 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
     if image is None:
         raise ValueError(f"이미지를 읽을 수 없습니다: {image_path}")
 
+    # 한글 정확도 향상을 위한 이미지 전처리
+    processed_image_path = image_path
+    preprocessor = None
+
+    if use_korean_enhancement:
+        try:
+            print(f"한글 OCR 향상을 위한 이미지 전처리 중... (강도: {preprocessing_level})")
+            preprocessor = KoreanImagePreprocessor()
+            processed_image_path = preprocessor.preprocess_for_korean_ocr(image_path, preprocessing_level)
+            print("✅ 이미지 전처리 완료")
+        except Exception as e:
+            print(f"⚠️ 이미지 전처리 실패, 원본 사용: {e}")
+            processed_image_path = image_path
+
     # PaddleOCR 실행
     print("OCR 처리 중...")
-    result = ocr_instance.ocr(image_path, cls=True)
+    result = ocr_instance.ocr(processed_image_path, cls=True)
 
     # 결과 파싱
     blocks = []
@@ -77,12 +97,38 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
             }
             blocks.append(block_info)
 
+    # 한글 후처리 적용
+    if use_korean_enhancement and blocks:
+        try:
+            print("한글 텍스트 후처리 중...")
+            postprocessor = KoreanTextPostProcessor()
+            enhanced_blocks = postprocessor.process_ocr_results(blocks, confidence_threshold)
+
+            # 향상된 결과로 교체
+            blocks = enhanced_blocks
+            print("✅ 한글 텍스트 후처리 완료")
+
+            # 후처리 통계
+            corrected_count = sum(1 for block in blocks if block.get('was_corrected', False))
+            if corrected_count > 0:
+                print(f"📝 {corrected_count}개 블록의 텍스트가 보정되었습니다")
+
+        except Exception as e:
+            print(f"⚠️ 한글 후처리 실패: {e}")
+
     # 블록 병합 처리
     if merge_blocks and blocks:
         blocks = merge_adjacent_blocks(blocks, merge_threshold)
 
     # 이미지 정보
     height, width = image.shape[:2]
+
+    # 임시 파일 정리
+    if preprocessor:
+        try:
+            preprocessor.cleanup_temp_files()
+        except Exception:
+            pass
 
     return {
         'image_info': {
@@ -96,7 +142,9 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
             'confidence_threshold': confidence_threshold,
             'language': 'korean',  # Default language
             'merge_blocks': merge_blocks,
-            'merge_threshold': merge_threshold
+            'merge_threshold': merge_threshold,
+            'korean_enhancement': use_korean_enhancement,
+            'preprocessing_level': preprocessing_level if use_korean_enhancement else None
         }
     }
 
