@@ -7,7 +7,9 @@ from services.ocr import DocumentBlockExtractor
 from services.pdf import PDFToImageProcessor
 
 # Import API modules
-from api.endpoints import root, process_image, process_pdf, blocks, requests, templates, pages, images, analysis
+from api.endpoints import root, process_image, process_pdf, blocks, templates, pages, images
+from api.endpoints.requests import router as requests_router, set_dependencies as set_requests_dependencies, set_processing_dependencies as set_requests_processing_dependencies
+from api.endpoints.analysis import router as analysis_router
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -40,8 +42,8 @@ output_dir.mkdir(exist_ok=True)
 root.set_server_stats(server_stats)
 process_image.set_dependencies(server_stats, extractor, str(output_dir))
 process_pdf.set_dependencies(server_stats, extractor, pdf_processor, str(output_dir))
-requests.set_dependencies(str(output_dir))
-requests.set_processing_dependencies(extractor, pdf_processor)
+set_requests_dependencies(str(output_dir))
+set_requests_processing_dependencies(extractor, pdf_processor)
 pages.set_dependencies(str(output_dir))
 blocks.set_dependencies(str(output_dir))
 images.set_dependencies(str(output_dir))
@@ -50,12 +52,12 @@ images.set_dependencies(str(output_dir))
 app.include_router(root.router, tags=["Root"])
 app.include_router(process_image.router, tags=["Processing"])
 app.include_router(process_pdf.router, tags=["Processing"])
-app.include_router(requests.router, tags=["Request Management"])
+app.include_router(requests_router, tags=["Request Management"])
 app.include_router(templates.router, tags=["Template Management"])
 app.include_router(pages.router, tags=["Page Navigation"])
 app.include_router(blocks.router, tags=["Block Editing"])
 app.include_router(images.router, tags=["Image Processing"])
-app.include_router(analysis.router, tags=["LLM Analysis"])
+app.include_router(analysis_router, tags=["LLM Analysis"])
 
 if __name__ == "__main__":
     import uvicorn
