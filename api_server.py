@@ -7,7 +7,7 @@ from services.ocr import DocumentBlockExtractor
 from services.pdf import PDFToImageProcessor
 
 # Import API modules
-from api.endpoints import root, process_image, process_pdf, blocks, requests, templates, pages, images
+from api.endpoints import root, process_image, process_pdf, blocks, requests, templates, pages, images, analysis
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -55,6 +55,7 @@ app.include_router(templates.router, tags=["Template Management"])
 app.include_router(pages.router, tags=["Page Navigation"])
 app.include_router(blocks.router, tags=["Block Editing"])
 app.include_router(images.router, tags=["Image Processing"])
+app.include_router(analysis.router, tags=["LLM Analysis"])
 
 if __name__ == "__main__":
     import uvicorn
