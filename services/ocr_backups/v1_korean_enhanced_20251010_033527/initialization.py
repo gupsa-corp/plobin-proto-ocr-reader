@@ -7,7 +7,7 @@ from paddleocr import PaddleOCR
 
 
 def initialize_ocr(use_gpu: bool = True, lang: str = 'korean', enable_layout_analysis: bool = True,
-                   use_korean_optimized: bool = True, use_ppocrv5: bool = False, use_tensorrt: bool = False):
+                   use_korean_optimized: bool = True):
     """
     PaddleOCR 초기화 (한글 정확도 최적화 포함)
 
@@ -16,38 +16,12 @@ def initialize_ocr(use_gpu: bool = True, lang: str = 'korean', enable_layout_ana
         lang: 인식 언어 ('korean', 'en', 'ch' 등)
         enable_layout_analysis: 레이아웃 분석 및 표 인식 활성화
         use_korean_optimized: 한글 최적화 설정 사용 여부
-        use_ppocrv5: PP-OCRv5 모델 사용 여부 (최신 버전)
-        use_tensorrt: TensorRT 가속화 사용 여부 (최고 성능)
 
     Returns:
         초기화된 PaddleOCR 인스턴스
     """
     try:
-        # TensorRT 가속화 우선 시도
-        if use_tensorrt and use_gpu:
-            try:
-                from .tensorrt_acceleration import initialize_with_tensorrt
-                result = initialize_with_tensorrt(lang, enable_layout_analysis)
-                if result:
-                    return result
-                else:
-                    print("⚠️ TensorRT 초기화 실패. 일반 모드로 폴백...")
-            except ImportError:
-                print("⚠️ TensorRT 모듈을 찾을 수 없습니다. 일반 모드로 폴백...")
-            except Exception as e:
-                print(f"⚠️ TensorRT 초기화 실패: {e}. 일반 모드로 폴백...")
-
-        # PP-OCRv5 사용 시 새로운 초기화 시스템 사용
-        if use_ppocrv5 and lang == 'korean':
-            try:
-                from .ppocrv5_initialization import initialize_ppocrv5_korean
-                return initialize_ppocrv5_korean(use_gpu, enable_layout_analysis)
-            except ImportError:
-                print("⚠️ PP-OCRv5 모듈을 찾을 수 없습니다. PP-OCRv3으로 폴백...")
-            except Exception as e:
-                print(f"⚠️ PP-OCRv5 초기화 실패: {e}. PP-OCRv3으로 폴백...")
-
-        # 한글 최적화 설정 (PP-OCRv3)
+        # 한글 최적화 설정
         if lang == 'korean' and use_korean_optimized:
             print("한글 최적화 모드로 PaddleOCR 초기화 중...")
 

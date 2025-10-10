@@ -7,15 +7,13 @@ from .table_recognition import create_table_recognizer
 
 # Legacy DocumentBlockExtractor class for backward compatibility (한글 정확도 향상 포함)
 class DocumentBlockExtractor:
-    def __init__(self, use_gpu: bool = True, lang: str = 'korean', use_korean_enhancement: bool = True, use_ppocrv5: bool = False):
+    def __init__(self, use_gpu: bool = True, lang: str = 'korean', use_korean_enhancement: bool = True):
         self.lang = lang
         self.use_gpu = use_gpu
         self.use_korean_enhancement = use_korean_enhancement
-        self.use_ppocrv5 = use_ppocrv5
-        # 한글 최적화 설정 적용 (PP-OCRv5 지원)
+        # 한글 최적화 설정 적용
         self.ocr = initialize_ocr(use_gpu, lang, enable_layout_analysis=True,
-                                 use_korean_optimized=(lang == 'korean' and use_korean_enhancement),
-                                 use_ppocrv5=use_ppocrv5)
+                                 use_korean_optimized=(lang == 'korean' and use_korean_enhancement))
 
     def extract_blocks(self, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True,
                       merge_threshold: int = 30, enable_table_recognition: bool = True,
