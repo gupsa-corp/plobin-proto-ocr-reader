@@ -57,7 +57,6 @@ def initialize_ocr(use_gpu: bool = True, lang: str = 'korean', enable_layout_ana
                     # 한글 전용 모델 사용 (PP-OCRv3)
                     lang='korean',             # 명시적으로 korean 지정
                     use_angle_cls=True,        # 텍스트 방향 분류 활성화
-                    show_log=False,            # 로그 출력 최소화
 
                     # 한글 최적화 감지 설정
                     det_limit_side_len=3000,   # 고해상도 이미지 지원
@@ -66,9 +65,7 @@ def initialize_ocr(use_gpu: bool = True, lang: str = 'korean', enable_layout_ana
                     det_db_unclip_ratio=3.0,   # 박스 확장 비율 증가
 
                     # 성능 최적화
-                    rec_batch_num=4,           # 배치 크기
-                    max_batch_size=8,          # 최대 배치 크기
-                    total_process_num=1        # 단일 프로세스
+                    rec_batch_num=4            # 배치 크기
                 )
                 print("✅ 한글 최적화 PaddleOCR 초기화 완료")
                 return ocr
@@ -82,18 +79,15 @@ def initialize_ocr(use_gpu: bool = True, lang: str = 'korean', enable_layout_ana
             ocr = PaddleOCR(
                 lang=lang,
                 use_angle_cls=True,        # 텍스트 방향 분류 활성화
-                show_log=False,            # 로그 출력 최소화
                 det_limit_side_len=1600,   # 고해상도 이미지 지원
                 rec_batch_num=8,           # 배치 크기
-                max_batch_size=12,         # 최대 배치 크기
                 det_db_thresh=0.2,         # 텍스트 감지 임계값
-                det_db_box_thresh=0.5,     # 박스 신뢰도 임계값
-                total_process_num=1        # 단일 프로세스
+                det_db_box_thresh=0.5      # 박스 신뢰도 임계값
             )
             print(f"PaddleOCR 최적화 초기화 완료 - 언어: {lang}")
         else:
             # 기본 설정
-            ocr = PaddleOCR(lang=lang, show_log=False)
+            ocr = PaddleOCR(lang=lang)
             print(f"PaddleOCR 초기화 완료 - 언어: {lang}, 기본 모드")
 
         # GPU 사용 여부는 PaddlePaddle 환경에 따라 자동 결정됨

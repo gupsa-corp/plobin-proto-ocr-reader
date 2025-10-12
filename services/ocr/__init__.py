@@ -4,6 +4,7 @@ from .extraction import extract_blocks, extract_blocks_with_layout_analysis, cro
 from .merging import merge_adjacent_blocks, merge_line_blocks, create_merged_block
 from .visualization import visualize_blocks
 from .table_recognition import create_table_recognizer
+from .hierarchy import build_hierarchy, get_block_hierarchy_tree, get_hierarchy_statistics, flatten_hierarchy
 
 # Legacy DocumentBlockExtractor class for backward compatibility (한글 정확도 향상 포함)
 class DocumentBlockExtractor:
@@ -36,4 +37,4 @@ class DocumentBlockExtractor:
     def visualize_blocks(self, image_path: str, result, save_path=None):
         return visualize_blocks(image_path, result, save_path)
 
-__all__ = ['DocumentBlockExtractor', 'initialize_ocr', 'extract_blocks', 'extract_blocks_with_layout_analysis', 'visualize_blocks', 'merge_adjacent_blocks', 'merge_line_blocks', 'create_merged_block', 'create_table_recognizer', 'crop_all_blocks']
+__all__ = ['DocumentBlockExtractor', 'initialize_ocr', 'extract_blocks', 'extract_blocks_with_layout_analysis', 'visualize_blocks', 'merge_adjacent_blocks', 'merge_line_blocks', 'create_merged_block', 'create_table_recognizer', 'crop_all_blocks', 'build_hierarchy', 'get_block_hierarchy_tree', 'get_hierarchy_statistics', 'flatten_hierarchy']

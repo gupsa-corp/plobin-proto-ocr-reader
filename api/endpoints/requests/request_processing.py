@@ -118,18 +118,26 @@ async def process_image_request(request_id: str, image_path: str, original_filen
                                request_storage, extractor) -> None:
     """이미지 요청 처리"""
     try:
-        # OCR 처리
-        result = extractor.extract_blocks(image_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold)
+        # OCR 처리 (레이아웃 분석 및 표 인식 활성화)
+        result = extractor.extract_blocks(image_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold,
+                                         enable_table_recognition=True)
         blocks = result.get('blocks', [])
 
-        # 블록 데이터 변환
+        # 레이아웃 정보 추가 (표, 차트 등)
+        layout_info = result.get('layout_info', {})
+
+        # 블록 데이터 변환 (계층 정보 포함)
         processed_blocks = []
         for i, block in enumerate(blocks):
             processed_blocks.append({
                 'text': block['text'],
                 'confidence': block['confidence'],
                 'bbox': block['bbox_points'],
-                'block_type': block['type']
+                'block_type': block['type'],
+                'block_id': block.get('block_id'),
+                'parent_id': block.get('parent_id'),
+                'children': block.get('children', []),
+                'level': block.get('level', 0)
             })
 
         # 시각화 이미지 생성
@@ -171,7 +179,7 @@ async def process_image_request(request_id: str, image_path: str, original_filen
         summarizer = ContentSummarizer()
         content_summary = summarizer.create_comprehensive_summary(processed_blocks)
 
-        # 결과 저장
+        # 결과 저장 (메타데이터 포함)
         request_storage.save_page_result(
             request_id=request_id,
             page_number=1,
@@ -179,7 +187,8 @@ async def process_image_request(request_id: str, image_path: str, original_filen
             processing_time=processing_time,
             visualization_data=visualization_data,
             original_image_data=original_image_data,
-            content_summary=content_summary
+            content_summary=content_summary,
+            metadata=result.get('metadata', {})  # 계층 구조 통계 포함
         )
 
     except Exception as e:
@@ -198,18 +207,26 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
         for page_num, image_path in enumerate(image_paths, 1):
             page_start_time = time.time()
 
-            # 각 페이지 OCR 처리
-            result = extractor.extract_blocks(image_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold)
+            # 각 페이지 OCR 처리 (레이아웃 분석 및 표 인식 활성화)
+            result = extractor.extract_blocks(image_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold,
+                                             enable_table_recognition=True)
             blocks = result.get('blocks', [])
 
-            # 블록 데이터 변환
+            # 레이아웃 정보 추가 (표, 차트 등)
+            layout_info = result.get('layout_info', {})
+
+            # 블록 데이터 변환 (계층 정보 포함)
             processed_blocks = []
             for i, block in enumerate(blocks):
                 processed_blocks.append({
                     'text': block['text'],
                     'confidence': block['confidence'],
                     'bbox': block['bbox_points'],
-                    'block_type': block['type']
+                    'block_type': block['type'],
+                    'block_id': block.get('block_id'),
+                    'parent_id': block.get('parent_id'),
+                    'children': block.get('children', []),
+                    'level': block.get('level', 0)
                 })
 
             # 시각화 이미지 생성
@@ -251,7 +268,7 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
             summarizer = ContentSummarizer()
             content_summary = summarizer.create_comprehensive_summary(processed_blocks)
 
-            # 페이지 결과 저장
+            # 페이지 결과 저장 (메타데이터 포함)
             request_storage.save_page_result(
                 request_id=request_id,
                 page_number=page_num,
@@ -259,7 +276,8 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
                 processing_time=page_processing_time,
                 visualization_data=visualization_data,
                 original_image_data=original_image_data,
-                content_summary=content_summary
+                content_summary=content_summary,
+                metadata=result.get('metadata', {})  # 계층 구조 통계 포함
             )
 
             # 임시 이미지 파일 정리
