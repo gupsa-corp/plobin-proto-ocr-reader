@@ -96,7 +96,8 @@ class RequestStorage:
     def save_page_result(self, request_id: str, page_number: int,
                         blocks: List[Dict[str, Any]], processing_time: float,
                         visualization_data: bytes = None, original_image_data: bytes = None,
-                        content_summary: Dict[str, Any] = None) -> Dict[str, str]:
+                        content_summary: Dict[str, Any] = None,
+                        metadata: Dict[str, Any] = None) -> Dict[str, str]:
         """
         페이지 OCR 결과 저장
 
@@ -107,6 +108,8 @@ class RequestStorage:
             processing_time: 처리 시간
             visualization_data: 시각화 이미지 데이터
             original_image_data: 원본 페이지 이미지 데이터
+            content_summary: 콘텐츠 요약
+            metadata: OCR 메타데이터 (계층 구조 통계 포함)
 
         Returns:
             저장된 파일 경로들
@@ -127,7 +130,7 @@ class RequestStorage:
         )
         save_metadata(page_metadata, page_paths['page_info_file'])
 
-        # 전체 결과 저장
+        # 전체 결과 저장 (메타데이터 포함)
         page_result = {
             'page_number': page_number,
             'total_blocks': total_blocks,
@@ -135,6 +138,11 @@ class RequestStorage:
             'processing_time': processing_time,
             'blocks': blocks
         }
+
+        # OCR 메타데이터 추가 (계층 구조 통계 등)
+        if metadata:
+            page_result['metadata'] = metadata
+
         with open(page_paths['result_file'], 'w', encoding='utf-8') as f:
             json.dump(page_result, f, ensure_ascii=False, indent=2)
 

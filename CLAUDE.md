@@ -59,6 +59,26 @@ PaddleOCR을 기반으로 한 문서 텍스트 추출 및 블록 분류 API 서�
 - `POST /templates/{template_id}/usage` - 템플릿 사용 횟수 증가
 - `POST /templates/{template_id}/accuracy` - 템플릿 정확도 업데이트
 
+### LLM 분석 (신규)
+- `POST /analysis/sections/analyze` - 개별 섹션 텍스트 LLM 분석
+- `POST /analysis/documents/{request_id}/pages/{page_number}/analyze` - 문서 페이지 섹션별 LLM 분석
+- `GET /analysis/documents/{request_id}/pages/{page_number}/analysis` - 저장된 분석 결과 조회
+- `GET /analysis/documents/{request_id}/analysis/summary` - 전체 문서 분석 요약 조회
+- `DELETE /analysis/documents/{request_id}/analysis` - 문서 분석 결과 삭제
+- `GET /analysis/models` - 사용 가능한 LLM 모델 목록 조회
+- `GET /analysis/health` - LLM 분석 서비스 상태 확인
+
+### 통합 OCR + LLM 분석 (신규)
+- `POST /analysis/process-and-analyze` - 파일 업로드 → OCR → LLM 분석 원스톱 처리
+- `GET /analysis/integrated-results` - 통합 분석 결과 목록 조회 (페이징 지원)
+- `GET /analysis/integrated-results/{request_id}` - 특정 통합 결과 JSON 조회
+- `GET /analysis/integrated-results/{request_id}/download` - 통합 결과 JSON 파일 다운로드
+
+### 디버깅 및 개발 도구 (신규)
+- `GET /analysis/debug/api-info` - LLM API 연결 정보 및 설정 확인
+- `GET /analysis/debug/test-connection` - 다양한 LLM API 엔드포인트 연결 테스트
+- `POST /analysis/debug/manual-request` - 수동 LLM API 요청 테스트
+
 ## 지원 파일 포맷
 - **이미지**: JPEG, PNG, BMP, TIFF, WEBP
 - **문서**: PDF
@@ -116,6 +136,27 @@ curl -X GET http://localhost:6003/templates/statistics
 curl -X GET "http://localhost:6003/templates/search?query=송장"
 curl -X POST -F "file=@demo/invoices/sample_invoice.pdf" http://localhost:6003/templates/invoice_standard_001/match
 curl -X POST -F "file=@demo/invoices/sample_invoice.pdf" http://localhost:6003/templates/auto-match
+
+# LLM 분석 API 테스트 (신규)
+python3 test_analysis_api.py
+curl -X GET http://localhost:6003/analysis/health
+curl -X GET http://localhost:6003/analysis/models
+curl -X POST http://localhost:6003/analysis/sections/analyze -H "Content-Type: application/json" -d '{"text":"테스트 텍스트","section_type":"general","model":"boto"}'
+curl -X POST http://localhost:6003/analysis/documents/{request_id}/pages/1/analyze -H "Content-Type: application/json" -d '{"model":"boto"}'
+curl -X GET http://localhost:6003/analysis/documents/{request_id}/pages/1/analysis
+curl -X GET http://localhost:6003/analysis/documents/{request_id}/analysis/summary
+
+# 통합 OCR + LLM 분석 API 테스트 (신규)
+curl -X POST http://localhost:6003/analysis/process-and-analyze -F "file=@test_receipt.png" -F "description=영수증 분석 테스트"
+curl -X POST http://localhost:6003/analysis/process-and-analyze -F "file=@document.pdf" -F "description=문서 분석" -F 'analysis_config={"perform_llm_analysis": true, "model": "boto", "document_type": "invoice"}'
+curl -X GET http://localhost:6003/analysis/integrated-results
+curl -X GET http://localhost:6003/analysis/integrated-results/{request_id}
+curl -X GET http://localhost:6003/analysis/integrated-results/{request_id}/download
+
+# 디버깅 및 개발 도구 테스트 (신규)
+curl -X GET http://localhost:6003/analysis/debug/api-info
+curl -X GET http://localhost:6003/analysis/debug/test-connection
+curl -X POST http://localhost:6003/analysis/debug/manual-request -H "Content-Type: application/json" -d '{"url":"https://llm.gupsa.net/v1/models","method":"GET"}'
 ```
 
 ## 출력 파일 구조 (UUID 기반)
@@ -130,6 +171,8 @@ output/
         │   ├── result.json         # 페이지 OCR 결과
         │   ├── original.png        # 원본 페이지 이미지
         │   ├── visualization.png   # 바운딩 박스 시각화
+        │   ├── analysis/           # LLM 분석 결과 (신규)
+        │   │   └── llm_analysis.json  # 섹션별 LLM 분석 결과
         │   └── blocks/             # 블록별 상세 데이터
         │       ├── block_001.json  # 블록 메타데이터
         │       ├── block_001.png   # 크롭된 블록 이미지
@@ -178,12 +221,18 @@ output/
     - `matcher.py` - 템플릿 매칭 알고리즘 (구현 예정)
     - `generator.py` - 자동 템플릿 생성 (구현 예정)
     - `visualization.py` - 템플릿 시각화 (구현 예정)
+  - `llm/` - LLM 분석 도메인 (신규)
+    - `client.py` - ai.gupsa.net/v1 LLM API 클라이언트
+    - `analyzer.py` - OCR 결과 섹션별 분석기
 - `api/endpoints/` - API 엔드포인트 모듈들
   - `requests.py` - 새로운 UUID 기반 요청 처리 API
   - `templates.py` - 템플릿 관리 API (신규)
+  - `analysis.py` - LLM 분석 API (신규)
 - `api/models/` - Pydantic 스키마 모델들
+  - `analysis.py` - LLM 분석 관련 스키마 (신규)
 - `api/utils/` - 유틸리티 함수들
 - `test_api.py` - API 테스트 스크립트
+- `test_analysis_api.py` - LLM 분석 API 테스트 스크립트 (신규)
 
 ## 개발 환경
 - Python 3.12

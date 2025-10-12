@@ -1,8 +1,8 @@
 {
   "c4de4a4406a1d2bcafd2584449180df3_b441d65e86cbc5d73b3b43fdf5d96e5d": {
     "created": 1759322500.531209,
-    "last_accessed": 1759322500.5312092,
-    "access_count": 1,
+    "last_accessed": 1760247329.4564989,
+    "access_count": 10,
     "image_path": "/tmp/tmpi5g1e9kj_page_001.png",
     "file_size": 11876
   },
@@ -19,5 +19,68 @@
     "access_count": 1,
     "image_path": "/tmp/tmp23blpupv_page_002.png",
     "file_size": 17360
+  },
+  "1444dcfa2aaf5225fd1a5ca110775852_983a9fad3160712d719c50fc4dd7bc44": {
+    "created": 1759380153.96066,
+    "last_accessed": 1759380153.96066,
+    "access_count": 1,
+    "image_path": "/tmp/tmp4bnoca2w.jpg",
+    "file_size": 14211
+  },
+  "f26ccd19b4731cb6523ad5958c93e314_b441d65e86cbc5d73b3b43fdf5d96e5d": {
+    "created": 1760023800.7665908,
+    "last_accessed": 1760024737.5258632,
+    "access_count": 17,
+    "image_path": "/tmp/tmp5x60diy9.png",
+    "file_size": 2753
+  },
+  "aa844f127288c4bafd9be2a4e38a78d9_b441d65e86cbc5d73b3b43fdf5d96e5d": {
+    "created": 1760033598.6249173,
+    "last_accessed": 1760034351.9122908,
+    "access_count": 2,
+    "image_path": "/tmp/tmp7hs5ccoh.png",
+    "file_size": 2908
+  },
+  "b537db590af923ca5aed7ce0e7d6c122_b441d65e86cbc5d73b3b43fdf5d96e5d": {
+    "created": 1760033632.4145417,
+    "last_accessed": 1760033632.4145422,
+    "access_count": 1,
+    "image_path": "/tmp/tmppoag6jyr.png",
+    "file_size": 4417
+  },
+  "bb634c0665b7b8d74333bc3851b5ec3a_b441d65e86cbc5d73b3b43fdf5d96e5d": {
+    "created": 1760034326.5598514,
+    "last_accessed": 1760034326.559852,
+    "access_count": 1,
+    "image_path": "/tmp/tmp94bgvxxd.png",
+    "file_size": 15015
+  },
+  "a5a26b7ef107ab8255abfde35ea4d99e_b441d65e86cbc5d73b3b43fdf5d96e5d": {
+    "created": 1760034412.4942982,
+    "last_accessed": 1760034412.4942985,
+    "access_count": 1,
+    "image_path": "/tmp/tmpc63qgfs7.png",
+    "file_size": 10311
+  },
+  "2c7f89876de8314405c37e1bf3be00ca_b441d65e86cbc5d73b3b43fdf5d96e5d": {
+    "created": 1760034466.9743936,
+    "last_accessed": 1760035544.836412,
+    "access_count": 8,
+    "image_path": "/tmp/tmplotsw_yk.png",
+    "file_size": 27818
+  },
+  "f9ca235b5e887fd2bb99d2aaaafe80f4_b441d65e86cbc5d73b3b43fdf5d96e5d": {
+    "created": 1760059390.058135,
+    "last_accessed": 1760059468.1491928,
+    "access_count": 5,
+    "image_path": "/tmp/tmpyp7phge5.png",
+    "file_size": 499
+  },
+  "f26ccd19b4731cb6523ad5958c93e314_cba8c272ac3a946f395f5c722ab7806a": {
+    "created": 1760248441.94061,
+    "last_accessed": 1760252878.391127,
+    "access_count": 11,
+    "image_path": "/var/folders/tz/sqx9gyyd0wqbwrw21478jpfm0000gn/T/tmp67c084zz.png",
+    "file_size": 3069
   }
 }
