@@ -29,7 +29,9 @@ def set_dependencies(stats, doc_extractor, out_dir=None):
 async def process_image(
     file: UploadFile = File(...),
     merge_blocks: Optional[bool] = Query(True, description="인접한 블록들을 병합하여 문장 단위로 그룹화"),
-    merge_threshold: Optional[int] = Query(30, description="블록 병합 임계값 (픽셀 단위)")
+    merge_threshold: Optional[int] = Query(30, description="블록 병합 임계값 (픽셀 단위)"),
+    create_sections: Optional[bool] = Query(False, description="블록들을 논리적 섹션으로 그룹화 (header, body, footer 등)"),
+    build_hierarchy_tree: Optional[bool] = Query(False, description="블록 간 계층 구조 구축 (포함 관계)")
 ):
     start_time = time.time()
     server_stats["total_requests"] += 1
@@ -45,7 +47,13 @@ async def process_image(
             tmp_path = tmp_file.name
 
         try:
-            result = extractor.extract_blocks(tmp_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold)
+            result = extractor.extract_blocks(
+                tmp_path,
+                merge_blocks=merge_blocks,
+                merge_threshold=merge_threshold,
+                create_sections=create_sections,
+                build_hierarchy_tree=build_hierarchy_tree
+            )
             blocks = result.get('blocks', [])
 
             if not blocks:
@@ -87,8 +95,18 @@ async def process_image(
             # 요청 생성
             request_id = storage.create_request(file.filename, "image", file_size, total_pages=1)
 
+            # 메타데이터 준비 (섹션/계층 정보 포함)
+            ocr_metadata = {}
+            if create_sections and 'sections' in result:
+                ocr_metadata['sections'] = result['sections']
+                ocr_metadata['section_summary'] = result.get('section_summary', {})
+
+            if build_hierarchy_tree and 'hierarchical_blocks' in result:
+                ocr_metadata['hierarchical_blocks'] = result['hierarchical_blocks']
+                ocr_metadata['hierarchy_statistics'] = result.get('hierarchy_statistics', {})
+
             # 페이지 결과 저장
-            storage.save_page_result(request_id, 1, blocks, processing_time)
+            storage.save_page_result(request_id, 1, blocks, processing_time, metadata=ocr_metadata if ocr_metadata else None)
 
             # 원본 이미지 저장
             if tmp_path and os.path.exists(tmp_path):
@@ -120,8 +138,19 @@ async def process_image(
                 "total_blocks": len(blocks),
                 "overall_confidence": round(avg_confidence, 3),
                 "processing_time": round(processing_time, 3),
-                "completed_at": datetime.now().isoformat()
+                "completed_at": datetime.now().isoformat(),
+                "sections_created": create_sections,
+                "hierarchy_built": build_hierarchy_tree
             }
+
+            # 섹션/계층 정보가 있으면 추가
+            if create_sections and 'sections' in result:
+                summary_data['total_sections'] = len(result['sections'])
+                summary_data['section_summary'] = result.get('section_summary', {})
+
+            if build_hierarchy_tree and 'hierarchy_statistics' in result:
+                summary_data['hierarchy_statistics'] = result['hierarchy_statistics']
+
             storage.complete_request(request_id, summary_data)
 
             output_files = {

@@ -9,11 +9,14 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional
 from PIL import Image
 from .merging import merge_adjacent_blocks
+from .section_grouping import group_blocks_by_sections, classify_sections_by_type
+from .hierarchy import build_hierarchy, get_hierarchy_statistics
 
 
 def extract_blocks(ocr_predictors, image_path: str, confidence_threshold: float = 0.5,
                   merge_blocks: bool = True, merge_threshold: int = 30,
-                  lang: str = 'ko', **kwargs) -> Dict:
+                  lang: str = 'ko', create_sections: bool = False,
+                  build_hierarchy_tree: bool = False, **kwargs) -> Dict:
     """
     이미지에서 문서 블록 추출 (Surya OCR 사용)
 
@@ -99,7 +102,7 @@ def extract_blocks(ocr_predictors, image_path: str, confidence_threshold: float 
     # 이미지 정보
     height, width = cv_image.shape[:2]
 
-    return {
+    result = {
         'image_info': {
             'path': image_path,
             'width': width,
@@ -112,9 +115,37 @@ def extract_blocks(ocr_predictors, image_path: str, confidence_threshold: float 
             'language': lang,
             'merge_blocks': merge_blocks,
             'merge_threshold': merge_threshold,
-            'ocr_engine': 'surya'
+            'ocr_engine': 'surya',
+            'sections_created': create_sections,
+            'hierarchy_built': build_hierarchy_tree
         }
     }
+
+    # 섹션 그룹핑 (선택적)
+    if create_sections and blocks:
+        print("섹션 그룹핑 수행 중...")
+        sections = group_blocks_by_sections(blocks)
+        sections = classify_sections_by_type(sections)
+        result['sections'] = sections
+        result['section_summary'] = {
+            'total_sections': len(sections),
+            'section_types': {
+                section_type: len([s for s in sections if s.get('section_type') == section_type])
+                for section_type in set([s.get('section_type', 'unknown') for s in sections])
+            }
+        }
+        print(f"섹션 그룹핑 완료: {len(sections)}개 섹션 생성")
+
+    # 계층 구조 구축 (선택적)
+    if build_hierarchy_tree and blocks:
+        print("계층 구조 구축 중...")
+        hierarchical_blocks = build_hierarchy(blocks)
+        hierarchy_stats = get_hierarchy_statistics(hierarchical_blocks)
+        result['hierarchical_blocks'] = hierarchical_blocks
+        result['hierarchy_statistics'] = hierarchy_stats
+        print(f"계층 구조 구축 완료: {hierarchy_stats['max_depth']}단계 깊이")
+
+    return result
 
 
 def extract_blocks_with_layout_analysis(ocr_predictors, image_path: str, confidence_threshold: float = 0.5,

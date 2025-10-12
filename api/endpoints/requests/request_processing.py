@@ -22,6 +22,8 @@ async def process_request(
     description: Optional[str] = Form(None),
     merge_blocks: Optional[bool] = Form(True),
     merge_threshold: Optional[int] = Form(30),
+    create_sections: Optional[bool] = Form(False),
+    build_hierarchy_tree: Optional[bool] = Form(False),
     request_storage = Depends(get_request_storage),
     extractor = Depends(get_extractor),
     pdf_processor = Depends(get_pdf_processor)
@@ -67,14 +69,16 @@ async def process_request(
                 # 이미지 처리
                 await process_image_request(request_id, tmp_path, file.filename,
                                           merge_blocks, merge_threshold, start_time,
-                                          request_storage, extractor)
+                                          request_storage, extractor,
+                                          create_sections, build_hierarchy_tree)
                 total_pages = 1
 
             elif file_type == 'pdf':
                 # PDF 처리
                 total_pages = await process_pdf_request(request_id, tmp_path, file.filename,
                                                       merge_blocks, merge_threshold, start_time,
-                                                      request_storage, extractor, pdf_processor)
+                                                      request_storage, extractor, pdf_processor,
+                                                      create_sections, build_hierarchy_tree)
 
             # 메타데이터 업데이트
             metadata = request_storage.get_request_metadata(request_id)
@@ -115,7 +119,8 @@ async def process_request(
 
 async def process_image_request(request_id: str, image_path: str, original_filename: str,
                                merge_blocks: bool, merge_threshold: int, start_time: float,
-                               request_storage, extractor) -> None:
+                               request_storage, extractor,
+                               create_sections: bool = False, build_hierarchy_tree: bool = False) -> None:
     """이미지 요청 처리"""
     try:
         # OCR 처리 (단순 블록 추출 - 레이아웃 분석은 텍스트를 누락시킴)
@@ -125,7 +130,9 @@ async def process_image_request(request_id: str, image_path: str, original_filen
             confidence_threshold=0.5,
             merge_blocks=False,  # 병합 비활성화
             merge_threshold=merge_threshold,
-            enable_table_recognition=False
+            enable_table_recognition=False,
+            create_sections=create_sections,
+            build_hierarchy_tree=build_hierarchy_tree
         )
         blocks = result.get('blocks', [])
 
@@ -185,6 +192,16 @@ async def process_image_request(request_id: str, image_path: str, original_filen
         summarizer = ContentSummarizer()
         content_summary = summarizer.create_comprehensive_summary(processed_blocks)
 
+        # 메타데이터 준비 (섹션/계층 정보 포함)
+        ocr_metadata = {}
+        if create_sections and 'sections' in result:
+            ocr_metadata['sections'] = result['sections']
+            ocr_metadata['section_summary'] = result.get('section_summary', {})
+
+        if build_hierarchy_tree and 'hierarchical_blocks' in result:
+            ocr_metadata['hierarchical_blocks'] = result['hierarchical_blocks']
+            ocr_metadata['hierarchy_statistics'] = result.get('hierarchy_statistics', {})
+
         # 결과 저장 (메타데이터 포함)
         request_storage.save_page_result(
             request_id=request_id,
@@ -194,7 +211,7 @@ async def process_image_request(request_id: str, image_path: str, original_filen
             visualization_data=visualization_data,
             original_image_data=original_image_data,
             content_summary=content_summary,
-            metadata=result.get('metadata', {})  # 계층 구조 통계 포함
+            metadata=ocr_metadata if ocr_metadata else result.get('metadata', {})
         )
 
     except Exception as e:
@@ -203,7 +220,8 @@ async def process_image_request(request_id: str, image_path: str, original_filen
 
 async def process_pdf_request(request_id: str, pdf_path: str, original_filename: str,
                              merge_blocks: bool, merge_threshold: int, start_time: float,
-                             request_storage, extractor, pdf_processor) -> int:
+                             request_storage, extractor, pdf_processor,
+                             create_sections: bool = False, build_hierarchy_tree: bool = False) -> int:
     """PDF 요청 처리"""
     try:
         # PDF를 이미지로 변환
@@ -220,7 +238,9 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
                 confidence_threshold=0.5,
                 merge_blocks=False,  # 병합 비활성화
                 merge_threshold=merge_threshold,
-                enable_table_recognition=False
+                enable_table_recognition=False,
+                create_sections=create_sections,
+                build_hierarchy_tree=build_hierarchy_tree
             )
             blocks = result.get('blocks', [])
 
@@ -280,6 +300,16 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
             summarizer = ContentSummarizer()
             content_summary = summarizer.create_comprehensive_summary(processed_blocks)
 
+            # 메타데이터 준비 (섹션/계층 정보 포함)
+            ocr_metadata = {}
+            if create_sections and 'sections' in result:
+                ocr_metadata['sections'] = result['sections']
+                ocr_metadata['section_summary'] = result.get('section_summary', {})
+
+            if build_hierarchy_tree and 'hierarchical_blocks' in result:
+                ocr_metadata['hierarchical_blocks'] = result['hierarchical_blocks']
+                ocr_metadata['hierarchy_statistics'] = result.get('hierarchy_statistics', {})
+
             # 페이지 결과 저장 (메타데이터 포함)
             request_storage.save_page_result(
                 request_id=request_id,
@@ -289,7 +319,7 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
                 visualization_data=visualization_data,
                 original_image_data=original_image_data,
                 content_summary=content_summary,
-                metadata=result.get('metadata', {})  # 계층 구조 통계 포함
+                metadata=ocr_metadata if ocr_metadata else result.get('metadata', {})
             )
 
             # 임시 이미지 파일 정리

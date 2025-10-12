@@ -1,5 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException, Query
 from typing import List, Optional
+from pathlib import Path
 import tempfile
 import shutil
 import time
@@ -30,7 +31,9 @@ def set_dependencies(stats, doc_extractor, pdf_proc, out_dir=None):
 async def process_pdf(
     file: UploadFile = File(...),
     merge_blocks: Optional[bool] = Query(True, description="인접한 블록들을 병합하여 문장 단위로 그룹화"),
-    merge_threshold: Optional[int] = Query(30, description="블록 병합 임계값 (픽셀 단위)")
+    merge_threshold: Optional[int] = Query(30, description="블록 병합 임계값 (픽셀 단위)"),
+    create_sections: Optional[bool] = Query(False, description="블록들을 논리적 섹션으로 그룹화 (header, body, footer 등)"),
+    build_hierarchy_tree: Optional[bool] = Query(False, description="블록 간 계층 구조 구축 (포함 관계)")
 ):
     start_time = time.time()
     server_stats["total_requests"] += 1
@@ -69,12 +72,28 @@ async def process_pdf(
                     page_num = i + 1
                     page_start_time = time.time()
 
-                    result = extractor.extract_blocks(image_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold)
+                    result = extractor.extract_blocks(
+                        image_path,
+                        merge_blocks=merge_blocks,
+                        merge_threshold=merge_threshold,
+                        create_sections=create_sections,
+                        build_hierarchy_tree=build_hierarchy_tree
+                    )
                     blocks = result.get('blocks', [])
                     page_processing_time = time.time() - page_start_time
 
+                    # 메타데이터 준비 (섹션/계층 정보 포함)
+                    ocr_metadata = {}
+                    if create_sections and 'sections' in result:
+                        ocr_metadata['sections'] = result['sections']
+                        ocr_metadata['section_summary'] = result.get('section_summary', {})
+
+                    if build_hierarchy_tree and 'hierarchical_blocks' in result:
+                        ocr_metadata['hierarchical_blocks'] = result['hierarchical_blocks']
+                        ocr_metadata['hierarchy_statistics'] = result.get('hierarchy_statistics', {})
+
                     # 페이지 결과 저장
-                    storage.save_page_result(request_id, page_num, blocks, page_processing_time)
+                    storage.save_page_result(request_id, page_num, blocks, page_processing_time, metadata=ocr_metadata if ocr_metadata else None)
 
                     # 원본 이미지 저장 (PDF에서 변환된 페이지 이미지)
                     try:
@@ -128,7 +147,9 @@ async def process_pdf(
                     "overall_confidence": round(overall_confidence, 3),
                     "processing_time": round(processing_time, 3),
                     "pages": all_pages_data,
-                    "completed_at": datetime.now().isoformat()
+                    "completed_at": datetime.now().isoformat(),
+                    "sections_created": create_sections,
+                    "hierarchy_built": build_hierarchy_tree
                 }
                 storage.complete_request(request_id, summary_data)
 
