@@ -34,7 +34,7 @@ server_stats = {
 }
 
 # Initialize processors
-extractor = DocumentBlockExtractor(use_gpu=False)
+extractor = DocumentBlockExtractor(use_gpu=False, lang='korean', use_korean_enhancement=True)
 pdf_processor = PDFToImageProcessor()
 
 # Initialize output directory
