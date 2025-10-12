@@ -13,7 +13,8 @@ from ..cache import get_ocr_cache
 from ..analysis import create_chart_detector
 
 
-def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True, merge_threshold: int = 30) -> Dict:
+def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True, merge_threshold: int = 30,
+                  use_korean_enhancement: bool = False, preprocessing_level: str = 'medium') -> Dict:
     """
     이미지에서 문서 블록 추출
 
@@ -23,6 +24,8 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
         confidence_threshold: 신뢰도 임계값
         merge_blocks: 블록 병합 여부
         merge_threshold: 병합 임계값
+        use_korean_enhancement: 한글 최적화 사용 (현재 미구현, 호환성 유지용)
+        preprocessing_level: 전처리 레벨 (현재 미구현, 호환성 유지용)
 
     Returns:
         블록 정보가 포함된 딕셔너리
@@ -42,11 +45,13 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
     # 결과 파싱
     blocks = []
     if result and result[0]:
+        print(f"OCR 감지된 총 텍스트 수: {len(result[0])}")
         for idx, detection in enumerate(result[0]):
             bbox, (text, confidence) = detection
 
             # 신뢰도 필터링
             if confidence < confidence_threshold:
+                print(f"신뢰도 낮음 제외 (confidence={confidence:.3f}): {text}")
                 continue
 
             # 바운딩 박스 좌표 정규화
@@ -78,8 +83,10 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
             blocks.append(block_info)
 
     # 블록 병합 처리
+    print(f"병합 전 블록 수: {len(blocks)}")
     if merge_blocks and blocks:
         blocks = merge_adjacent_blocks(blocks, merge_threshold)
+        print(f"병합 후 블록 수: {len(blocks)}")
 
     # 이미지 정보
     height, width = image.shape[:2]

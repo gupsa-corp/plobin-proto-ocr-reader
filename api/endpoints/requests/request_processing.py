@@ -118,9 +118,15 @@ async def process_image_request(request_id: str, image_path: str, original_filen
                                request_storage, extractor) -> None:
     """이미지 요청 처리"""
     try:
-        # OCR 처리 (레이아웃 분석 및 표 인식 활성화)
-        result = extractor.extract_blocks(image_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold,
-                                         enable_table_recognition=True)
+        # OCR 처리 (단순 블록 추출 - 레이아웃 분석은 텍스트를 누락시킴)
+        # 병합 비활성화 - 모든 텍스트 블록을 개별적으로 유지
+        result = extractor.extract_blocks(
+            image_path,
+            confidence_threshold=0.5,
+            merge_blocks=False,  # 병합 비활성화
+            merge_threshold=merge_threshold,
+            enable_table_recognition=False
+        )
         blocks = result.get('blocks', [])
 
         # 레이아웃 정보 추가 (표, 차트 등)
@@ -207,9 +213,15 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
         for page_num, image_path in enumerate(image_paths, 1):
             page_start_time = time.time()
 
-            # 각 페이지 OCR 처리 (레이아웃 분석 및 표 인식 활성화)
-            result = extractor.extract_blocks(image_path, merge_blocks=merge_blocks, merge_threshold=merge_threshold,
-                                             enable_table_recognition=True)
+            # 각 페이지 OCR 처리 (단순 블록 추출 - 레이아웃 분석은 텍스트를 누락시킴)
+            # 병합 비활성화 - 모든 텍스트 블록을 개별적으로 유지
+            result = extractor.extract_blocks(
+                image_path,
+                confidence_threshold=0.5,
+                merge_blocks=False,  # 병합 비활성화
+                merge_threshold=merge_threshold,
+                enable_table_recognition=False
+            )
             blocks = result.get('blocks', [])
 
             # 레이아웃 정보 추가 (표, 차트 등)

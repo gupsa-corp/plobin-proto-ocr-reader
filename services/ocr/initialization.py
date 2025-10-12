@@ -59,15 +59,15 @@ def initialize_ocr(use_gpu: bool = True, lang: str = 'en', enable_layout_analysi
                     use_angle_cls=True,        # 텍스트 방향 분류 활성화
                     use_gpu=use_gpu,           # GPU 명시적 지정
 
-                    # 한글 고품질 감지 설정
+                    # 한글 고품질 감지 설정 (매우 낮은 임계값으로 모든 텍스트 감지)
                     det_limit_side_len=4096,   # 고해상도 이미지 지원 (최대)
-                    det_db_thresh=0.3,         # 높은 임계값으로 노이즈 제거
-                    det_db_box_thresh=0.6,     # 박스 신뢰도 높임
-                    det_db_unclip_ratio=1.8,   # 적절한 박스 확장
+                    det_db_thresh=0.1,         # 텍스트 감지 임계값 (매우 낮춤 - 더 많이 감지)
+                    det_db_box_thresh=0.3,     # 박스 신뢰도 임계값 (낮춤)
+                    det_db_unclip_ratio=2.0,   # 박스 확장 증가
 
                     # 인식 품질 설정
                     rec_batch_num=6,           # 배치 크기
-                    drop_score=0.5,            # 낮은 신뢰도 결과 제거
+                    drop_score=0.3,            # 낮은 신뢰도 결과 제거 (낮춰서 더 많이 감지)
 
                     # 고품질 처리
                     use_dilation=True,         # 텍스트 영역 확장

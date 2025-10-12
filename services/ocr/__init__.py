@@ -19,12 +19,14 @@ class DocumentBlockExtractor:
                                  use_ppocrv5=use_ppocrv5)
 
     def extract_blocks(self, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True,
-                      merge_threshold: int = 30, enable_table_recognition: bool = True,
+                      merge_threshold: int = 30, enable_table_recognition: bool = False,
                       use_korean_enhancement: bool = None, preprocessing_level: str = 'medium'):
         # 기본값 설정
         if use_korean_enhancement is None:
             use_korean_enhancement = self.use_korean_enhancement
 
+        # 레이아웃 분석은 텍스트를 누락시키므로 기본적으로 사용하지 않음
+        # 필요한 경우에만 enable_table_recognition=True로 명시적으로 활성화
         if enable_table_recognition:
             return extract_blocks_with_layout_analysis(
                 self.ocr, image_path, confidence_threshold, merge_blocks, merge_threshold,
