@@ -101,19 +101,17 @@ async def process_and_analyze_document(
             # OCR 처리 실행
             if file_extension == '.pdf':
                 # PDF 처리
-                images = pdf_processor.convert_pdf_to_images(temp_file_path)
+                pdf_output_dir = f"{output_dir}/{request_id}/pages"
+                images = pdf_processor.convert_pdf_to_images(temp_file_path, pdf_output_dir)
                 total_pages = len(images)
 
                 all_results = []
                 total_blocks = 0
                 confidence_scores = []
 
-                for page_num, image in enumerate(images, 1):
-                    # OCR 실행 (이미지를 임시 저장해서 경로로 전달)
-                    with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as temp_img:
-                        cv2.imwrite(temp_img.name, image)
-                        result = extractor.extract_blocks(temp_img.name)
-                        os.unlink(temp_img.name)
+                for page_num, image_path in enumerate(images, 1):
+                    # OCR 실행 (이미 저장된 이미지 경로 사용)
+                    result = extractor.extract_blocks(image_path)
                     all_results.append(result)
 
                     # 블록 수 및 신뢰도 수집

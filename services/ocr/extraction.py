@@ -57,7 +57,7 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
 
     # PaddleOCR 실행
     print("OCR 처리 중...")
-    result = ocr_instance.ocr(processed_image_path, cls=True)
+    result = ocr_instance.ocr(processed_image_path)
 
     # 결과 파싱
     blocks = []
