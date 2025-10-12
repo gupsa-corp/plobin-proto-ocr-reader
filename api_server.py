@@ -17,8 +17,8 @@ from api.endpoints.recommendations import router as recommendations_router
 # Initialize FastAPI app
 app = FastAPI(
     title="Document OCR API",
-    description="API for document text extraction and block classification using PaddleOCR",
-    version="1.0.0"
+    description="API for document text extraction and block classification using Surya OCR",
+    version="2.0.0"
 )
 
 # Global configuration and dependencies
@@ -34,8 +34,8 @@ server_stats = {
 }
 
 # Initialize processors
-# PP-OCRv3 한글 모델 사용 (가장 안정적이고 정확)
-extractor = DocumentBlockExtractor(use_gpu=False, lang='korean', use_korean_enhancement=True, use_ppocrv5=False)
+# Surya OCR 사용 (90+ 언어 지원, 한글 최적화)
+extractor = DocumentBlockExtractor(use_gpu=True, lang='ko', use_korean_enhancement=False, use_ppocrv5=False)
 pdf_processor = PDFToImageProcessor()
 
 # Initialize output directory
