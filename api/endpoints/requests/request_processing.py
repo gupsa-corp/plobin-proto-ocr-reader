@@ -214,6 +214,52 @@ async def process_image_request(request_id: str, image_path: str, original_filen
             metadata=ocr_metadata if ocr_metadata else result.get('metadata', {})
         )
 
+        # 섹션 시각화 및 저장 (create_sections가 활성화된 경우)
+        if create_sections and 'sections' in result and result['sections']:
+            from services.visualization.sections import create_section_visualization_with_crops
+            from PIL import Image
+            import io
+
+            try:
+                # 원본 이미지 로드
+                original_image = Image.open(image_path)
+
+                # 섹션 시각화 및 크롭 생성
+                with tempfile.TemporaryDirectory() as temp_sections_dir:
+                    sections_vis_image, cropped_paths = create_section_visualization_with_crops(
+                        original_image,
+                        result['sections'],
+                        temp_sections_dir,
+                        line_thickness=3,
+                        padding=5
+                    )
+
+                    # 섹션 시각화 이미지를 bytes로 변환
+                    sections_vis_buffer = io.BytesIO()
+                    sections_vis_image.save(sections_vis_buffer, format='PNG')
+                    sections_visualization_data = sections_vis_buffer.getvalue()
+
+                    # 섹션 데이터 및 시각화 저장
+                    request_storage.save_sections(
+                        request_id=request_id,
+                        page_number=1,
+                        sections=result['sections'],
+                        sections_visualization_data=sections_visualization_data
+                    )
+
+                    # 섹션 크롭 이미지들을 sections/ 폴더로 복사
+                    if cropped_paths:
+                        request_storage.save_section_images(
+                            request_id=request_id,
+                            page_number=1,
+                            section_image_paths=cropped_paths
+                        )
+
+            except Exception as e:
+                print(f"섹션 시각화 생성 실패: {e}")
+                import traceback
+                traceback.print_exc()
+
     except Exception as e:
         raise Exception(f"이미지 처리 중 오류: {str(e)}")
 
@@ -321,6 +367,52 @@ async def process_pdf_request(request_id: str, pdf_path: str, original_filename:
                 content_summary=content_summary,
                 metadata=ocr_metadata if ocr_metadata else result.get('metadata', {})
             )
+
+            # 섹션 시각화 및 저장 (create_sections가 활성화된 경우)
+            if create_sections and 'sections' in result and result['sections']:
+                from services.visualization.sections import create_section_visualization_with_crops
+                from PIL import Image
+                import io
+
+                try:
+                    # 원본 이미지 로드
+                    original_image = Image.open(image_path)
+
+                    # 섹션 시각화 및 크롭 생성
+                    with tempfile.TemporaryDirectory() as temp_sections_dir:
+                        sections_vis_image, cropped_paths = create_section_visualization_with_crops(
+                            original_image,
+                            result['sections'],
+                            temp_sections_dir,
+                            line_thickness=3,
+                            padding=5
+                        )
+
+                        # 섹션 시각화 이미지를 bytes로 변환
+                        sections_vis_buffer = io.BytesIO()
+                        sections_vis_image.save(sections_vis_buffer, format='PNG')
+                        sections_visualization_data = sections_vis_buffer.getvalue()
+
+                        # 섹션 데이터 및 시각화 저장
+                        request_storage.save_sections(
+                            request_id=request_id,
+                            page_number=page_num,
+                            sections=result['sections'],
+                            sections_visualization_data=sections_visualization_data
+                        )
+
+                        # 섹션 크롭 이미지들을 sections/ 폴더로 복사
+                        if cropped_paths:
+                            request_storage.save_section_images(
+                                request_id=request_id,
+                                page_number=page_num,
+                                section_image_paths=cropped_paths
+                            )
+
+                except Exception as e:
+                    print(f"페이지 {page_num} 섹션 시각화 생성 실패: {e}")
+                    import traceback
+                    traceback.print_exc()
 
             # 임시 이미지 파일 정리
             if Path(image_path).exists():

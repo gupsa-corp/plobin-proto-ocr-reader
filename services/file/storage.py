@@ -673,4 +673,135 @@ class RequestStorage:
             return None
 
 
+    def save_sections(self, request_id: str, page_number: int,
+                     sections: List[Dict[str, Any]],
+                     sections_visualization_data: bytes = None) -> Dict[str, Any]:
+        """
+        섹션 데이터 및 시각화 저장
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+            sections: 섹션 데이터 리스트
+            sections_visualization_data: 섹션 시각화 이미지 데이터
+
+        Returns:
+            저장된 섹션 관련 파일 경로들
+        """
+        request_dir = self.base_output_dir / request_id
+        if not request_dir.exists():
+            raise ValueError(f"요청 ID를 찾을 수 없습니다: {request_id}")
+
+        page_dir = request_dir / "pages" / f"{page_number:03d}"
+        sections_dir = page_dir / "sections"
+
+        if not sections_dir.exists():
+            sections_dir.mkdir(exist_ok=True)
+
+        saved_paths = {
+            'sections_dir': str(sections_dir),
+            'section_files': [],
+            'sections_visualization': None
+        }
+
+        # 개별 섹션 메타데이터 저장
+        from services.visualization.sections import extract_section_metadata
+
+        for idx, section in enumerate(sections):
+            section_id = f"{idx + 1:03d}"
+            section_metadata = extract_section_metadata(section, section_id)
+
+            # 섹션 JSON 저장
+            section_file = sections_dir / f"section_{section_id}.json"
+            save_metadata(section_metadata, section_file)
+            saved_paths['section_files'].append(str(section_file))
+
+        # 전체 섹션 시각화 저장
+        if sections_visualization_data:
+            visualization_file = page_dir / "sections_visualization.png"
+            with open(visualization_file, 'wb') as f:
+                f.write(sections_visualization_data)
+            saved_paths['sections_visualization'] = str(visualization_file)
+
+        return saved_paths
+
+    def save_section_images(self, request_id: str, page_number: int,
+                           section_image_paths: List[str]) -> Dict[str, str]:
+        """
+        섹션 크롭 이미지들을 sections/ 폴더로 복사
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+            section_image_paths: 섹션 이미지 파일 경로 리스트
+
+        Returns:
+            복사된 섹션 이미지 경로들
+        """
+        request_dir = self.base_output_dir / request_id
+        page_dir = request_dir / "pages" / f"{page_number:03d}"
+        sections_dir = page_dir / "sections"
+
+        if not sections_dir.exists():
+            sections_dir.mkdir(exist_ok=True)
+
+        saved_paths = {}
+
+        for idx, image_path in enumerate(section_image_paths):
+            section_id = f"{idx + 1:03d}"
+            target_path = sections_dir / f"section_{section_id}.png"
+
+            try:
+                # 이미지 파일 복사
+                import shutil
+                shutil.copy2(image_path, target_path)
+                saved_paths[f"section_{section_id}"] = str(target_path)
+            except Exception as e:
+                print(f"섹션 {section_id} 이미지 복사 실패: {e}")
+
+        return saved_paths
+
+    def get_section_data(self, request_id: str, page_number: int, section_id: int) -> Dict[str, Any]:
+        """
+        개별 섹션 데이터 조회
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+            section_id: 섹션 ID
+
+        Returns:
+            섹션 데이터
+        """
+        sections_dir = self.base_output_dir / request_id / "pages" / f"{page_number:03d}" / "sections"
+        section_file = sections_dir / f"section_{section_id:03d}.json"
+        return load_metadata(section_file)
+
+    def get_sections_list(self, request_id: str, page_number: int) -> List[Dict[str, Any]]:
+        """
+        페이지의 모든 섹션 목록 조회
+
+        Args:
+            request_id: 요청 ID
+            page_number: 페이지 번호
+
+        Returns:
+            섹션 데이터 리스트
+        """
+        sections_dir = self.base_output_dir / request_id / "pages" / f"{page_number:03d}" / "sections"
+
+        if not sections_dir.exists():
+            return []
+
+        sections = []
+        for section_file in sorted(sections_dir.glob("section_*.json")):
+            try:
+                section_data = load_metadata(section_file)
+                sections.append(section_data)
+            except Exception as e:
+                print(f"섹션 파일 로드 실패 {section_file}: {e}")
+
+        return sections
+
+
 __all__ = ['save_result', 'load_result', 'RequestStorage']

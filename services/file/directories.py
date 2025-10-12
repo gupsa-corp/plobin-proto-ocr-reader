@@ -75,14 +75,17 @@ def create_page_directory(request_dir: Path, page_number: int) -> Dict[str, Path
     """
     page_dir = request_dir / f"page_{page_number:03d}"
     blocks_dir = page_dir / "blocks"
+    sections_dir = page_dir / "sections"
 
     # 디렉토리 생성
     page_dir.mkdir(exist_ok=True)
     blocks_dir.mkdir(exist_ok=True)
+    sections_dir.mkdir(exist_ok=True)
 
     return {
         'page_dir': page_dir,
-        'blocks_dir': blocks_dir
+        'blocks_dir': blocks_dir,
+        'sections_dir': sections_dir
     }
 
 
@@ -167,6 +170,12 @@ def cleanup_empty_directories(base_output_dir: str) -> int:
                 blocks_dir = page_dir / 'blocks'
                 if blocks_dir.exists() and not any(blocks_dir.iterdir()):
                     blocks_dir.rmdir()
+                    cleaned_count += 1
+
+                # 섹션 디렉토리가 비어있으면 제거
+                sections_dir = page_dir / 'sections'
+                if sections_dir.exists() and not any(sections_dir.iterdir()):
+                    sections_dir.rmdir()
                     cleaned_count += 1
 
                 # 페이지 디렉토리가 비어있으면 제거
