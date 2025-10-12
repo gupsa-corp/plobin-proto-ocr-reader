@@ -7,10 +7,27 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib
+import matplotlib.font_manager as fm
 from typing import Dict, Optional
 
+# 한글 폰트 찾기 (macOS 기본 한글 폰트)
+def get_korean_font():
+    """시스템에서 사용 가능한 한글 폰트를 찾아 반환"""
+    korean_fonts = ['AppleGothic', 'Apple SD Gothic Neo', 'AppleSDGothicNeo-Regular', 'Nanum Gothic']
+
+    for font_name in korean_fonts:
+        try:
+            font_path = fm.findfont(fm.FontProperties(family=font_name))
+            if font_path:
+                return fm.FontProperties(fname=font_path)
+        except:
+            continue
+
+    # 폴백: 기본 폰트
+    return fm.FontProperties()
+
 # 한글 폰트 설정
-matplotlib.rcParams['font.family'] = ['Noto Sans CJK JP', 'DejaVu Sans', 'sans-serif']
+korean_font = get_korean_font()
 matplotlib.rcParams['axes.unicode_minus'] = False
 
 
@@ -30,7 +47,7 @@ def visualize_blocks(image_path: str, result: Dict, save_path: Optional[str] = N
     # 플롯 설정
     fig, ax = plt.subplots(1, 1, figsize=(15, 10))
     ax.imshow(image_rgb)
-    ax.set_title(f"문서 블록 감지 ({len(result['blocks'])}개 블록)", fontsize=16)
+    ax.set_title(f"문서 블록 감지 ({len(result['blocks'])}개 블록)", fontsize=16, fontproperties=korean_font)
 
     # 타입별 색상 정의 (한글)
     colors = {
@@ -76,6 +93,7 @@ def visualize_blocks(image_path: str, result: Dict, save_path: Optional[str] = N
             bbox['y_min'] - 5,
             label,
             fontsize=8,
+            fontproperties=korean_font,
             color=colors.get(block_type, 'gray'),
             bbox=dict(boxstyle="round,pad=0.3", facecolor='white', alpha=0.8)
         )
@@ -85,7 +103,7 @@ def visualize_blocks(image_path: str, result: Dict, save_path: Optional[str] = N
         patches.Patch(color=color, label=type_names.get(block_type, block_type))
         for block_type, color in colors.items()
     ]
-    ax.legend(handles=legend_elements, loc='upper right')
+    ax.legend(handles=legend_elements, loc='upper right', prop=korean_font)
 
     ax.axis('off')
     plt.tight_layout()
