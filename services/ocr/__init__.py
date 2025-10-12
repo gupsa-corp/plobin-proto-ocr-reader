@@ -8,7 +8,7 @@ from .hierarchy import build_hierarchy, get_block_hierarchy_tree, get_hierarchy_
 
 # Legacy DocumentBlockExtractor class for backward compatibility (한글 정확도 향상 포함)
 class DocumentBlockExtractor:
-    def __init__(self, use_gpu: bool = True, lang: str = 'korean', use_korean_enhancement: bool = True, use_ppocrv5: bool = False):
+    def __init__(self, use_gpu: bool = True, lang: str = 'en', use_korean_enhancement: bool = False, use_ppocrv5: bool = False):
         self.lang = lang
         self.use_gpu = use_gpu
         self.use_korean_enhancement = use_korean_enhancement

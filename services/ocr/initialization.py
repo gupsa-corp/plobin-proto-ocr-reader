@@ -6,8 +6,8 @@ OCR initialization service
 from paddleocr import PaddleOCR
 
 
-def initialize_ocr(use_gpu: bool = True, lang: str = 'korean', enable_layout_analysis: bool = True,
-                   use_korean_optimized: bool = True, use_ppocrv5: bool = False, use_tensorrt: bool = False):
+def initialize_ocr(use_gpu: bool = True, lang: str = 'en', enable_layout_analysis: bool = True,
+                   use_korean_optimized: bool = False, use_ppocrv5: bool = False, use_tensorrt: bool = False):
     """
     PaddleOCR 초기화 (한글 정확도 최적화 포함)
 
@@ -51,21 +51,27 @@ def initialize_ocr(use_gpu: bool = True, lang: str = 'korean', enable_layout_ana
         if lang == 'korean' and use_korean_optimized:
             print("한글 최적화 모드로 PaddleOCR 초기화 중...")
 
-            # 한글 전용 모델 설정 시도
+            # 한글 전용 모델 설정 시도 (고품질 설정)
             try:
                 ocr = PaddleOCR(
                     # 한글 전용 모델 사용 (PP-OCRv3)
                     lang='korean',             # 명시적으로 korean 지정
                     use_angle_cls=True,        # 텍스트 방향 분류 활성화
+                    use_gpu=use_gpu,           # GPU 명시적 지정
 
-                    # 한글 최적화 감지 설정
-                    det_limit_side_len=3000,   # 고해상도 이미지 지원
-                    det_db_thresh=0.05,        # 한글에 최적화된 낮은 임계값
-                    det_db_box_thresh=0.3,     # 박스 임계값 더 낮춤
-                    det_db_unclip_ratio=3.0,   # 박스 확장 비율 증가
+                    # 한글 고품질 감지 설정
+                    det_limit_side_len=4096,   # 고해상도 이미지 지원 (최대)
+                    det_db_thresh=0.3,         # 높은 임계값으로 노이즈 제거
+                    det_db_box_thresh=0.6,     # 박스 신뢰도 높임
+                    det_db_unclip_ratio=1.8,   # 적절한 박스 확장
 
-                    # 성능 최적화
-                    rec_batch_num=4            # 배치 크기
+                    # 인식 품질 설정
+                    rec_batch_num=6,           # 배치 크기
+                    drop_score=0.5,            # 낮은 신뢰도 결과 제거
+
+                    # 고품질 처리
+                    use_dilation=True,         # 텍스트 영역 확장
+                    det_db_score_mode='fast'   # 빠른 스코어 모드
                 )
                 print("✅ 한글 최적화 PaddleOCR 초기화 완료")
                 return ocr

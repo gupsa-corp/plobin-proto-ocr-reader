@@ -42,6 +42,25 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
     if image is None:
         raise ValueError(f"이미지를 읽을 수 없습니다: {image_path}")
 
+    # 메모리 절약을 위한 이미지 크기 제한 (2000x2000 픽셀 이내)
+    max_dimension = 2000
+    height, width = image.shape[:2]
+    original_image_path = image_path
+    temp_resized_path = None
+
+    if width > max_dimension or height > max_dimension:
+        scale = max_dimension / max(width, height)
+        new_width = int(width * scale)
+        new_height = int(height * scale)
+        print(f"⚠️  이미지 크기 조정: {width}x{height} → {new_width}x{new_height} (메모리 최적화)")
+        image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_AREA)
+        # 임시 파일로 저장하여 OCR 처리
+        import tempfile
+        temp_dir = tempfile.mkdtemp()
+        temp_resized_path = os.path.join(temp_dir, 'resized_' + os.path.basename(image_path))
+        cv2.imwrite(temp_resized_path, image)
+        image_path = temp_resized_path
+
     # 한글 정확도 향상을 위한 이미지 전처리
     processed_image_path = image_path
     preprocessor = None
@@ -171,6 +190,14 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
     if preprocessor:
         try:
             preprocessor.cleanup_temp_files()
+        except Exception:
+            pass
+
+    # 리사이즈된 임시 파일 정리
+    if temp_resized_path and os.path.exists(temp_resized_path):
+        try:
+            import shutil
+            shutil.rmtree(os.path.dirname(temp_resized_path))
         except Exception:
             pass
 
