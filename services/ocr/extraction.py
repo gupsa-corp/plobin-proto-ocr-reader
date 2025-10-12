@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Extract text blocks from images using OCR with enhanced Korean accuracy
+Extract text blocks from images using OCR with enhanced table recognition
 """
 
 import os
@@ -9,18 +9,13 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional
 from .merging import merge_adjacent_blocks
 from .table_recognition import create_table_recognizer
-from .image_preprocessing import KoreanImagePreprocessor
-from .korean_postprocessing import KoreanTextPostProcessor
-from .hierarchy import build_hierarchy, get_block_hierarchy_tree, get_hierarchy_statistics, flatten_hierarchy
 from ..cache import get_ocr_cache
 from ..analysis import create_chart_detector
 
 
-def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True,
-                  merge_threshold: int = 30, use_korean_enhancement: bool = True,
-                  preprocessing_level: str = 'medium') -> Dict:
+def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 0.5, merge_blocks: bool = True, merge_threshold: int = 30) -> Dict:
     """
-    이미지에서 문서 블록 추출 (한글 정확도 향상 포함)
+    이미지에서 문서 블록 추출
 
     Args:
         ocr_instance: PaddleOCR 인스턴스
@@ -28,8 +23,6 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
         confidence_threshold: 신뢰도 임계값
         merge_blocks: 블록 병합 여부
         merge_threshold: 병합 임계값
-        use_korean_enhancement: 한글 정확도 향상 기능 사용 여부
-        preprocessing_level: 전처리 강도 ('light', 'medium', 'strong')
 
     Returns:
         블록 정보가 포함된 딕셔너리
@@ -42,142 +35,47 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
     if image is None:
         raise ValueError(f"이미지를 읽을 수 없습니다: {image_path}")
 
-    # 메모리 절약을 위한 이미지 크기 제한 (2000x2000 픽셀 이내)
-    max_dimension = 2000
-    height, width = image.shape[:2]
-    original_image_path = image_path
-    temp_resized_path = None
-
-    if width > max_dimension or height > max_dimension:
-        scale = max_dimension / max(width, height)
-        new_width = int(width * scale)
-        new_height = int(height * scale)
-        print(f"⚠️  이미지 크기 조정: {width}x{height} → {new_width}x{new_height} (메모리 최적화)")
-        image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_AREA)
-        # 임시 파일로 저장하여 OCR 처리
-        import tempfile
-        temp_dir = tempfile.mkdtemp()
-        temp_resized_path = os.path.join(temp_dir, 'resized_' + os.path.basename(image_path))
-        cv2.imwrite(temp_resized_path, image)
-        image_path = temp_resized_path
-
-    # 한글 정확도 향상을 위한 이미지 전처리
-    processed_image_path = image_path
-    preprocessor = None
-
-    if use_korean_enhancement:
-        try:
-            print(f"한글 OCR 향상을 위한 이미지 전처리 중... (강도: {preprocessing_level})")
-            preprocessor = KoreanImagePreprocessor()
-            processed_image_path = preprocessor.preprocess_for_korean_ocr(image_path, preprocessing_level)
-            print("✅ 이미지 전처리 완료")
-        except Exception as e:
-            print(f"⚠️ 이미지 전처리 실패, 원본 사용: {e}")
-            processed_image_path = image_path
-
     # PaddleOCR 실행
     print("OCR 처리 중...")
-    result = ocr_instance.ocr(processed_image_path)
+    result = ocr_instance.ocr(image_path, cls=True)
 
-    # 결과 파싱 (PaddleOCR 3.2.0+ 새 형식)
+    # 결과 파싱
     blocks = []
-    if result and len(result) > 0:
-        page_result = result[0]
+    if result and result[0]:
+        for idx, detection in enumerate(result[0]):
+            bbox, (text, confidence) = detection
 
-        # 새 형식: rec_polys, rec_texts, rec_scores
-        if isinstance(page_result, dict):
-            rec_polys = page_result.get('rec_polys', [])
-            rec_texts = page_result.get('rec_texts', [])
-            rec_scores = page_result.get('rec_scores', [])
+            # 신뢰도 필터링
+            if confidence < confidence_threshold:
+                continue
 
-            for idx, (bbox, text, confidence) in enumerate(zip(rec_polys, rec_texts, rec_scores)):
-                # 신뢰도 필터링
-                if confidence < confidence_threshold:
-                    continue
+            # 바운딩 박스 좌표 정규화
+            bbox = np.array(bbox).astype(int)
+            x_min = int(np.min(bbox[:, 0]))
+            y_min = int(np.min(bbox[:, 1]))
+            x_max = int(np.max(bbox[:, 0]))
+            y_max = int(np.max(bbox[:, 1]))
 
-                # 바운딩 박스 좌표 정규화
-                bbox = np.array(bbox).astype(int)
-                x_min = int(np.min(bbox[:, 0]))
-                y_min = int(np.min(bbox[:, 1]))
-                x_max = int(np.max(bbox[:, 0]))
-                y_max = int(np.max(bbox[:, 1]))
+            # 블록 분류 (단순화)
+            block_type = 'other'  # Simplified - no complex classification needed
 
-                # 블록 분류 (단순화)
-                block_type = 'other'
-
-                block_info = {
-                    'id': idx,
-                    'text': text,
-                    'confidence': float(confidence),
-                    'bbox': {
-                        'x_min': x_min,
-                        'y_min': y_min,
-                        'x_max': x_max,
-                        'y_max': y_max,
-                        'width': x_max - x_min,
-                        'height': y_max - y_min
-                    },
-                    'bbox_points': bbox.tolist(),
-                    'type': block_type,
-                    'area': (x_max - x_min) * (y_max - y_min)
-                }
-                blocks.append(block_info)
-
-        # 이전 형식 지원 (하위 호환성)
-        elif isinstance(page_result, list):
-            for idx, detection in enumerate(page_result):
-                bbox, (text, confidence) = detection
-
-                # 신뢰도 필터링
-                if confidence < confidence_threshold:
-                    continue
-
-                # 바운딩 박스 좌표 정규화
-                bbox = np.array(bbox).astype(int)
-                x_min = int(np.min(bbox[:, 0]))
-                y_min = int(np.min(bbox[:, 1]))
-                x_max = int(np.max(bbox[:, 0]))
-                y_max = int(np.max(bbox[:, 1]))
-
-                # 블록 분류 (단순화)
-                block_type = 'other'
-
-                block_info = {
-                    'id': idx,
-                    'text': text,
-                    'confidence': float(confidence),
-                    'bbox': {
-                        'x_min': x_min,
-                        'y_min': y_min,
-                        'x_max': x_max,
-                        'y_max': y_max,
-                        'width': x_max - x_min,
-                        'height': y_max - y_min
-                    },
-                    'bbox_points': bbox.tolist(),
-                    'type': block_type,
-                    'area': (x_max - x_min) * (y_max - y_min)
-                }
-                blocks.append(block_info)
-
-    # 한글 후처리 적용
-    if use_korean_enhancement and blocks:
-        try:
-            print("한글 텍스트 후처리 중...")
-            postprocessor = KoreanTextPostProcessor()
-            enhanced_blocks = postprocessor.process_ocr_results(blocks, confidence_threshold)
-
-            # 향상된 결과로 교체
-            blocks = enhanced_blocks
-            print("✅ 한글 텍스트 후처리 완료")
-
-            # 후처리 통계
-            corrected_count = sum(1 for block in blocks if block.get('was_corrected', False))
-            if corrected_count > 0:
-                print(f"📝 {corrected_count}개 블록의 텍스트가 보정되었습니다")
-
-        except Exception as e:
-            print(f"⚠️ 한글 후처리 실패: {e}")
+            block_info = {
+                'id': idx,
+                'text': text,
+                'confidence': float(confidence),
+                'bbox': {
+                    'x_min': x_min,
+                    'y_min': y_min,
+                    'x_max': x_max,
+                    'y_max': y_max,
+                    'width': x_max - x_min,
+                    'height': y_max - y_min
+                },
+                'bbox_points': bbox.tolist(),
+                'type': block_type,
+                'area': (x_max - x_min) * (y_max - y_min)
+            }
+            blocks.append(block_info)
 
     # 블록 병합 처리
     if merge_blocks and blocks:
@@ -185,21 +83,6 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
 
     # 이미지 정보
     height, width = image.shape[:2]
-
-    # 임시 파일 정리
-    if preprocessor:
-        try:
-            preprocessor.cleanup_temp_files()
-        except Exception:
-            pass
-
-    # 리사이즈된 임시 파일 정리
-    if temp_resized_path and os.path.exists(temp_resized_path):
-        try:
-            import shutil
-            shutil.rmtree(os.path.dirname(temp_resized_path))
-        except Exception:
-            pass
 
     return {
         'image_info': {
@@ -213,9 +96,7 @@ def extract_blocks(ocr_instance, image_path: str, confidence_threshold: float = 
             'confidence_threshold': confidence_threshold,
             'language': 'korean',  # Default language
             'merge_blocks': merge_blocks,
-            'merge_threshold': merge_threshold,
-            'korean_enhancement': use_korean_enhancement,
-            'preprocessing_level': preprocessing_level if use_korean_enhancement else None
+            'merge_threshold': merge_threshold
         }
     }
 
@@ -247,8 +128,7 @@ def extract_blocks_with_layout_analysis(ocr_instance, image_path: str, confidenc
         'merge_blocks': merge_blocks,
         'merge_threshold': merge_threshold,
         'enable_table_recognition': enable_table_recognition,
-        'hierarchy_detection': True,  # 계층 구조 감지 포함
-        'function': 'extract_blocks_with_layout_analysis_v2'  # 버전 업
+        'function': 'extract_blocks_with_layout_analysis'
     }
 
     # 캐시 확인
@@ -309,47 +189,21 @@ def extract_blocks_with_layout_analysis(ocr_instance, image_path: str, confidenc
         except Exception as e:
             print(f"차트 감지 중 오류 (무시하고 계속): {e}")
 
-    # 계층 구조 감지 수행 (간소화)
-    hierarchical_blocks = []
-    hierarchy_stats = {}
-    try:
-        print("블록 계층 구조 분석 중...")
-        # build_hierarchy는 평면 리스트 반환 (계층 정보 포함)
-        hierarchical_blocks = build_hierarchy(blocks, containment_threshold=0.9)
-        # 통계는 평면 리스트로 계산
-        hierarchy_stats = get_hierarchy_statistics(hierarchical_blocks)
-        print(f"✅ 계층 구조 분석 완료 (최상위 블록: {hierarchy_stats['root_blocks']}개, 최대 깊이: {hierarchy_stats['max_depth']})")
-    except Exception as e:
-        import traceback
-        print(f"⚠️ 계층 구조 분석 실패 (기본 구조 사용): {e}")
-        print(traceback.format_exc())
-        # 실패 시 원본 블록을 평면 구조로 사용
-        for i, block in enumerate(blocks):
-            block['block_id'] = i
-            block['parent_id'] = None
-            block['children'] = []
-            block['level'] = 0
-        hierarchical_blocks = blocks
-        hierarchy_stats = {'root_blocks': len(blocks), 'max_depth': 0}
-
     result = {
         'metadata': {
             'image_path': image_path,
             'total_blocks': len(blocks),
             'tables_detected': len(layout_info.get('tables', [])),
-            'layout_analysis_enabled': enable_table_recognition,
-            'hierarchy_enabled': True,
-            'hierarchy_stats': hierarchy_stats
+            'layout_analysis_enabled': enable_table_recognition
         },
-        'blocks': hierarchical_blocks,  # 계층 구조가 포함된 블록
+        'blocks': blocks,
         'layout_info': layout_info,
         'processing_info': {
             'confidence_threshold': confidence_threshold,
             'language': 'korean',
             'merge_blocks': merge_blocks,
             'merge_threshold': merge_threshold,
-            'table_recognition': enable_table_recognition,
-            'hierarchy_detection': True
+            'table_recognition': enable_table_recognition
         }
     }
 
