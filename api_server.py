@@ -34,7 +34,8 @@ server_stats = {
 }
 
 # Initialize processors
-extractor = DocumentBlockExtractor(use_gpu=False, lang='korean', use_korean_enhancement=True)
+# PP-OCRv3 한글 모델 사용 (가장 안정적이고 정확)
+extractor = DocumentBlockExtractor(use_gpu=False, lang='korean', use_korean_enhancement=True, use_ppocrv5=False)
 pdf_processor = PDFToImageProcessor()
 
 # Initialize output directory
