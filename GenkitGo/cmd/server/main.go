@@ -9,10 +9,32 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	// Controllers
+	// Controllers - OCR
 	processimage "github.com/plobin/genkitgo/internal/http/controllers/OCR/ProcessImage"
 	processpdf "github.com/plobin/genkitgo/internal/http/controllers/OCR/ProcessPDF"
+
+	// Controllers - Analysis
 	analyzedocument "github.com/plobin/genkitgo/internal/http/controllers/Analysis/AnalyzeDocument"
+
+	// Controllers - Blocks
+	getblock "github.com/plobin/genkitgo/internal/http/controllers/Blocks/GetBlock"
+	updateblock "github.com/plobin/genkitgo/internal/http/controllers/Blocks/UpdateBlock"
+	deleteblock "github.com/plobin/genkitgo/internal/http/controllers/Blocks/DeleteBlock"
+
+	// Controllers - Pages
+	listpages "github.com/plobin/genkitgo/internal/http/controllers/Pages/ListPages"
+	getpage "github.com/plobin/genkitgo/internal/http/controllers/Pages/GetPage"
+
+	// Controllers - Images
+	getimage "github.com/plobin/genkitgo/internal/http/controllers/Images/GetImage"
+
+	// Controllers - Requests
+	listrequests "github.com/plobin/genkitgo/internal/http/controllers/Requests/ListRequests"
+	getrequest "github.com/plobin/genkitgo/internal/http/controllers/Requests/GetRequest"
+	createrequest "github.com/plobin/genkitgo/internal/http/controllers/Requests/CreateRequest"
+
+	// Controllers - Meta
+	serverstatus "github.com/plobin/genkitgo/internal/http/controllers/Meta/ServerStatus"
 )
 
 func main() {
@@ -42,10 +64,7 @@ func main() {
 	})
 
 	// Health check
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"status":"ok","message":"GenkitGo OCR API Server"}`)
-	})
+	r.Get("/", serverstatus.Handle)
 
 	// API Routes - OCR 도메인
 	r.Post("/api/ocr/process-image", processimage.Handle)
@@ -53,6 +72,23 @@ func main() {
 
 	// API Routes - Analysis 도메인
 	r.Post("/api/analysis/analyze-document", analyzedocument.Handle)
+
+	// API Routes - Blocks 도메인
+	r.Get("/api/blocks", getblock.Handle)
+	r.Put("/api/blocks", updateblock.Handle)
+	r.Delete("/api/blocks", deleteblock.Handle)
+
+	// API Routes - Pages 도메인
+	r.Get("/api/pages", listpages.Handle)
+	r.Get("/api/pages/detail", getpage.Handle)
+
+	// API Routes - Images 도메인
+	r.Get("/api/images", getimage.Handle)
+
+	// API Routes - Requests 도메인
+	r.Get("/api/requests", listrequests.Handle)
+	r.Get("/api/requests/detail", getrequest.Handle)
+	r.Post("/api/requests", createrequest.Handle)
 
 	// 서버 시작
 	port := ":6003"
