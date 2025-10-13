@@ -1,42 +1,61 @@
-package extractblocks
+package ExtractBlocks
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"os/exec"
+	"time"
+
 	"github.com/plobin/genkitgo/internal/models"
-	initializeocr "github.com/plobin/genkitgo/internal/services/OCR/InitializeOCR"
 )
 
-// Service - OCR 블록 추출 서비스
+// Service handles OCR block extraction using Python Surya OCR
 type Service struct {
-	extractor *initializeocr.DocumentBlockExtractor
+	pythonPath string
+	scriptPath string
 }
 
-// New - Service 생성자
-func New() *Service {
+// NewService creates a new OCR extraction service
+func NewService(pythonPath, scriptPath string) *Service {
+	if pythonPath == "" {
+		pythonPath = "python3"
+	}
+	if scriptPath == "" {
+		scriptPath = "../FastApi/services/ocr_wrapper.py"
+	}
+
 	return &Service{
-		extractor: initializeocr.New(true, "ko"),
+		pythonPath: pythonPath,
+		scriptPath: scriptPath,
 	}
 }
 
-// Execute - OCR 블록 추출 비즈니스 로직 (1파일 1메서드 원칙)
-// 역할: 이미지 → OCR 처리 → 블록 정보 반환
-// 금지: HTTP 요청/응답 처리 (Controller 책임)
-func (s *Service) Execute(imagePath string, confidenceThreshold float64, mergeBlocks bool) (*models.BlockResult, error) {
-	// TODO: 실제 OCR 처리 구현
-	// FastAPI의 services/ocr/extraction.py 로직 포팅 필요
+// Execute extracts text blocks from an image using Surya OCR
+func (s *Service) Execute(ctx context.Context, imagePath string, options models.OCROptions) (*models.OCRResult, error) {
+	startTime := time.Now()
 
-	// 임시 구현 (구조 확인용)
-	result := &models.BlockResult{
-		ImagePath: imagePath,
-		Blocks: []models.Block{
-			{
-				Text:       "샘플 텍스트",
-				Confidence: 0.95,
-				BBox:       []int{10, 20, 100, 50},
-				BlockType:  "text",
-			},
-		},
-		ProcessingTime: 0.5,
+	// Prepare JSON options
+	optsJSON, err := json.Marshal(options)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal options: %w", err)
 	}
 
-	return result, nil
+	// Call Python script
+	cmd := exec.CommandContext(ctx, s.pythonPath, s.scriptPath, imagePath, string(optsJSON))
+	
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("OCR processing failed: %w, output: %s", err, string(output))
+	}
+
+	// Parse result
+	var result models.OCRResult
+	if err := json.Unmarshal(output, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse OCR result: %w", err)
+	}
+
+	result.ProcessingTime = time.Since(startTime).Seconds()
+
+	return &result, nil
 }
