@@ -40,8 +40,9 @@ func main() {
 	llmClient := Client.NewLLMClient(cfg.LLMBaseURL, cfg.LLMAPIKey, cfg.LLMModel)
 	defer llmClient.Close()
 
-	ocrService := ExtractBlocks.NewService("python3", "../FastApi/services/ocr_wrapper.py")
-	pdfService := ProcessPDF.NewService("python3", "../FastApi/services/pdf_wrapper.py")
+	// Initialize OCR and PDF services (Pure Go - No Python dependency!)
+	ocrService := ExtractBlocks.NewService(cfg.OCRLanguage)
+	pdfService := ProcessPDF.NewService(cfg.OCRLanguage, 150.0)
 	storageService := Storage.NewService(cfg.OutputDir)
 
 	// Block services
@@ -62,10 +63,10 @@ func main() {
 	getTemplateService := GetTemplate.NewService(cfg.OutputDir)
 	deleteTemplateService := DeleteTemplate.NewService(cfg.OutputDir)
 
-	log.Printf("✅ Services initialized")
+	log.Printf("✅ Services initialized (Pure Go - No Python!)")
 	log.Printf("  - LLM Client (model: %s)", cfg.LLMModel)
-	log.Printf("  - OCR Service (Surya OCR)")
-	log.Printf("  - PDF Service (PyMuPDF)")
+	log.Printf("  - OCR Service (Tesseract via gosseract)")
+	log.Printf("  - PDF Service (MuPDF via go-fitz)")
 	log.Printf("  - Storage Service (dir: %s)", cfg.OutputDir)
 	log.Printf("  - Block Services (Get, Update, Delete)")
 	log.Printf("  - Page Services (Get, List)")

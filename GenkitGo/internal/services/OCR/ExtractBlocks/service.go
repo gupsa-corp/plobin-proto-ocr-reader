@@ -2,60 +2,92 @@ package ExtractBlocks
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"os/exec"
-	"time"
 
+	"github.com/otiai10/gosseract/v2"
 	"github.com/plobin/genkitgo/internal/models"
 )
 
-// Service handles OCR block extraction using Python Surya OCR
 type Service struct {
-	pythonPath string
-	scriptPath string
+	language string
 }
 
-// NewService creates a new OCR extraction service
-func NewService(pythonPath, scriptPath string) *Service {
-	if pythonPath == "" {
-		pythonPath = "python3"
+func NewService(language string) *Service {
+	if language == "" {
+		language = "kor+eng"
 	}
-	if scriptPath == "" {
-		scriptPath = "../FastApi/services/ocr_wrapper.py"
-	}
-
 	return &Service{
-		pythonPath: pythonPath,
-		scriptPath: scriptPath,
+		language: language,
 	}
 }
 
-// Execute extracts text blocks from an image using Surya OCR
+// Execute performs OCR on an image and extracts text blocks
 func (s *Service) Execute(ctx context.Context, imagePath string, options models.OCROptions) (*models.OCRResult, error) {
-	startTime := time.Now()
+	// Initialize Tesseract client
+	client := gosseract.NewClient()
+	defer client.Close()
 
-	// Prepare JSON options
-	optsJSON, err := json.Marshal(options)
+	// Set language
+	lang := s.language
+	if options.Language != "" {
+		lang = options.Language
+	}
+	client.SetLanguage(lang)
+
+	// Set image
+	if err := client.SetImage(imagePath); err != nil {
+		return nil, fmt.Errorf("failed to set image: %w", err)
+	}
+
+	// Get bounding boxes
+	boxes, err := client.GetBoundingBoxes(gosseract.RIL_WORD)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal options: %w", err)
+		return nil, fmt.Errorf("failed to get bounding boxes: %w", err)
 	}
 
-	// Call Python script
-	cmd := exec.CommandContext(ctx, s.pythonPath, s.scriptPath, imagePath, string(optsJSON))
-	
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, fmt.Errorf("OCR processing failed: %w, output: %s", err, string(output))
+	// Convert to BlockInfo
+	blocks := make([]models.BlockInfo, 0, len(boxes))
+	for i, box := range boxes {
+		if box.Word == "" {
+			continue
+		}
+
+		block := models.BlockInfo{
+			ID:   i,
+			Text: box.Word,
+			Confidence: float64(box.Confidence) / 100.0, // Convert 0-100 to 0-1
+			BBox: models.BBox{
+				X:      box.Box.Min.X,
+				Y:      box.Box.Min.Y,
+				Width:  box.Box.Max.X - box.Box.Min.X,
+				Height: box.Box.Max.Y - box.Box.Min.Y,
+			},
+			BBoxPoints: []models.Point{
+				{X: box.Box.Min.X, Y: box.Box.Min.Y},
+				{X: box.Box.Max.X, Y: box.Box.Min.Y},
+				{X: box.Box.Max.X, Y: box.Box.Max.Y},
+				{X: box.Box.Min.X, Y: box.Box.Max.Y},
+			},
+			BlockType: models.BlockTypeText,
+		}
+		blocks = append(blocks, block)
 	}
 
-	// Parse result
-	var result models.OCRResult
-	if err := json.Unmarshal(output, &result); err != nil {
-		return nil, fmt.Errorf("failed to parse OCR result: %w", err)
+	// Calculate average confidence
+	avgConfidence := 0.0
+	if len(blocks) > 0 {
+		for _, block := range blocks {
+			avgConfidence += block.Confidence
+		}
+		avgConfidence /= float64(len(blocks))
 	}
 
-	result.ProcessingTime = time.Since(startTime).Seconds()
+	result := &models.OCRResult{
+		RequestID:   "",
+		TotalBlocks: len(blocks),
+		AverageConf: avgConfidence,
+		Blocks:      blocks,
+	}
 
-	return &result, nil
+	return result, nil
 }

@@ -2,78 +2,113 @@ package ProcessPDF
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"os/exec"
-	"time"
+	"image/png"
+	"os"
+	"path/filepath"
 
+	"github.com/gen2brain/go-fitz"
 	"github.com/plobin/genkitgo/internal/models"
+	"github.com/plobin/genkitgo/internal/services/OCR/ExtractBlocks"
 )
 
-// Service handles PDF processing using Python
 type Service struct {
-	pythonPath string
-	scriptPath string
+	ocrService *ExtractBlocks.Service
+	dpi        float64
 }
 
-// PDFResult represents the result of PDF processing
 type PDFResult struct {
-	RequestID        string               `json:"request_id"`
-	TotalPages       int                  `json:"total_pages"`
-	TotalBlocks      int                  `json:"total_blocks"`
-	AverageConf      float64              `json:"average_confidence"`
-	Pages            []models.PageResult  `json:"pages"`
-	ProcessingTime   float64              `json:"processing_time"`
+	RequestID   string             `json:"request_id"`
+	TotalPages  int                `json:"total_pages"`
+	TotalBlocks int                `json:"total_blocks"`
+	AverageConf float64            `json:"average_confidence"`
+	Pages       []models.OCRResult `json:"pages"`
 }
 
-// NewService creates a new PDF processing service
-func NewService(pythonPath, scriptPath string) *Service {
-	if pythonPath == "" {
-		pythonPath = "python3"
+func NewService(language string, dpi float64) *Service {
+	if dpi == 0 {
+		dpi = 150.0  // Default DPI
 	}
-	if scriptPath == "" {
-		scriptPath = "./FastApi/services/pdf_wrapper.py"
-	}
-
 	return &Service{
-		pythonPath: pythonPath,
-		scriptPath: scriptPath,
+		ocrService: ExtractBlocks.NewService(language),
+		dpi:        dpi,
 	}
 }
 
-// Execute processes a PDF file and extracts text blocks from all pages
+// Execute processes a PDF file: converts to images and performs OCR on each page
 func (s *Service) Execute(ctx context.Context, pdfPath string, options models.OCROptions) (*PDFResult, error) {
-	startTime := time.Now()
-
-	// Prepare JSON options
-	optsJSON, err := json.Marshal(map[string]interface{}{
-		"merge_blocks":         options.MergeBlocks,
-		"merge_threshold":      options.MergeThreshold,
-		"create_sections":      options.CreateSections,
-		"build_hierarchy_tree": options.BuildHierarchyTree,
-		"language":             options.Language,
-		"use_gpu":              false, // Can be made configurable
-		"dpi":                  150,   // Can be made configurable
-	})
+	// Open PDF document
+	doc, err := fitz.New(pdfPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal options: %w", err)
+		return nil, fmt.Errorf("failed to open PDF: %w", err)
+	}
+	defer doc.Close()
+
+	pageCount := doc.NumPage()
+	if pageCount == 0 {
+		return nil, fmt.Errorf("PDF has no pages")
 	}
 
-	// Call Python script
-	cmd := exec.CommandContext(ctx, s.pythonPath, s.scriptPath, pdfPath, string(optsJSON))
-	
-	output, err := cmd.CombinedOutput()
+	// Create temporary directory for images
+	tempDir, err := os.MkdirTemp("", "pdf-*")
 	if err != nil {
-		return nil, fmt.Errorf("PDF processing failed: %w, output: %s", err, string(output))
+		return nil, fmt.Errorf("failed to create temp directory: %w", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Process each page
+	pages := make([]models.OCRResult, 0, pageCount)
+	totalBlocks := 0
+	totalConfidence := 0.0
+
+	for pageNum := 0; pageNum < pageCount; pageNum++ {
+		// Render page to image
+		img, err := doc.Image(pageNum)
+		if err != nil {
+			return nil, fmt.Errorf("failed to render page %d: %w", pageNum+1, err)
+		}
+
+		// Save image to temporary file
+		imagePath := filepath.Join(tempDir, fmt.Sprintf("page_%d.png", pageNum+1))
+		file, err := os.Create(imagePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create image file: %w", err)
+		}
+
+		if err := png.Encode(file, img); err != nil {
+			file.Close()
+			return nil, fmt.Errorf("failed to encode image: %w", err)
+		}
+		file.Close()
+
+		// Perform OCR on the image
+		result, err := s.ocrService.Execute(ctx, imagePath, options)
+		if err != nil {
+			return nil, fmt.Errorf("failed to OCR page %d: %w", pageNum+1, err)
+		}
+
+		// Update block IDs to be globally unique
+		for i := range result.Blocks {
+			result.Blocks[i].ID = totalBlocks + i
+		}
+
+		totalBlocks += result.TotalBlocks
+		totalConfidence += result.AverageConf
+
+		pages = append(pages, *result)
 	}
 
-	// Parse result
-	var result PDFResult
-	if err := json.Unmarshal(output, &result); err != nil {
-		return nil, fmt.Errorf("failed to parse PDF result: %w, output: %s", err, string(output))
+	// Calculate overall average confidence
+	avgConfidence := 0.0
+	if pageCount > 0 {
+		avgConfidence = totalConfidence / float64(pageCount)
 	}
 
-	result.ProcessingTime = time.Since(startTime).Seconds()
-
-	return &result, nil
+	return &PDFResult{
+		RequestID:   "",
+		TotalPages:  pageCount,
+		TotalBlocks: totalBlocks,
+		AverageConf: avgConfidence,
+		Pages:       pages,
+	}, nil
 }
