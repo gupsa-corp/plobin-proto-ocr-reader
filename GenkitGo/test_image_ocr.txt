@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Create a simple test image with text using ImageMagick
-convert -size 800x200 xc:white \
-  -font Arial -pointsize 48 \
-  -draw "text 50,100 'Hello World OCR Test'" \
-  test_image.png
-
-echo "Test image created: test_image.png"
