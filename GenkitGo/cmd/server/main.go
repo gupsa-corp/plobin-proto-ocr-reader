@@ -30,6 +30,7 @@ import (
 	"github.com/plobin/genkitgo/internal/services/Template/DeleteTemplate"
 	"github.com/plobin/genkitgo/internal/services/Template/GetTemplate"
 	"github.com/plobin/genkitgo/internal/services/Template/ListTemplates"
+	"github.com/plobin/genkitgo/internal/services/Visualization/DrawBlocks"
 )
 
 func main() {
@@ -63,9 +64,12 @@ func main() {
 	getTemplateService := GetTemplate.NewService(cfg.OutputDir)
 	deleteTemplateService := DeleteTemplate.NewService(cfg.OutputDir)
 
+	// Visualization service
+	visualizationService := DrawBlocks.NewService()
+
 	log.Printf("✅ Services initialized (Pure Go - No Python!)")
 	log.Printf("  - LLM Client (model: %s)", cfg.LLMModel)
-	log.Printf("  - OCR Service (Tesseract via gosseract)")
+	log.Printf("  - OCR Service (Surya via HTTP)")
 	log.Printf("  - PDF Service (MuPDF via go-fitz)")
 	log.Printf("  - Storage Service (dir: %s)", cfg.OutputDir)
 	log.Printf("  - Block Services (Get, Update, Delete)")
@@ -81,7 +85,7 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(60 * time.Second))
+	r.Use(middleware.Timeout(10 * time.Minute))
 	
 	// Health check
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
@@ -170,6 +174,33 @@ func main() {
 				log.Printf("Warning: Failed to create request storage: %v", err)
 			} else {
 				result.RequestID = requestID
+
+				// Save original image
+				imageData, err := os.ReadFile(tmpFile.Name())
+				if err != nil {
+					log.Printf("Warning: Failed to read image data: %v", err)
+				} else {
+					if err := storageService.SavePageImage(requestID, 1, imageData); err != nil {
+						log.Printf("Warning: Failed to save page image: %v", err)
+					}
+				}
+
+				// Generate and save visualization
+				visualPath := storageService.GetPageVisualizationPath(requestID, 1)
+				if err := visualizationService.Execute(r.Context(), tmpFile.Name(), result.Blocks, visualPath); err != nil {
+					log.Printf("Warning: Failed to create visualization: %v", err)
+				}
+
+				// Save OCR result
+				pageData := &models.PageResult{
+					PageNumber:  1,
+					Blocks:      result.Blocks,
+					TotalBlocks: result.TotalBlocks,
+					AverageConf: result.AverageConf,
+				}
+				if err := storageService.SavePageResult(requestID, 1, pageData); err != nil {
+					log.Printf("Warning: Failed to save page result: %v", err)
+				}
 			}
 
 			// Return success response
@@ -249,6 +280,36 @@ func main() {
 				log.Printf("Warning: Failed to create request storage: %v", err)
 			} else {
 				result.RequestID = requestID
+
+				// Save each page image, visualization, and OCR result
+				for i, pageResult := range result.Pages {
+					pageNum := i + 1
+
+					// Save page image
+					if i < len(result.PageImages) {
+						if err := storageService.SavePageImage(requestID, pageNum, result.PageImages[i]); err != nil {
+							log.Printf("Warning: Failed to save page %d image: %v", pageNum, err)
+						} else {
+							// Generate and save visualization
+							imagePath := storageService.GetPageImagePath(requestID, pageNum)
+							visualPath := storageService.GetPageVisualizationPath(requestID, pageNum)
+							if err := visualizationService.Execute(r.Context(), imagePath, pageResult.Blocks, visualPath); err != nil {
+								log.Printf("Warning: Failed to create page %d visualization: %v", pageNum, err)
+							}
+						}
+					}
+
+					// Save page OCR result
+					pageData := &models.PageResult{
+						PageNumber:  pageNum,
+						Blocks:      pageResult.Blocks,
+						TotalBlocks: pageResult.TotalBlocks,
+						AverageConf: pageResult.AverageConf,
+					}
+					if err := storageService.SavePageResult(requestID, pageNum, pageData); err != nil {
+						log.Printf("Warning: Failed to save page %d result: %v", pageNum, err)
+					}
+				}
 			}
 
 			w.Header().Set("Content-Type", "application/json")
@@ -643,8 +704,8 @@ func main() {
 	srv := &http.Server{
 		Addr:         cfg.GetAddress(),
 		Handler:      r,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  2 * time.Minute,
+		WriteTimeout: 10 * time.Minute,
 		IdleTimeout:  60 * time.Second,
 	}
 	

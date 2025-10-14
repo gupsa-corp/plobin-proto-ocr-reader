@@ -140,6 +140,34 @@ func (s *Service) SavePageResult(requestID string, pageNum int, result *models.P
 	return os.WriteFile(resultPath, data, 0644)
 }
 
+// SavePageImage saves page image file
+func (s *Service) SavePageImage(requestID string, pageNum int, imageData []byte) error {
+	pageDir := filepath.Join(s.baseDir, requestID, "pages", fmt.Sprintf("%03d", pageNum))
+	os.MkdirAll(pageDir, 0755)
+
+	imagePath := filepath.Join(pageDir, "original.png")
+	return os.WriteFile(imagePath, imageData, 0644)
+}
+
+// SavePageVisualization saves page visualization image with OCR blocks drawn
+func (s *Service) SavePageVisualization(requestID string, pageNum int, imageData []byte) error {
+	pageDir := filepath.Join(s.baseDir, requestID, "pages", fmt.Sprintf("%03d", pageNum))
+	os.MkdirAll(pageDir, 0755)
+
+	visualPath := filepath.Join(pageDir, "visualization.png")
+	return os.WriteFile(visualPath, imageData, 0644)
+}
+
+// GetPageImagePath returns the path to the original page image
+func (s *Service) GetPageImagePath(requestID string, pageNum int) string {
+	return filepath.Join(s.baseDir, requestID, "pages", fmt.Sprintf("%03d", pageNum), "original.png")
+}
+
+// GetPageVisualizationPath returns the path to save visualization
+func (s *Service) GetPageVisualizationPath(requestID string, pageNum int) string {
+	return filepath.Join(s.baseDir, requestID, "pages", fmt.Sprintf("%03d", pageNum), "visualization.png")
+}
+
 // ListRequests lists all request IDs
 func (s *Service) ListRequests() ([]string, error) {
 	entries, err := os.ReadDir(s.baseDir)

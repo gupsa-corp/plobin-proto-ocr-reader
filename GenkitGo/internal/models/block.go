@@ -32,13 +32,14 @@ type Point struct {
 
 // BlockInfo represents OCR block information
 type BlockInfo struct {
-	ID         int       `json:"id"`
-	Text       string    `json:"text"`
-	Confidence float64   `json:"confidence"`
-	BBox       BBox      `json:"bbox"`
-	BBoxPoints []Point   `json:"bbox_points"`
-	BlockType  BlockType `json:"block_type"`
-	Language   string    `json:"language,omitempty"`
+	ID          int       `json:"id"`
+	Text        string    `json:"text"`
+	Confidence  float64   `json:"confidence"`
+	BBox        BBox      `json:"bbox"`
+	BBoxPoints  []Point   `json:"bbox_points"`
+	BlockType   BlockType `json:"block_type"`
+	Language    string    `json:"language,omitempty"`
+	LayoutLabel string    `json:"layout_label,omitempty"` // Surya layout label (Title, Text, Table, etc.)
 }
 
 // BlockResult represents blocks with metadata

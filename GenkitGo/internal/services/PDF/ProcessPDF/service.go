@@ -23,6 +23,7 @@ type PDFResult struct {
 	TotalBlocks int                `json:"total_blocks"`
 	AverageConf float64            `json:"average_confidence"`
 	Pages       []models.OCRResult `json:"pages"`
+	PageImages  [][]byte           `json:"-"` // Page images (not included in JSON response)
 }
 
 func NewService(language string, dpi float64) *Service {
@@ -58,6 +59,7 @@ func (s *Service) Execute(ctx context.Context, pdfPath string, options models.OC
 
 	// Process each page
 	pages := make([]models.OCRResult, 0, pageCount)
+	pageImages := make([][]byte, 0, pageCount)
 	totalBlocks := 0
 	totalConfidence := 0.0
 
@@ -80,6 +82,13 @@ func (s *Service) Execute(ctx context.Context, pdfPath string, options models.OC
 			return nil, fmt.Errorf("failed to encode image: %w", err)
 		}
 		file.Close()
+
+		// Read image data for storage
+		imageData, err := os.ReadFile(imagePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read image data: %w", err)
+		}
+		pageImages = append(pageImages, imageData)
 
 		// Perform OCR on the image
 		result, err := s.ocrService.Execute(ctx, imagePath, options)
@@ -110,5 +119,6 @@ func (s *Service) Execute(ctx context.Context, pdfPath string, options models.OC
 		TotalBlocks: totalBlocks,
 		AverageConf: avgConfidence,
 		Pages:       pages,
+		PageImages:  pageImages,
 	}, nil
 }

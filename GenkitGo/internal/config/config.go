@@ -15,7 +15,7 @@ type Config struct {
 	ServerHost string
 	
 	// OCR configuration
-	OCREngine   string // "tesseract" or "surya"
+	OCREngine   string // "surya" (ML-based layout detection + OCR)
 	OCRLanguage string // "kor", "eng", etc.
 	UseGPU      bool
 	
@@ -53,7 +53,7 @@ func Load() *Config {
 		ServerHost: getEnv("SERVER_HOST", "0.0.0.0"),
 		
 		// OCR
-		OCREngine:   getEnv("OCR_ENGINE", "tesseract"),
+		OCREngine:   getEnv("OCR_ENGINE", "surya"),
 		OCRLanguage: getEnv("OCR_LANGUAGE", "kor+eng"),
 		UseGPU:      getEnvBool("USE_GPU", false),
 		

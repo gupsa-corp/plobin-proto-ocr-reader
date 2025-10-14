@@ -6,7 +6,7 @@ FastAPI 기반 OCR 시스템의 Go + Firebase Genkit 포팅 버전입니다.
 
 - **🔥 Firebase Genkit**: 강력한 AI 플로우 오케스트레이션
 - **🤖 Gemini Integration**: Google Gemini 모델을 통한 문서 분석
-- **📄 OCR Processing**: Tesseract/Surya 기반 다국어 OCR
+- **📄 OCR Processing**: Surya ML 기반 레이아웃 감지 + OCR
 - **🚀 고성능**: Go 언어 기반 병렬 처리
 - **🏗️ 확장 가능한 아키텍처**: 도메인 기반 계층 분리
 
@@ -60,7 +60,7 @@ GenkitGo/
 ### 사전 요구사항
 
 - Go 1.22 이상
-- Tesseract OCR (선택사항)
+- Surya OCR Service (Python FastAPI 서비스, 포트 6004)
 - Google Cloud API Key (Gemini 사용)
 
 ### 설치
@@ -179,7 +179,7 @@ OCR 처리와 LLM 분석을 결합한 플로우입니다.
 |--------|------|--------|
 | `SERVER_PORT` | 서버 포트 | `6003` |
 | `SERVER_HOST` | 서버 호스트 | `0.0.0.0` |
-| `OCR_ENGINE` | OCR 엔진 (tesseract/surya) | `tesseract` |
+| `OCR_ENGINE` | OCR 엔진 (surya) | `surya` |
 | `OCR_LANGUAGE` | OCR 언어 | `kor+eng` |
 | `USE_GPU` | GPU 사용 여부 | `false` |
 | `PDF_DPI` | PDF 변환 DPI | `300` |
