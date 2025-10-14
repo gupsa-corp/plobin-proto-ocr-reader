@@ -373,4 +373,78 @@ async def proxy_image(
         raise HTTPException(status_code=500, detail=f"이미지 프록시 중 오류: {str(e)}")
 
 
+@router.get("/requests/{request_id}/pages/{page_number}/crop", summary="이미지 영역 크롭")
+async def crop_image_region(
+    request_id: str,
+    page_number: int,
+    x: int = Query(..., description="크롭 시작 X 좌표"),
+    y: int = Query(..., description="크롭 시작 Y 좌표"),
+    width: int = Query(..., description="크롭 너비"),
+    height: int = Query(..., description="크롭 높이"),
+    padding: Optional[int] = Query(5, description="크롭 영역 패딩 (픽셀)"),
+    quality: Optional[int] = Query(85, description="JPEG 품질 (1-100)")
+):
+    """
+    원본 이미지에서 지정된 bbox 좌표 영역을 크롭하여 반환
+
+    Args:
+        request_id: UUID v7 요청 ID
+        page_number: 페이지 번호 (1부터 시작)
+        x: 크롭 시작 X 좌표
+        y: 크롭 시작 Y 좌표
+        width: 크롭 너비
+        height: 크롭 높이
+        padding: 크롭 영역 주변 패딩 (기본 5px)
+        quality: JPEG 품질
+
+    Returns:
+        크롭된 이미지 (JPEG 형식)
+    """
+    if not validate_request_id(request_id):
+        raise HTTPException(status_code=400, detail="유효하지 않은 요청 ID")
+
+    try:
+        # 원본 이미지 파일 경로
+        original_file = Path(request_storage.base_output_dir) / request_id / "pages" / f"{page_number:03d}" / "original.png"
+
+        if not original_file.exists():
+            raise HTTPException(status_code=404, detail="원본 이미지를 찾을 수 없습니다")
+
+        # 이미지 열기 및 크롭
+        with Image.open(original_file) as img:
+            # 패딩 적용한 크롭 영역 계산
+            crop_x1 = max(0, x - padding)
+            crop_y1 = max(0, y - padding)
+            crop_x2 = min(img.width, x + width + padding)
+            crop_y2 = min(img.height, y + height + padding)
+
+            # 크롭
+            cropped = img.crop((crop_x1, crop_y1, crop_x2, crop_y2))
+
+            # RGB 모드로 변환 (JPEG 저장을 위해)
+            if cropped.mode in ('RGBA', 'LA'):
+                background = Image.new('RGB', cropped.size, (255, 255, 255))
+                background.paste(cropped, mask=cropped.split()[-1] if cropped.mode == 'RGBA' else None)
+                cropped = background
+            elif cropped.mode != 'RGB':
+                cropped = cropped.convert('RGB')
+
+            # 메모리에 JPEG로 저장
+            img_io = io.BytesIO()
+            cropped.save(img_io, format='JPEG', quality=quality, optimize=True)
+            img_io.seek(0)
+
+            return StreamingResponse(
+                io.BytesIO(img_io.read()),
+                media_type="image/jpeg",
+                headers={
+                    "Content-Disposition": f"inline; filename=page_{page_number:03d}_crop_{x}_{y}.jpg",
+                    "Cache-Control": "public, max-age=3600"
+                }
+            )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"이미지 크롭 중 오류: {str(e)}")
+
+
 __all__ = ['router', 'set_dependencies']
