@@ -59,7 +59,7 @@ class SectionAnalyzer:
         section_text: str,
         section_type: str = "general",
         analysis_prompt: Optional[str] = None,
-        model: str = LLMModel.GPT_3_5_TURBO
+        model: str = LLMModel.BOTO
     ) -> SectionAnalysisResult:
         """
         개별 섹션 분석
@@ -100,7 +100,7 @@ class SectionAnalyzer:
         request_id: str,
         page_number: int,
         section_configs: Optional[List[Dict[str, Any]]] = None,
-        model: str = LLMModel.GPT_3_5_TURBO
+        model: str = LLMModel.BOTO
     ) -> DocumentAnalysisResult:
         """
         OCR 결과의 모든 섹션을 분석

@@ -25,29 +25,9 @@ async def get_available_models():
         "success": True,
         "models": [
             {
-                "model_id": LLMModel.GPT_4,
-                "name": "GPT-4",
-                "description": "고성능 범용 언어 모델"
-            },
-            {
-                "model_id": LLMModel.GPT_3_5_TURBO,
-                "name": "GPT-3.5 Turbo",
-                "description": "빠르고 효율적인 언어 모델 (기본값)"
-            },
-            {
-                "model_id": LLMModel.CLAUDE_3_SONNET,
-                "name": "Claude 3 Sonnet",
-                "description": "균형잡힌 성능의 Claude 모델"
-            },
-            {
-                "model_id": LLMModel.CLAUDE_3_HAIKU,
-                "name": "Claude 3 Haiku",
-                "description": "빠른 응답의 Claude 모델"
-            },
-            {
                 "model_id": LLMModel.BOTO,
                 "name": "Boto (Qwen3-Omni-30B)",
-                "description": "Gupsa 자체 LLM 모델"
+                "description": "로컬 LLM 모델 (기본값)"
             }
         ]
     })

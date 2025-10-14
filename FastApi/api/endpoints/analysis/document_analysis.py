@@ -55,7 +55,7 @@ async def analyze_document_page(
             ocr_result = json.load(f)
 
         # 분석 설정 준비
-        model = config.model if config and config.model else LLMModel.GPT_3_5_TURBO
+        model = config.model if config and config.model else LLMModel.BOTO
         section_configs = config.section_configs if config and config.section_configs else None
 
         # 문서 분석 실행

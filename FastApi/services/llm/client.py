@@ -11,11 +11,7 @@ from enum import Enum
 
 class LLMModel(str, Enum):
     """사용 가능한 LLM 모델들"""
-    BOTO = "boto"  # Qwen3-Omni-30B-A3B-Instruct (실제 사용 가능)
-    GPT_4 = "gpt-4"
-    GPT_3_5_TURBO = "gpt-3.5-turbo"
-    CLAUDE_3_SONNET = "claude-3-sonnet"
-    CLAUDE_3_HAIKU = "claude-3-haiku"
+    BOTO = "boto"  # Qwen3-Omni-30B-A3B-Instruct (로컬 LLM)
 
 
 @dataclass

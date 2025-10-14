@@ -10,8 +10,6 @@ from services.pdf import PDFToImageProcessor
 from api.endpoints import root, process_image, process_pdf, blocks, templates, pages, images
 from api.endpoints.requests import router as requests_router, set_dependencies as set_requests_dependencies, set_processing_dependencies as set_requests_processing_dependencies
 from api.endpoints.analysis import router as analysis_router
-from api.endpoints.ppocrv5 import router as ppocrv5_router
-from api.endpoints.tensorrt import router as tensorrt_router
 from api.endpoints.recommendations import router as recommendations_router
 
 # Initialize FastAPI app
@@ -62,8 +60,6 @@ app.include_router(pages.router, tags=["Page Navigation"])
 app.include_router(blocks.router, tags=["Block Editing"])
 app.include_router(images.router, tags=["Image Processing"])
 app.include_router(analysis_router, tags=["LLM Analysis"])
-app.include_router(ppocrv5_router, tags=["PP-OCRv5 Advanced"])
-app.include_router(tensorrt_router, tags=["TensorRT Acceleration"])
 app.include_router(recommendations_router, tags=["Development Recommendations"])
 
 if __name__ == "__main__":
