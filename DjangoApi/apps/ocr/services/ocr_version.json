@@ -1,7 +1,0 @@
-{
-  "version": "v2_ppocrv5",
-  "backup_name": "v2_ppocrv5_20251010_034118",
-  "created_at": "2025-10-10T03:41:18.646708",
-  "description": "PP-OCRv5 + TensorRT 지원 완료",
-  "path": "services/ocr_backups/v2_ppocrv5_20251010_034118"
-}
