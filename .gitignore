@@ -1,1 +1,5 @@
 GenkitGo/surya-service/venv/
+
+# 테스트 파일
+test_font.py
+test_font_output.png

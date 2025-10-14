@@ -6,9 +6,24 @@ Draw bounding boxes on images
 import matplotlib.patches as patches
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+import os
+from pathlib import Path
 
-# 한글 폰트 설정
-matplotlib.rcParams['font.family'] = ['Noto Sans CJK JP', 'DejaVu Sans', 'sans-serif']
+# 프로젝트 루트에서 폰트 파일 경로 찾기
+current_dir = Path(__file__).resolve().parent
+project_root = current_dir.parent.parent.parent
+font_path = project_root / 'fonts' / 'NotoSansCJK-Regular.ttc'
+
+# 폰트 등록
+if font_path.exists():
+    font_prop = fm.FontProperties(fname=str(font_path))
+    fm.fontManager.addfont(str(font_path))
+    matplotlib.rcParams['font.family'] = font_prop.get_name()
+else:
+    # 폴백: 시스템 폰트 사용
+    matplotlib.rcParams['font.family'] = ['Noto Sans CJK JP', 'DejaVu Sans', 'sans-serif']
+
 matplotlib.rcParams['axes.unicode_minus'] = False
 
 
