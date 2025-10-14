@@ -7,7 +7,7 @@ from services.ocr import DocumentBlockExtractor
 from services.pdf import PDFToImageProcessor
 
 # Import API modules
-from api.endpoints import root, process_image, process_pdf, blocks, templates, pages, images
+from api.endpoints import root, process_image, process_pdf, blocks, templates, pages, images, export
 from api.endpoints.requests import router as requests_router, set_dependencies as set_requests_dependencies, set_processing_dependencies as set_requests_processing_dependencies
 from api.endpoints.analysis import router as analysis_router
 
@@ -48,6 +48,7 @@ set_requests_processing_dependencies(extractor, pdf_processor)
 pages.set_dependencies(str(output_dir))
 blocks.set_dependencies(str(output_dir))
 images.set_dependencies(str(output_dir))
+export.set_dependencies(str(output_dir))
 
 # Include routers
 app.include_router(root.router, tags=["Root"])
@@ -59,6 +60,7 @@ app.include_router(pages.router, tags=["Page Navigation"])
 app.include_router(blocks.router, tags=["Block Editing"])
 app.include_router(images.router, tags=["Image Processing"])
 app.include_router(analysis_router, tags=["LLM Analysis"])
+app.include_router(export.router, tags=["Data Export"])
 
 if __name__ == "__main__":
     import uvicorn
