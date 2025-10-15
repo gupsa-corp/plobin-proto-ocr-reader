@@ -54,8 +54,10 @@ async def process_pdf(
             file_size = file_stats.st_size
 
             with tempfile.TemporaryDirectory() as temp_dir:
+                print(f"🔄 PDF 변환 시작: {file.filename}")
                 image_paths = pdf_processor.convert_pdf_to_images(tmp_path, temp_dir)
                 total_pages = len(image_paths)
+                print(f"✅ PDF 변환 완료: {total_pages} 페이지")
 
                 # RequestStorage를 사용해서 저장
                 storage = RequestStorage(output_dir)
@@ -71,6 +73,7 @@ async def process_pdf(
                 for i, image_path in enumerate(image_paths):
                     page_num = i + 1
                     page_start_time = time.time()
+                    print(f"🔄 페이지 {page_num} OCR 처리 시작...")
 
                     result = extractor.extract_blocks(
                         image_path,
@@ -175,7 +178,24 @@ async def process_pdf(
 
     except Exception as e:
         server_stats["errors"] += 1
-        raise HTTPException(status_code=500, detail=f"Processing error: {str(e)}")
+        import traceback
+        error_details = {
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "traceback": traceback.format_exc(),
+            "filename": file.filename if file else "unknown",
+            "request_id": request_id if 'request_id' in locals() else "unknown"
+        }
+        print(f"❌ PDF 처리 오류: {error_details}")
+
+        # 파이프 오류 특별 처리
+        if "Broken pipe" in str(e) or "파이프가 깨어짐" in str(e):
+            print(f"🔍 파이프 오류 디버깅 정보:")
+            print(f"   - 임시 파일 경로: {tmp_path if 'tmp_path' in locals() else 'unknown'}")
+            print(f"   - 출력 디렉토리: {output_dir}")
+            print(f"   - 현재 작업 디렉토리: {os.getcwd()}")
+
+        raise HTTPException(status_code=500, detail=f"처리 중 오류 발생: PDF 처리 중 오류: {str(e)}")
 
 @router.post("/process-document")
 async def process_document(file: UploadFile = File(...)):
