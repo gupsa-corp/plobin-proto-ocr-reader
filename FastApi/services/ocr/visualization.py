@@ -10,25 +10,45 @@ import matplotlib
 import matplotlib.font_manager as fm
 from typing import Dict, Optional
 
-# 한글 폰트 찾기 (macOS 기본 한글 폰트)
+# 한글 폰트 찾기 (시스템에서 사용 가능한 한글 폰트)
 def get_korean_font():
     """시스템에서 사용 가능한 한글 폰트를 찾아 반환"""
-    korean_fonts = ['AppleGothic', 'Apple SD Gothic Neo', 'AppleSDGothicNeo-Regular', 'Nanum Gothic']
+    korean_fonts = [
+        'NanumGothic', 'NanumBarunGothic', 'NanumMyeongjo',
+        'AppleSDGothicNeoR00', 'AppleSDGothicNeoM00', 'AppleSDGothicNeoB00',
+        'AppleGothic', 'Apple SD Gothic Neo', 'AppleSDGothicNeo-Regular',
+        'Noto Sans CJK KR', 'Malgun Gothic', 'Dotum', 'Gulim'
+    ]
 
     for font_name in korean_fonts:
         try:
             font_path = fm.findfont(fm.FontProperties(family=font_name))
-            if font_path:
+            if font_path and 'DejaVu' not in font_path:
+                print(f"✅ 한글 폰트 사용: {font_name} ({font_path})")
                 return fm.FontProperties(fname=font_path)
         except:
             continue
 
     # 폴백: 기본 폰트
+    print("⚠️ 한글 폰트를 찾을 수 없어 기본 폰트를 사용합니다.")
     return fm.FontProperties()
 
 # 한글 폰트 설정
 korean_font = get_korean_font()
 matplotlib.rcParams['axes.unicode_minus'] = False
+
+# matplotlib 전역 폰트 설정
+try:
+    # Nanum 폰트가 있으면 전역으로 설정
+    available_fonts = [f.name for f in fm.fontManager.ttflist]
+    if 'NanumGothic' in available_fonts:
+        matplotlib.rcParams['font.family'] = 'NanumGothic'
+        print("✅ matplotlib 전역 폰트 설정: NanumGothic")
+    elif 'NanumBarunGothic' in available_fonts:
+        matplotlib.rcParams['font.family'] = 'NanumBarunGothic'
+        print("✅ matplotlib 전역 폰트 설정: NanumBarunGothic")
+except Exception as e:
+    print(f"⚠️ 전역 폰트 설정 실패: {e}")
 
 
 def visualize_blocks(image_path: str, result: Dict, save_path: Optional[str] = None):
